@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable{
     public void setupGame(){
         aSetter.setObject();
         player.setDefaultValuaes();
-        chunkM.loadChunk(0,0);
+        // chunkM.loadChunk(0,0);
         
         playMusic(0);
     }

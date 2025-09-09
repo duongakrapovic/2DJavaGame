@@ -48,7 +48,7 @@ public class Player extends Entity{
         // central of the chunk 
         worldX = gp.tileSize * gp.chunkSize / 2; // chunkSize = số tile trong 1 chunk
         worldY = gp.tileSize * gp.chunkSize / 2;
-        defaultSpeed = 6;
+        defaultSpeed = 15;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "down";

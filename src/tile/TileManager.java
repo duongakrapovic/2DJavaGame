@@ -30,10 +30,10 @@ public class TileManager {
         //CHECK COLLISION   
         loadTilesetProperties("/maps/tileset.tsx");     
         
-        System.out.println("==== TILE COLLISION STATUS ====");
-        for(int i=0; i<tile.length; i++){
-            System.out.println("Tile " + i + ": collision=" + tile[i].collision);
-        }
+//        System.out.println("==== TILE COLLISION STATUS ====");
+//        for(int i=0; i<tile.length; i++){
+//            System.out.println("Tile " + i + ": collision=" + tile[i].collision);
+//        }
     }
     
     public void loadTileset(String path, int tileSize) {
