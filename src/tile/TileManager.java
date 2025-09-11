@@ -145,10 +145,10 @@ public class TileManager {
                             d
         */ 
         // find boundary
-        int screenLeft = playerPosX - gp.player.screenX/2;
-        int screenTop  = playerPosY - gp.player.screenY/2;
-        int screenRight= playerPosX + gp.player.screenX/2;
-        int screenBottom= playerPosY + gp.player.screenY/2;
+        int screenLeft = playerPosX - gp.player.screenX;
+        int screenTop  = playerPosY - gp.player.screenY;
+        int screenRight= playerPosX + gp.player.screenX + 5*gp.tileSize;
+        int screenBottom= playerPosY + gp.player.screenY + 5*gp.tileSize;
         
         for(Chunk c : chunkM.getActiveChunks()){
             int chunkWorldX = c.chunkX * c.size * gp.tileSize;

@@ -6,19 +6,29 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChunkManager {
-    private TileManager tileM;
-    private int chunkSize;
-    private Map<String, Chunk> chunks;
-    private int warningDistance = 6; // number of tiles from edge to load next chunk
+import main.GamePanel;
 
-    public ChunkManager(TileManager tileM, int chunkSize){
+public class ChunkManager {
+    final private TileManager tileM;
+    final private int chunkSize;
+    final private Map<String, Chunk> chunks;
+    // number of tiles from edge to load next chunk
+    final private int warningDistanceX; 
+    final private int warningDistanceY;
+    final private GamePanel gp;
+    
+    public ChunkManager(TileManager tileM, int chunkSize , GamePanel gp){
         // Reference to TileManager (manages all tiles in the game)
         this.tileM = tileM;
         // Size of each chunk (number of tiles per side)
         this.chunkSize = chunkSize;
         // Store all loaded chunks, keyed by "chunkX_chunkY"
         this.chunks = new HashMap<>();
+        
+        this.gp = gp;
+        
+        this.warningDistanceX = gp.maxScreenCol / 2;
+        this.warningDistanceY = gp.maxScreenRow / 2;
     }
 
     private String chunkKey(int x, int y){
@@ -113,23 +123,31 @@ public class ChunkManager {
         loadChunk(currentChunkX, currentChunkY);
 
         // Near chunk borders → load adjacent chunks
-        if(offsetX >= chunkSize - warningDistance) loadChunk(currentChunkX + 1, currentChunkY);
-        if(offsetX < warningDistance) loadChunk(currentChunkX - 1, currentChunkY);
-        if(offsetY >= chunkSize - warningDistance) loadChunk(currentChunkX, currentChunkY + 1);
-        if(offsetY < warningDistance) loadChunk(currentChunkX, currentChunkY - 1);
+        if(offsetX >= chunkSize - warningDistanceX) 
+            loadChunk(currentChunkX + 1, currentChunkY);
+        if(offsetX <= warningDistanceX) 
+            loadChunk(currentChunkX - 1, currentChunkY);
+        if(offsetY >= chunkSize - warningDistanceY) 
+            loadChunk(currentChunkX, currentChunkY + 1);
+        if(offsetY <= warningDistanceY) 
+            loadChunk(currentChunkX, currentChunkY - 1);
 
         // Near chunk corners → load diagonal chunks
-        if(offsetX >= chunkSize - warningDistance && offsetY >= warningDistance)
+        if(offsetX >= chunkSize - warningDistanceX && offsetY >= chunkSize - warningDistanceY)
             loadChunk(currentChunkX + 1, currentChunkY + 1);
-        if(offsetX < warningDistance && offsetY >= warningDistance)
+
+        if(offsetX <= warningDistanceX && offsetY >= chunkSize - warningDistanceY)
             loadChunk(currentChunkX - 1, currentChunkY + 1);
-        if(offsetX >= chunkSize - warningDistance && offsetY < warningDistance)
+
+        if(offsetX >= chunkSize - warningDistanceX && offsetY < warningDistanceY)
             loadChunk(currentChunkX + 1, currentChunkY - 1);
-        if(offsetX < warningDistance && offsetY < warningDistance)
+
+        if(offsetX <= warningDistanceX && offsetY <= warningDistanceY)
             loadChunk(currentChunkX - 1, currentChunkY - 1);
 
+
         // Unload chunks that are too far (distance > 1)
-        unloadFarChunks(currentChunkX, currentChunkY, 1);
+        unloadFarChunks(currentChunkX, currentChunkY, 3);
     }
 
     public Iterable<Chunk> getActiveChunks(){

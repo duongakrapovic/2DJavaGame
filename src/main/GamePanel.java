@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.HashSet;
-import java.util.Set;
 import object.SuperObject;
 import tile.ChunkManager;
 import tile.TileManager;
@@ -32,15 +30,15 @@ public class GamePanel extends JPanel implements Runnable{
     public final int screenHeight = tileSize * maxScreenRow;// 576 pixels
     
     // WORLD SETTING   
-    public final int maxWorldCol = 32;
-    public final int maxWorldRow = 32;
+    public final int maxWorldCol = 32 * 3;
+    public final int maxWorldRow = 32 * 3;
     public final int chunkSize = 32;
     //FPS
     int FPS = 60;
     
     //SYSTEM
     TileManager tileM = new TileManager(this);
-    ChunkManager chunkM = new ChunkManager(tileM, chunkSize);
+    ChunkManager chunkM = new ChunkManager(tileM, chunkSize, this);
     KeyHandler keyH = new KeyHandler();
     Sound music = new Sound();
     Sound se = new Sound();  
