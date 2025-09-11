@@ -149,7 +149,10 @@ public class TileManager {
         int screenTop  = playerPosY - gp.player.screenY;
         int screenRight= playerPosX + gp.player.screenX + 5*gp.tileSize;
         int screenBottom= playerPosY + gp.player.screenY + 5*gp.tileSize;
-        
+        /*there is problem as old method , we render only the visible of one txt map 
+        but we use many tmx file , therefore we have to load and render a part of each tmx 
+        the boundary is so large so that code can render smother.
+        */  
         for(Chunk c : chunkM.getActiveChunks()){
             int chunkWorldX = c.chunkX * c.size * gp.tileSize;
             int chunkWorldY = c.chunkY * c.size * gp.tileSize;
