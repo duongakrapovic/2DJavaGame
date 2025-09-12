@@ -10,9 +10,11 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
 import object.SuperObject;
 import tile.ChunkManager;
 import tile.TileManager;
+
 
 public class GamePanel extends JPanel implements Runnable{
     //SCREEN SETTING
@@ -38,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable{
     
     //SYSTEM
     TileManager tileM = new TileManager(this);
-    ChunkManager chunkM = new ChunkManager(tileM, chunkSize, this);
+    ChunkManager chunkM = new ChunkManager(chunkSize, this);
     KeyHandler keyH = new KeyHandler();
     Sound music = new Sound();
     Sound se = new Sound();  
@@ -69,7 +71,7 @@ public class GamePanel extends JPanel implements Runnable{
     
     public void setupGame(){
         aSetter.setObject();
-        player.setDefaultValuaes();
+        player.setDefaultValues();
         // chunkM.loadChunk(0,0);
         
         playMusic(0);
@@ -140,12 +142,12 @@ public class GamePanel extends JPanel implements Runnable{
         //  TILES AND CHUNKS
         chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
         tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
-//        // OBJECT
-//        for(int i = 0 ; i < obj.length; i++){
-//            if(obj[i] != null){
-//                obj[i].draw(g2, this);
-//            }
-//        }
+        // OBJECT
+        for(int i = 0 ; i < obj.length; i++){
+            if(obj[i] != null){
+                obj[i].draw(g2, this);
+            }
+        }
         // PLAYER
         player.draw(g2);
         

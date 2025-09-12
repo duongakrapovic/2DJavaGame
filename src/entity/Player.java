@@ -41,10 +41,10 @@ public class Player extends Entity{
         solidArea.width = 25;
         solidArea.height = 25;
         
-        setDefaultValuaes();
+        setDefaultValues();
         getPlayerImage();
     }
-    public void setDefaultValuaes(){
+    public void setDefaultValues(){
         // central of the chunk 
         worldX = gp.tileSize * gp.chunkSize / 2; // chunkSize = số tile trong 1 chunk
         worldY = gp.tileSize * gp.chunkSize / 2;
