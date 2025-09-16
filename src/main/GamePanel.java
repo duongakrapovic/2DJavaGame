@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+
 import object.SuperObject;
 import tile.ChunkManager;
 import tile.TileManager;
@@ -41,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable{
     //SYSTEM
     TileManager tileM = new TileManager(this);
     ChunkManager chunkM = new ChunkManager(chunkSize, this);
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     Sound music = new Sound();
     Sound se = new Sound();  
     // need seperate class for music and sound effect because music and se 
@@ -57,14 +58,21 @@ public class GamePanel extends JPanel implements Runnable{
     public Player player = new Player(this, keyH);
     public SuperObject obj[] = new SuperObject[10];
     
+    // GAME STATE
+    public int gameState;
+    public int gameStart = 0;
+    public int gamePlay = 1;
+    public int gamePause = 2;
     
     public GamePanel(){
         
+        // set the size of the window
         this.setPreferredSize(new Dimension(screenWidth , screenHeight));
-        // set the size of the class
+        
         this.setBackground(Color.black);
-        this.setDoubleBuffered(true);
         // improve redering performent
+        this.setDoubleBuffered(true);
+        
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
@@ -72,9 +80,8 @@ public class GamePanel extends JPanel implements Runnable{
     public void setupGame(){
         aSetter.setObject();
         player.setDefaultValues();
-        // chunkM.loadChunk(0,0);
         
-        playMusic(0);
+        gameState = gameStart;
     }
     
     public void startGameThread(){
@@ -127,7 +134,12 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
     public void update(){
-        player.update();
+        if(gameState == gamePlay){
+            player.update();
+        }
+        if(gameState == gamePause){
+            //nothing happen 
+        }
     }
     public void paintComponent(Graphics g){
         // this is a standare method to darw on jPanel
@@ -139,20 +151,44 @@ public class GamePanel extends JPanel implements Runnable{
         long drawStart = 0;
         drawStart = System.nanoTime();
         
-        //  TILES AND CHUNKS
-        chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
-        tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
-        // OBJECT
-        for(int i = 0 ; i < obj.length; i++){
-            if(obj[i] != null){
-                obj[i].draw(g2, this);
-            }
+        if(gameState == gameStart){
+            ui.draw(g2);
         }
-        // PLAYER
-        player.draw(g2);
+        else if(gameState == gamePlay){
+            //  TILES AND CHUNKS
+            chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
+            tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
         
-        // UI 
-        ui.draw(g2);
+            // OBJECT
+            for(int i = 0 ; i < obj.length; i++){
+                if(obj[i] != null){
+                    obj[i].draw(g2, this);
+                }
+            }
+            // PLAYER
+            player.draw(g2);
+        
+            // UI 
+            ui.draw(g2);
+        }
+        
+        else if(gameState == gamePause){
+            //  TILES AND CHUNKS
+            chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
+            tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
+        
+            // OBJECT
+            for(int i = 0 ; i < obj.length; i++){
+                if(obj[i] != null){
+                    obj[i].draw(g2, this);
+                }
+            }
+            // PLAYER
+            player.draw(g2);
+        
+            // UI 
+            ui.draw(g2);
+        }
         
         long drawEnd = System.nanoTime();
         long passed = drawEnd - drawStart;

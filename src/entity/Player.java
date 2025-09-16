@@ -211,7 +211,7 @@ public class Player extends Entity{
                         gp.ui.showMessage("door opened mate");
                     }
                     else{
-                         gp.ui.showTouchMessage("find a key mate", obj , gp);
+                        gp.ui.showTouchMessage("find a key mate", obj , gp);
                     }
                     
                     break;

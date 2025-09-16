@@ -17,7 +17,7 @@ public class TileManager {
     public TileManager(GamePanel gp){
         this.gp = gp;
 
-        tile = null; // 🟢 chỉ giữ tileset, không có mapTileNum toàn cục
+        tile = null; // load tileset, and collision of tiles 
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
         loadTilesetProperties("/maps/tileset.tsx");  
     }
@@ -95,7 +95,7 @@ public class TileManager {
 
             for(int row=0; row<c.size; row++){
                 for(int col=0; col<c.size; col++){
-                    int tileNum = c.mapTileNum[row][col]; // 🟢 lấy trực tiếp từ chunk
+                    int tileNum = c.mapTileNum[row][col]; // take tile num from chunk
                     if (tileNum < 0 || tileNum >= tile.length) continue;
 
                     int tileWorldX = chunkWorldX + col*gp.tileSize;

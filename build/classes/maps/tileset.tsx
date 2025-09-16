@@ -80,5 +80,9 @@
      <property name="collision" type="bool" value="true"/>
    </properties>
  </tile> 
-      
+ <tile id="22">
+   <properties>
+     <property name="collision" type="bool" value="true"/>
+   </properties>
+ </tile>     
 </tileset>
