@@ -23,7 +23,7 @@ public class ChunkManager {
         return x + "_" + y;
     }
 
-    public void loadChunk(int chunkX, int chunkY){
+    private void loadChunk(int chunkX, int chunkY){
         String key = chunkKey(chunkX, chunkY);
         if(chunks.containsKey(key)) return;
 

@@ -15,7 +15,7 @@ public class CollisionChecker {
         this.gp = gp;
     }
     
-    // 🟢 Lấy tileNum từ chunk thay vì mapTileNum toàn cục
+    //get tile number from chunk.tmx file 
     private int getTileNumAt(int worldX, int worldY){
         int tileCol = worldX / gp.tileSize;
         int tileRow = worldY / gp.tileSize;

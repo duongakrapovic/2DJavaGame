@@ -22,7 +22,7 @@ public class TileManager {
         loadTilesetProperties("/maps/tileset.tsx");  
     }
     
-    public void loadTileset(String path, int tileSize) {
+    private void loadTileset(String path, int tileSize) {
         try {
             BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream(path));
             int cols = tileset.getWidth() / tileSize;
@@ -45,7 +45,7 @@ public class TileManager {
         }
     }
     
-    public void loadTilesetProperties(String tsxPath) {
+    private void loadTilesetProperties(String tsxPath) {
         try {
             InputStream is = getClass().getResourceAsStream(tsxPath);
             if(is == null){
@@ -107,7 +107,7 @@ public class TileManager {
                 }
             }
 
-            // vẽ khung chunk để debug
+            // draw red outline to recognize each chunk 
             g2.setColor(Color.RED);
             int rectX = chunkWorldX - playerPosX + gp.player.screenX;
             int rectY = chunkWorldY - playerPosY + gp.player.screenY;

@@ -54,7 +54,7 @@ public class Player extends Entity{
         direction = "down";
     }
     
-    public void getPlayerImage(){
+    private void getPlayerImage(){
         
         up1 = setup("/boy_up_1");
         up2 = setup("boy_up_2");
@@ -65,7 +65,7 @@ public class Player extends Entity{
         right1 = setup("boy_right_1");
         right2 = setup("boy_right_2");  
     }
-    public BufferedImage setup(String imageName){
+    private BufferedImage setup(String imageName){
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
         
@@ -161,6 +161,7 @@ public class Player extends Entity{
         pickUpObject(objectIndex);
         if (!collisionXOn && !collisionOn) {
             worldX = nextX;
+            System.out.print(worldX / 16 + " ");
         }
         
         //collide with Y
@@ -174,7 +175,10 @@ public class Player extends Entity{
         pickUpObject(objectIndex);
         if (!collisionYOn && !collisionOn) {
             worldY = nextY;
+            System.out.println(worldY / 16);
         }
+        
+        
         // RESET VAL
         keyH.pickPressOnce = false;
         // COUNTER FOR SPEED
@@ -185,7 +189,7 @@ public class Player extends Entity{
             actualSpeed = defaultSpeed; 
         }
     }
-    public void pickUpObject(int index){
+    private void pickUpObject(int index){
         int i = index;
         if (i != 999){
             String objectName = gp.obj[i].name;
