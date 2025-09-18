@@ -4,6 +4,7 @@
  */
 package main;
 
+import entity.Entity;
 import entity.Player;
 import javax.swing.JPanel;
 import java.awt.Dimension;
@@ -11,8 +12,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-
-import object.SuperObject;
 import tile.ChunkManager;
 import tile.TileManager;
 
@@ -56,7 +55,7 @@ public class GamePanel extends JPanel implements Runnable{
         
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[10];
+    public Entity obj[] = new Entity[10];
     
     // GAME STATE
     public int gameState;
@@ -153,7 +152,7 @@ public class GamePanel extends JPanel implements Runnable{
         drawStart = System.nanoTime();
         
         if(gameState == gameStart){
-            ui.draw(g2);
+            ui.drawUI(g2);
         }
         
         else if(gameState == gamePlay){
@@ -162,14 +161,14 @@ public class GamePanel extends JPanel implements Runnable{
             // OBJECT
             for(int i = 0 ; i < obj.length; i++){
                 if(obj[i] != null){
-                    obj[i].draw(g2, this);
+                    obj[i].drawObject(g2, this);
                 }
             }
             // PLAYER
-            player.draw(g2);
+            player.drawPlayer(g2);
         
             // UI 
-            ui.draw(g2);
+            ui.drawUI(g2);
         }
         
         else if(gameState == gamePause){
@@ -178,14 +177,14 @@ public class GamePanel extends JPanel implements Runnable{
             // OBJECT
             for(int i = 0 ; i < obj.length; i++){
                 if(obj[i] != null){
-                    obj[i].draw(g2, this);
+                    obj[i].drawObject(g2, this);
                 }
             }
             // PLAYER
-            player.draw(g2);
+            player.drawPlayer(g2);
         
             // UI 
-            ui.draw(g2);
+            ui.drawUI(g2);
         }
         
         long drawEnd = System.nanoTime();

@@ -4,22 +4,23 @@
  */
 package object;
 
-import javax.imageio.ImageIO;
+import java.awt.Rectangle;
+
+import entity.Entity;
 import main.GamePanel;
 
-public class ObjectDoor extends SuperObject{
-     GamePanel gp;
+public class ObjectDoor extends Entity{
     public ObjectDoor( GamePanel gp){
+        super(gp);
         name = "door";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/door.png"));
-            this.width = gp.tileSize;
-            this.height = gp.tileSize;
-            uTool.scaleImage(image , width, height );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        width = gp.tileSize;
+        height = gp.tileSize;
+        image = setup("/object/door" , width, height);
+        
         collision = true;
+        
+        solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     } 
 }

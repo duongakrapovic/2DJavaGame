@@ -6,7 +6,6 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import object.SuperObject;
 
 public class Interact extends Entity{
     GamePanel gp;
@@ -14,6 +13,7 @@ public class Interact extends Entity{
     Player player;
     
     public Interact(GamePanel gp , KeyHandler keyH, Player player){
+        super(gp);
         this.gp = gp;
         this.keyH = keyH;
         this.player = player;
@@ -22,7 +22,7 @@ public class Interact extends Entity{
         int i = index;
         if (i != 999){
             String objectName = gp.obj[i].name;
-            SuperObject obj = gp.obj[i];
+            Entity obj = gp.obj[i];
             
             switch(objectName){
                 case "key":

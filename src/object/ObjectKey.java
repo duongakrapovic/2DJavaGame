@@ -4,21 +4,24 @@
  */
 package object;
 
-import javax.imageio.ImageIO;
+import java.awt.Rectangle;
+
+import entity.Entity;
 import main.GamePanel;
 
-public class ObjectKey extends SuperObject {
-    GamePanel gp;
-    public ObjectKey(GamePanel gp){
-        name = "key";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/key.png"));
-            this.width = gp.tileSize * 4/5 - 5;
-            this.height = gp.tileSize * 4/5 - 5;
-            uTool.scaleImage(image , width, height );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+public class ObjectKey extends Entity{
+    public ObjectKey( GamePanel gp){
+        super(gp);
+        name = "key";   
+        width = gp.tileSize * 3 / 5;
+        height = gp.tileSize * 3 / 5;
+        image = setup("/object/key" , width, height);
+        
+        collision = false;
+        
+        solidArea = new Rectangle(-gp.tileSize/4, -gp.tileSize/4,
+                        width + gp.tileSize/2, height + gp.tileSize/2);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
 }

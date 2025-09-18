@@ -27,6 +27,7 @@ public class Player extends Entity{
     int standCounter = 0;// return stand image
     
     public Player(GamePanel gp , KeyHandler keyH){
+        super(gp);
         this.gp = gp;
         this.keyH = keyH;
         this.iR = new Interact(gp, keyH, this);
@@ -191,7 +192,7 @@ public class Player extends Entity{
         }
     }
     
-    public void draw(Graphics2D g2){
+    public void drawPlayer(Graphics2D g2){
 //      g2.setColor(Color.white);// color to draw objects      
 //      g2.fillRect(x , y, gp.tileSize , gp.tileSize);
 

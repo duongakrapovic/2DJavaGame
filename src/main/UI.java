@@ -11,8 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
+import entity.Entity;
 import object.ObjectKey;
-import object.SuperObject;
 
 public class UI {
     GamePanel gp;
@@ -71,7 +71,7 @@ public class UI {
         messageOn = true;
     }
     
-    public void showTouchMessage(String text, SuperObject obj , GamePanel gp){
+    public void showTouchMessage(String text, Entity obj , GamePanel gp){
         touchMessage = text;
         touchMessageOn = true;
         
@@ -84,7 +84,7 @@ public class UI {
         touchMessageOn = false;
     }
     
-    public void draw(Graphics2D g2){
+    public void drawUI(Graphics2D g2){
         this.g2 = g2;
         
         g2.setFont(arial);

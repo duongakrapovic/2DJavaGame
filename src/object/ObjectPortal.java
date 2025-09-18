@@ -4,21 +4,23 @@
  */
 package object;
 
-import javax.imageio.ImageIO;
+import java.awt.Rectangle;
+
+import entity.Entity;
 import main.GamePanel;
 
-public class ObjectPortal extends SuperObject {
-    GamePanel gp;
-    public ObjectPortal(GamePanel gp){
+public class ObjectPortal extends Entity{
+    public ObjectPortal( GamePanel gp){
+        super(gp);
         name = "portal";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/portal.png"));
-            this.width = gp.tileSize;
-            this.height = gp.tileSize;
-            uTool.scaleImage(image , width, height );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        width = gp.tileSize * 3/2 ;
+        height = gp.tileSize * 3/2;
+        image = setup("/object/portal" , width, height);
+        
+        collision = false;
+        
+        solidArea = new Rectangle(-gp.tileSize/25, -gp.tileSize/25, width, height);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
 }

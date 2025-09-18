@@ -4,21 +4,23 @@
  */
 package object;
 
-import javax.imageio.ImageIO;
+import java.awt.Rectangle;
+
+import entity.Entity;
 import main.GamePanel;
 
-public class ObjectBoots extends SuperObject{
-    GamePanel gp;
-    public ObjectBoots( GamePanel gp){
+public class ObjectBoots extends Entity {
+    public ObjectBoots(GamePanel gp){
+        super(gp);
         name = "boots";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/boots.png"));
-            this.width = gp.tileSize - 10;
-            this.height = gp.tileSize - 10;
-            uTool.scaleImage(image , width, height );
-            
-        } catch (Exception e) {
-             e.printStackTrace();
-        }
+        width = gp.tileSize * 3 / 5;
+        height = gp.tileSize * 3 / 5;
+        image = setup("/object/boots" , width, height);
+        
+        collision = false;
+        
+        solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
 }

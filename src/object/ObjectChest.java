@@ -4,21 +4,23 @@
  */
 package object;
 
-import javax.imageio.ImageIO;
+import java.awt.Rectangle;
+
+import entity.Entity;
 import main.GamePanel;
 
-public class ObjectChest extends SuperObject{
-    GamePanel gp;
+public class ObjectChest extends Entity{
     public ObjectChest( GamePanel gp){
+        super(gp);
         name = "chest";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/chest.png"));
-            this.width = gp.tileSize;
-            this.height = gp.tileSize;
-            uTool.scaleImage(image , width, height );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        width = gp.tileSize;
+        height = gp.tileSize;
+        image = setup("/object/chest" , width, height);
+        
+        collision = false;
+        
+        solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
 }
