@@ -19,10 +19,9 @@ public class TileManager {
 
         tile = null; // load tileset, and collision of tiles 
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
-        loadTilesetProperties("/maps/tileset.tsx");  
+        loadTilesetProperties("/maptiles/tileset.tsx");  
     }
-    
-    private void loadTileset(String path, int tileSize) {
+    public void loadTileset(String path, int tileSize) {
         try {
             BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream(path));
             int cols = tileset.getWidth() / tileSize;
@@ -45,7 +44,7 @@ public class TileManager {
         }
     }
     
-    private void loadTilesetProperties(String tsxPath) {
+    public void loadTilesetProperties(String tsxPath) {
         try {
             InputStream is = getClass().getResourceAsStream(tsxPath);
             if(is == null){

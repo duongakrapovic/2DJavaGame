@@ -40,11 +40,11 @@ public class GamePanel extends JPanel implements Runnable{
     int FPS = 60;
     
     //SYSTEM
-    TileManager tileM = new TileManager(this);
-    ChunkManager chunkM = new ChunkManager(chunkSize, this);
-    KeyHandler keyH = new KeyHandler(this);
-    Sound music = new Sound();
-    Sound se = new Sound();  
+    public TileManager tileM = new TileManager(this);
+    public ChunkManager chunkM = new ChunkManager(chunkSize, this);
+    public KeyHandler keyH = new KeyHandler(this);
+    public Sound music = new Sound();
+    public Sound se = new Sound();  
     // need seperate class for music and sound effect because music and se 
     // would not play both if they are in 1 class, only process 1 at a time 
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -136,6 +136,7 @@ public class GamePanel extends JPanel implements Runnable{
     public void update(){
         if(gameState == gamePlay){
             player.update();
+            chunkM.updateChunks(player.worldX, player.worldY);
         }
         if(gameState == gamePause){
             //nothing happen 
@@ -154,9 +155,8 @@ public class GamePanel extends JPanel implements Runnable{
         if(gameState == gameStart){
             ui.draw(g2);
         }
+        
         else if(gameState == gamePlay){
-            //  TILES AND CHUNKS
-            chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
             tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
         
             // OBJECT
@@ -173,8 +173,6 @@ public class GamePanel extends JPanel implements Runnable{
         }
         
         else if(gameState == gamePause){
-            //  TILES AND CHUNKS
-            chunkM.updateChunks(player.worldX, player.worldY);// UPDATE NEEDED CHUNK 
             tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
         
             // OBJECT

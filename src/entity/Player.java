@@ -13,11 +13,11 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
-import object.SuperObject;
 
 public class Player extends Entity{
     GamePanel gp;
     KeyHandler keyH;
+    Interact iR;
     
     public final int screenX;
     public final int screenY;
@@ -29,6 +29,7 @@ public class Player extends Entity{
     public Player(GamePanel gp , KeyHandler keyH){
         this.gp = gp;
         this.keyH = keyH;
+        this.iR = new Interact(gp, keyH, this);
         
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
@@ -158,10 +159,9 @@ public class Player extends Entity{
         int nextY = worldY; // posible move Y
         gp.cChecker.checkTile(this, nextX, nextY);
         int objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
-        pickUpObject(objectIndex);
         if (!collisionXOn && !collisionOn) {
             worldX = nextX;
-            System.out.print(worldX / 16 + " ");
+            //System.out.print(worldX / 16 + " ");
         }
         
         //collide with Y
@@ -172,13 +172,14 @@ public class Player extends Entity{
         nextY = worldY + deltaMoveY;
         gp.cChecker.checkTile(this, nextX, nextY);
         objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
-        pickUpObject(objectIndex);
+        //iR.InteractObject(objectIndex);
         if (!collisionYOn && !collisionOn) {
             worldY = nextY;
-            System.out.println(worldY / 16);
+            //System.out.println(worldY / 16);
         }
         
-        
+        iR.InteractObject(objectIndex); // check player interact with object 
+    
         // RESET VAL
         keyH.pickPressOnce = false;
         // COUNTER FOR SPEED
@@ -189,54 +190,7 @@ public class Player extends Entity{
             actualSpeed = defaultSpeed; 
         }
     }
-    private void pickUpObject(int index){
-        int i = index;
-        if (i != 999){
-            String objectName = gp.obj[i].name;
-            SuperObject obj = gp.obj[i];
-            
-            switch(objectName){
-                case "key":
-                    gp.ui.showTouchMessage("press 'F' to pick key", obj, gp);
-                    if(keyH.pickPressOnce == true){
-                        gp.playSE(1);
-                        hasKey++;
-                        gp.obj[i] = null;
-                        gp.ui.showMessage("Ya got a key");
-                        keyH.pickPress = false;
-                    }
-                    
-                    break;
-                case "door":
-                    if (hasKey > 0){
-                        gp.playSE(3);
-                        gp.obj[i] = null;
-                        hasKey--;
-                        gp.ui.showMessage("door opened mate");
-                    }
-                    else{
-                        gp.ui.showTouchMessage("find a key mate", obj , gp);
-                    }
-                    
-                    break;
-                case "boots":
-                    gp.playSE(2);
-                    actualSpeed += buffSpeed;
-                    speedTimer = 180;
-                    gp.obj[i] = null;
-                    gp.ui.showMessage("speed up");
-                    break;
-                case "chest":
-                    gp.ui.gameFinished = true;
-                    gp.stopMusic();
-                    gp.playSE(4);
-                    break;
-            }
-        }
-        else{
-             gp.ui.hideTouchMessage();
-        }
-    }
+    
     public void draw(Graphics2D g2){
 //      g2.setColor(Color.white);// color to draw objects      
 //      g2.fillRect(x , y, gp.tileSize , gp.tileSize);

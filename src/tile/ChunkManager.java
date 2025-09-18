@@ -13,6 +13,8 @@ public class ChunkManager {
     final private Map<String, Chunk> chunks;
     final private GamePanel gp;
     
+    public String pathMap = "map1"; 
+    
     public ChunkManager(int chunkSize , GamePanel gp){
         this.chunkSize = chunkSize;
         this.chunks = new HashMap<>();
@@ -23,19 +25,23 @@ public class ChunkManager {
         return x + "_" + y;
     }
 
-    private void loadChunk(int chunkX, int chunkY){
+    public void loadChunk(int chunkX, int chunkY , String pathMap){
         String key = chunkKey(chunkX, chunkY);
         if(chunks.containsKey(key)) return;
 
         Chunk c = new Chunk(chunkX, chunkY, chunkSize);
 
         try {
-            String path = "/maps/chunk" + chunkX + "_" + chunkY + ".tmx";
+            String path = "/" + pathMap + "/chunk" + chunkX + "_" + chunkY + ".tmx";
+            
+//            System.out.println("Loading: " + path);
             InputStream is = getClass().getResourceAsStream(path);
-            if(is == null) {
-                System.out.println("Chunk not found: " + path);
-                return;
+            if (is == null) {
+//                System.out.println("Không tìm thấy file: " + path);
+                return; // if it doesn't return, the ide might crash,
+                        //the game might still run but i don't know why the ide terminal is red
             }
+            
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             StringBuilder xml = new StringBuilder();
             String line;
@@ -52,12 +58,12 @@ public class ChunkManager {
             for(int row=0; row<chunkSize; row++){
                 for(int col=0; col<chunkSize; col++){
                     int num = Integer.parseInt(numbers[idx].trim());
-                    c.mapTileNum[row][col] = (num == 0) ? 0 : num - 1; // 🟢 chỉ lưu trong chunk
+                    c.mapTileNum[row][col] = (num == 0) ? 0 : num - 1; 
                     idx++;
                 }
             }
             chunks.put(key, c);
-            System.out.println("Loaded chunk: " + key);
+//            System.out.println("Loaded chunk: " + key + pathMap);adss
 
         } catch(Exception e){ e.printStackTrace(); }
     }
@@ -85,10 +91,17 @@ public class ChunkManager {
 
         for(int cx = chunkLeft; cx <= chunkRight; cx++){
             for(int cy = chunkTop; cy <= chunkBottom; cy++){
-                loadChunk(cx, cy);
+                if (cx < 0 || cy < 0 || cx >= gp.chunkSize || cy >= gp.chunkSize) {
+                    continue; // skip chunks out of range
+                }
+                loadChunk(cx, cy , pathMap);
             }
         }
         unloadFarChunks(chunkLeft, chunkRight, chunkTop, chunkBottom);
+    }
+    
+    public void clearChunks(){
+        chunks.clear();
     }
 
     public Iterable<Chunk> getActiveChunks(){

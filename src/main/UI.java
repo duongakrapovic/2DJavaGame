@@ -32,7 +32,11 @@ public class UI {
     public boolean gameFinished = false;
     // check request
     public int commandNum = 0;
-    
+    // fading effect
+    private float alpha = 0f; 
+    private boolean fading = false;
+    private int phase = 0; // 1=fade out, 2=fade in
+    private Runnable onFadeComplete;
     
     public UI(GamePanel gp){
         this.gp = gp;
@@ -97,6 +101,7 @@ public class UI {
         if(gp.gameState == gp.gamePause){
             drawGamePauseScene();
         }
+        drawFade(g2);
     }
     
     public void drawMessage(){
@@ -135,6 +140,7 @@ public class UI {
         }
         
     }
+    
     public void drawGameStartScene(){
         //backGround color
         g2.setColor(new Color(70 , 120 , 90));// red green blue 
@@ -179,6 +185,7 @@ public class UI {
         }
         
     }
+    
     public void drawGamePauseScene(){
         //WINDOW
         int x = gp.screenWidth / 2 - 5 * gp.tileSize;
@@ -205,6 +212,39 @@ public class UI {
         g2.drawString(text, x, y);
         if(commandNum == 1){
             g2.drawString(">", x - gp.tileSize, y);
+        }
+    }
+    
+    public void startFade(Runnable onComplete){
+        fading = true;
+        phase = 1; // bắt đầu fade out
+        alpha = 0f;
+        this.onFadeComplete = onComplete;
+    }
+    
+    private void drawFade(Graphics2D g2){
+        if(!fading) return;
+        Color c = new Color(0,0,0,(int)(alpha*255));
+        g2.setColor(c);
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        
+        if(phase == 1){
+            alpha += 0.05f;
+            if(alpha >= 1f){
+                alpha = 1f;
+                if(onFadeComplete != null){
+                    onFadeComplete.run(); // đổi map ở đây
+                    onFadeComplete = null;
+                }
+                phase = 2; // sang fade in
+            }
+        }
+        else if(phase == 2){
+            alpha -= 0.05f;
+            if(alpha <= 0f){
+                alpha = 0f;
+                fading = false; // kết thúc
+            }
         }
     }
 }
