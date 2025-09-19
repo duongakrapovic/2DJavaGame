@@ -81,6 +81,7 @@ public class Player extends Entity{
         return image;
     }
     
+    @Override
     public void update(){
         // in java , the top left corner is x = 0 and y = 0;
         // x valuaes increase to the right
@@ -156,14 +157,17 @@ public class Player extends Entity{
         collisionOn = false;
         collisionXOn = false;
         
+        
         int nextX = worldX + deltaMoveX; // posible move X
         int nextY = worldY; // posible move Y
         gp.cChecker.checkTile(this, nextX, nextY);
         int objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
+        iR.InteractObject(objectIndex);
         if (!collisionXOn && !collisionOn) {
             worldX = nextX;
             //System.out.print(worldX / 16 + " ");
         }
+        
         
         //collide with Y
         collisionOn = false;
@@ -173,13 +177,12 @@ public class Player extends Entity{
         nextY = worldY + deltaMoveY;
         gp.cChecker.checkTile(this, nextX, nextY);
         objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
-        //iR.InteractObject(objectIndex);
+        iR.InteractObject(objectIndex);
         if (!collisionYOn && !collisionOn) {
             worldY = nextY;
             //System.out.println(worldY / 16);
         }
-        
-        iR.InteractObject(objectIndex); // check player interact with object 
+        //iR.InteractObject(objectIndex); // check player interact with object 
     
         // RESET VAL
         keyH.pickPressOnce = false;

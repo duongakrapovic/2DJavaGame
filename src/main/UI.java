@@ -43,7 +43,7 @@ public class UI {
         
         arial = new Font("Arial", Font.PLAIN , 25);
         ObjectKey key = new ObjectKey(gp);
-        keyImage = key.image; 
+        keyImage = key.staticImage; 
     }
     
     //print the message in the middle of the screen

@@ -25,7 +25,7 @@ public class Entity {
     
     // set for animaion
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public String direction;
+    public String direction = "down";
     public int spriteCounter = 0;
     public int spriteNum = 1;
     
@@ -39,9 +39,10 @@ public class Entity {
     public int solidAreaDefaultX, solidAreaDefaultY;
     
     //OBJECT
-    public BufferedImage image;
+    public BufferedImage staticImage;
     public String name;
     public boolean collision  = false;
+    public boolean animationON = false;
     
     //set for utility
     public int defaultSpeed, actualSpeed, buffSpeed;
@@ -65,7 +66,7 @@ public class Entity {
         return image;
     }
     
-    public void drawObject(Graphics2D g2, GamePanel gp){
+    public void draw(Graphics2D g2, GamePanel gp){
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
         
@@ -73,17 +74,43 @@ public class Entity {
            worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
            worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
            worldY - gp.tileSize < gp.player.worldY + gp.player.screenY){
-           // only draw if object in the right area
-           // i dont know how to apply culling methotw same as the movement 
-            if(image != null){
-                g2.drawImage(image, screenX , screenY , width, height , null); 
-                // Debug: vẽ viền solidArea
-                g2.setColor(Color.RED);
-                int solidScreenX = screenX + solidArea.x;
-                int solidScreenY = screenY + solidArea.y;
-                g2.drawRect(solidScreenX, solidScreenY, solidArea.width, solidArea.height);
-           }
-           
+            // only draw if object in the right area
+            // i dont know how to apply culling methotw same as the movement 
+            
+            BufferedImage image = null;
+            if(animationON == true){
+                switch(direction){
+                case "up":
+                    if(spriteNum == 1) image = up1;
+                    if(spriteNum == 2) image = up2;   
+                    break;
+                case "down":
+                    if(spriteNum == 1) image = down1;
+                    if(spriteNum == 2) image = down2;
+                    break;
+                case "left":
+                    if(spriteNum == 1) image = left1;
+                    if(spriteNum == 2) image = left2;
+                    break;
+                case "right":
+                    if(spriteNum == 1) image = right1;
+                    if(spriteNum == 2) image = right2;
+                    break;
+                }
+            }
+            else{
+                image = staticImage;
+            }
+  
+            g2.drawImage(image, screenX , screenY , width, height , null); 
+            // Debug: vẽ viền solidArea
+            g2.setColor(Color.RED);
+            int solidScreenX = screenX + solidArea.x;
+            int solidScreenY = screenY + solidArea.y;
+            g2.drawRect(solidScreenX, solidScreenY, solidArea.width, solidArea.height);
         }
+    }
+    public void update(){
+        
     }
 }

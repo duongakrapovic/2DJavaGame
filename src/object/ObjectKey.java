@@ -15,7 +15,7 @@ public class ObjectKey extends Entity{
         name = "key";   
         width = gp.tileSize * 3 / 5;
         height = gp.tileSize * 3 / 5;
-        image = setup("/object/key" , width, height);
+        staticImage = setup("/object/key" , width, height);
         
         collision = false;
         

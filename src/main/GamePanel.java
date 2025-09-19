@@ -136,6 +136,11 @@ public class GamePanel extends JPanel implements Runnable{
         if(gameState == gamePlay){
             player.update();
             chunkM.updateChunks(player.worldX, player.worldY);
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) {
+                    obj[i].update();
+                }
+            }
         }
         if(gameState == gamePause){
             //nothing happen 
@@ -161,7 +166,7 @@ public class GamePanel extends JPanel implements Runnable{
             // OBJECT
             for(int i = 0 ; i < obj.length; i++){
                 if(obj[i] != null){
-                    obj[i].drawObject(g2, this);
+                    obj[i].draw(g2, this);
                 }
             }
             // PLAYER
@@ -177,7 +182,7 @@ public class GamePanel extends JPanel implements Runnable{
             // OBJECT
             for(int i = 0 ; i < obj.length; i++){
                 if(obj[i] != null){
-                    obj[i].drawObject(g2, this);
+                    obj[i].draw(g2, this);
                 }
             }
             // PLAYER

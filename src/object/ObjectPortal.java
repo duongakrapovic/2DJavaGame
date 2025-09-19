@@ -15,12 +15,27 @@ public class ObjectPortal extends Entity{
         name = "portal";
         width = gp.tileSize * 3/2 ;
         height = gp.tileSize * 3/2;
-        image = setup("/object/portal" , width, height);
+        down1 = setup("/object/portal1" , width, height);
+        down2 = setup("/object/portal2" , width, height);
         
         collision = false;
+        animationON = true;
         
         solidArea = new Rectangle(-gp.tileSize/25, -gp.tileSize/25, width, height);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+    }
+    @Override
+    public void update() {
+        spriteCounter++;
+        if (spriteCounter > 30) { 
+            if (spriteNum == 1) {
+                spriteNum = 2;
+            } 
+            else {
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
+        }
     }
 }

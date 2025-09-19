@@ -15,7 +15,7 @@ public class ObjectBoots extends Entity {
         name = "boots";
         width = gp.tileSize * 3 / 5;
         height = gp.tileSize * 3 / 5;
-        image = setup("/object/boots" , width, height);
+        staticImage = setup("/object/boots" , width, height);
         
         collision = false;
         

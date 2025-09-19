@@ -15,7 +15,7 @@ public class ObjectDoor extends Entity{
         name = "door";
         width = gp.tileSize;
         height = gp.tileSize;
-        image = setup("/object/door" , width, height);
+        staticImage = setup("/object/door" , width, height);
         
         collision = true;
         

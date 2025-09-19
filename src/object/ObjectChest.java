@@ -15,7 +15,7 @@ public class ObjectChest extends Entity{
         name = "chest";
         width = gp.tileSize;
         height = gp.tileSize;
-        image = setup("/object/chest" , width, height);
+        staticImage = setup("/object/chest" , width, height);
         
         collision = false;
         
