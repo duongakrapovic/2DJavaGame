@@ -28,6 +28,7 @@ public class Entity {
     public String direction = "down";
     public int spriteCounter = 0;
     public int spriteNum = 1;
+    public int actionLockCounter = 0;
     
     // set 1 part of player tile is solit 
     public Rectangle solidArea;
@@ -49,8 +50,7 @@ public class Entity {
     
     public Entity(GamePanel gp) {
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
-        screenY = gp.screenHeight/2 - (gp.tileSize/2);
-        UtilityTool uTool = new UtilityTool();
+        screenY = gp.screenHeight/2 - (gp.tileSize/2);  
     }
     public BufferedImage setup(String imagePath, int width , int height){
         
@@ -75,7 +75,7 @@ public class Entity {
            worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
            worldY - gp.tileSize < gp.player.worldY + gp.player.screenY){
             // only draw if object in the right area
-            // i dont know how to apply culling methotw same as the movement 
+            // i dont know how to apply culling methot same as the movement 
             
             BufferedImage image = null;
             if(animationON == true){
@@ -103,7 +103,7 @@ public class Entity {
             }
   
             g2.drawImage(image, screenX , screenY , width, height , null); 
-            // Debug: vẽ viền solidArea
+            // Debug: rec solidArea
             g2.setColor(Color.RED);
             int solidScreenX = screenX + solidArea.x;
             int solidScreenY = screenY + solidArea.y;

@@ -8,11 +8,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle;
-import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
-import main.UtilityTool;
 
 public class Player extends Entity{
     GamePanel gp;
@@ -31,6 +29,7 @@ public class Player extends Entity{
         this.gp = gp;
         this.keyH = keyH;
         this.iR = new Interact(gp, keyH, this);
+        
         
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
@@ -54,33 +53,20 @@ public class Player extends Entity{
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "down";
+        animationON = true;
     }
     
     private void getPlayerImage(){
         
-        up1 = setup("/boy_up_1");
-        up2 = setup("boy_up_2");
-        down1 = setup("boy_down_1");
-        down2 = setup("boy_down_2");
-        left1 = setup("boy_left_1");
-        left2 = setup("boy_left_2");
-        right1 = setup("boy_right_1");
-        right2 = setup("boy_right_2");  
+        up1 = setup("/player/boy_up_1", gp.tileSize, gp.tileSize);
+        up2 = setup("/player/boy_up_2", gp.tileSize, gp.tileSize);
+        down1 = setup("/player/boy_down_1", gp.tileSize, gp.tileSize);
+        down2 = setup("/player/boy_down_2", gp.tileSize, gp.tileSize);
+        left1 = setup("/player/boy_left_1", gp.tileSize, gp.tileSize);
+        left2 = setup("/player/boy_left_2", gp.tileSize, gp.tileSize);
+        right1 = setup("/player/boy_right_1", gp.tileSize, gp.tileSize);
+        right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);  
     }
-    private BufferedImage setup(String imageName){
-        UtilityTool uTool = new UtilityTool();
-        BufferedImage image = null;
-        
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/player/"+ imageName +".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return image;
-    }
-    
     @Override
     public void update(){
         // in java , the top left corner is x = 0 and y = 0;

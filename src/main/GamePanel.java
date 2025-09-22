@@ -4,14 +4,14 @@
  */
 package main;
 
-import entity.Entity;
-import entity.Player;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import entity.Entity;
+import entity.Player;
 import tile.ChunkManager;
 import tile.TileManager;
 
@@ -44,8 +44,8 @@ public class GamePanel extends JPanel implements Runnable{
     public KeyHandler keyH = new KeyHandler(this);
     public Sound music = new Sound();
     public Sound se = new Sound();  
-    // need seperate class for music and sound effect because music and se 
-    // would not play both if they are in 1 class, only process 1 at a time 
+        // need seperate class for music and sound effect because music and se 
+        // would not play both if they are in 1 class, only process 1 at a time 
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
     
@@ -55,8 +55,15 @@ public class GamePanel extends JPanel implements Runnable{
         
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
-    public Entity obj[] = new Entity[10];
+        //all the stuff here is to control objects on different maps
+    public int numMaps = 3;// exist map
+    public int currentMap = 0;//chunkManager.pathMap -> index 
     
+    public int maxObjPerMap = 10;//max num of obj per map
+    public Entity[][] obj;
+    public int maxMonsterPerMap = 10;
+    public Entity monster[][];
+   
     // GAME STATE
     public int gameState;
     public int gameStart = 0;
@@ -74,13 +81,17 @@ public class GamePanel extends JPanel implements Runnable{
         
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        
+        obj = new Entity[numMaps][maxObjPerMap];
+        monster = new Entity[numMaps][maxMonsterPerMap];
     }
     
     public void setupGame(){
         aSetter.setObject();
+        aSetter.setMonster();
         player.setDefaultValues();
-        
-        gameState = gameStart;
+        chunkM.pathMap = "map1";
+        gameState = gameStart;aSetter.setMonster();
     }
     
     public void startGameThread(){
@@ -93,6 +104,7 @@ public class GamePanel extends JPanel implements Runnable{
         double drawInterval = 1000000000/FPS; //  1s = 10^9 nano s
         // darw the screen every 0,016s or else upadte + repaint overload
         double nextDrawTime = System.nanoTime() + drawInterval;
+        
         long timer = System.currentTimeMillis();
         int drawcnt = 0;
         while(gameThread != null){
@@ -104,6 +116,8 @@ public class GamePanel extends JPanel implements Runnable{
             update();
             // 2 : DARW THE SCREEN WITH UPDATED INFO
             repaint();
+            // proof for multithreading
+            //System.out.println("GameLoop tick @" + System.nanoTime());
             
             drawcnt++;// catch 1 frame drew
             
@@ -136,9 +150,19 @@ public class GamePanel extends JPanel implements Runnable{
         if(gameState == gamePlay){
             player.update();
             chunkM.updateChunks(player.worldX, player.worldY);
-            for (int i = 0; i < obj.length; i++) {
-                if (obj[i] != null) {
-                    obj[i].update();
+            currentMap = mapNameToIndex(chunkM.pathMap);
+            //object
+            for(int i = 0; i < maxObjPerMap; i++){
+                Entity o = obj[currentMap][i];
+                if(o != null){
+                    o.update();
+                }
+            }
+            // monster
+            for(int i = 0 ; i < maxMonsterPerMap; i++){
+                Entity m = monster[currentMap][i];
+                if (m != null) {
+                    m.update();
                 }
             }
         }
@@ -164,9 +188,15 @@ public class GamePanel extends JPanel implements Runnable{
             tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
         
             // OBJECT
-            for(int i = 0 ; i < obj.length; i++){
-                if(obj[i] != null){
-                    obj[i].draw(g2, this);
+            for(int i = 0 ; i < maxObjPerMap; i++){
+                if(obj[currentMap][i] != null){
+                    obj[currentMap][i].draw(g2, this);
+                }
+            }
+            // monster
+            for(int i = 0 ; i < maxMonsterPerMap; i++){
+                if(monster[currentMap][i] != null){
+                    monster[currentMap][i].draw(g2, this);
                 }
             }
             // PLAYER
@@ -180,9 +210,15 @@ public class GamePanel extends JPanel implements Runnable{
             tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
         
             // OBJECT
-            for(int i = 0 ; i < obj.length; i++){
-                if(obj[i] != null){
-                    obj[i].draw(g2, this);
+            for(int i = 0 ; i < maxObjPerMap; i++){
+                if(obj[currentMap][i] != null){
+                    obj[currentMap][i].draw(g2, this);
+                }
+            }
+            // monster
+            for(int i = 0 ; i < maxMonsterPerMap; i++){
+                if(monster[currentMap][i] != null){
+                    monster[currentMap][i].draw(g2, this);
                 }
             }
             // PLAYER
@@ -210,4 +246,12 @@ public class GamePanel extends JPanel implements Runnable{
         se.setFile(i);
         se.play();
     }
+    public int mapNameToIndex(String mapName){
+    switch(mapName){
+        case "map1": return 0;
+        case "map2": return 1;
+        case "map3": return 2;
+        default: return 0;
+    }
+}
 }

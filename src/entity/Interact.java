@@ -21,8 +21,8 @@ public class Interact extends Entity{
     public void InteractObject(int index){
         int i = index;
         if (i != 999){
-            String objectName = gp.obj[i].name;
-            Entity obj = gp.obj[i];
+            String objectName = gp.obj[gp.currentMap][i].name;
+            Entity obj = gp.obj[gp.currentMap][i];
             
             switch(objectName){
                 case "key":
@@ -30,7 +30,7 @@ public class Interact extends Entity{
                 if(keyH.pickPressOnce == true){
                     gp.playSE(1);
                     player.hasKey++;
-                    gp.obj[i] = null;
+                    gp.obj[gp.currentMap][i] = null;
                     gp.ui.showMessage("Ya got a key");
                     keyH.pickPress = false;
                 }
