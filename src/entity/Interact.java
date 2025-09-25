@@ -63,4 +63,33 @@ public class Interact extends Entity{
              gp.ui.hideTouchMessage();
         }
     }
+    
+    public void InteractMonster(int index){
+        int i = index;
+        if (i != 999){
+            String monsterName = gp.monster[gp.currentMap][i].name;
+            Entity monster = gp.obj[gp.currentMap][i];
+            
+            switch(monsterName){
+                case "Green Slime":
+                break;
+                  
+            }
+        }
+    }
+    
+    public void InteractNPC(int index){
+        int i = index;
+        if (i != 999){
+            String npcName = gp.npc[gp.currentMap][i].name;
+            Entity npc = gp.npc[gp.currentMap][i];
+            
+            switch(npcName){
+                case "Oldman":
+                break;
+                  
+            }
+        }
+    }
+    
 }

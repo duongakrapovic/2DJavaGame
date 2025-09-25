@@ -11,7 +11,8 @@ import main.UtilityTool;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+import java.util.Random;
+ 
 public class Entity {
     
     // default setting 
@@ -22,6 +23,7 @@ public class Entity {
     
     // system
     UtilityTool uTool = new UtilityTool();
+    protected GamePanel gp;
     
     // set for animaion
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
@@ -49,6 +51,7 @@ public class Entity {
     public int defaultSpeed, actualSpeed, buffSpeed;
     
     public Entity(GamePanel gp) {
+        this.gp = gp;
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);  
     }
@@ -110,7 +113,58 @@ public class Entity {
             g2.drawRect(solidScreenX, solidScreenY, solidArea.width, solidArea.height);
         }
     }
-    public void update(){
+    public void update() {
+        setAction();
+        spriteCounter++;
+        if(spriteCounter > 8){
+            if(spriteNum == 1){
+                spriteNum = 2;
+            }
+            else if(spriteNum == 2){
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
+        }
         
+        int deltaMoveX = 0;
+        int deltaMoveY = 0;
+        switch (direction) {
+            case "up":    deltaMoveY = -actualSpeed; break;
+            case "down":  deltaMoveY =  actualSpeed; break;
+            case "left":  deltaMoveX = -actualSpeed; break;
+            case "right": deltaMoveX =  actualSpeed; break;
+        }
+        
+        /*no need to check x-axis and y-axis separately
+        because monster cannot move diagonally
+        */
+        collisionOn = false;
+        int nextX = worldX + deltaMoveX; // posible move X
+        int nextY = worldY + deltaMoveY; // posible move Y
+        
+        gp.cChecker.checkTile(this, nextX, nextY);
+        gp.cChecker.checkEntity(this, gp.obj , gp.maxObjPerMap, nextX, nextY);
+        
+        if (!collisionOn) {
+            worldX = nextX;
+            worldY = nextY;
+        }
+    }
+    public void setAction(){
+        actionLockCounter++ ;
+        if(actionLockCounter >= 120){
+            Random rand = new Random() ;
+            int i = rand.nextInt(100) ;
+            if(i <= 25){
+                direction = "up" ;
+            } else if (i <= 50) {
+                direction = "down" ;
+            } else if (i <= 75) {
+                direction = "right" ;
+            }else if (i <= 100) {
+                direction = "left" ;
+            }
+            actionLockCounter = 0;
+        }
     }
 }

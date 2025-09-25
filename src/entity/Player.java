@@ -146,9 +146,7 @@ public class Player extends Entity{
         
         int nextX = worldX + deltaMoveX; // posible move X
         int nextY = worldY; // posible move Y
-        gp.cChecker.checkTile(this, nextX, nextY);
-        int objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
-        iR.InteractObject(objectIndex);
+        allCheck(nextX, nextY);
         if (!collisionXOn && !collisionOn) {
             worldX = nextX;
             //System.out.print(worldX / 16 + " ");
@@ -161,9 +159,7 @@ public class Player extends Entity{
         
         nextX = worldX;
         nextY = worldY + deltaMoveY;
-        gp.cChecker.checkTile(this, nextX, nextY);
-        objectIndex = gp.cChecker.checkObject(this, true, nextX, nextY);
-        iR.InteractObject(objectIndex);
+        allCheck(nextX, nextY);
         if (!collisionYOn && !collisionOn) {
             worldY = nextY;
             //System.out.println(worldY / 16);
@@ -207,5 +203,15 @@ public class Player extends Entity{
         g2.drawImage(image, screenX, screenY, null);
         g2.setColor(Color.red);
         g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
-    }       
+    }     
+    
+    private void allCheck(int nextX, int nextY){
+        gp.cChecker.checkTile(this, nextX, nextY);
+        int objectIndex = gp.cChecker.checkEntity(this, gp.obj, gp.maxObjPerMap, nextX, nextY);
+        iR.InteractObject(objectIndex);
+        int monsterIndex = gp.cChecker.checkEntity(this, gp.monster, gp.maxMonsterPerMap, nextX, nextY);
+        iR.InteractMonster(monsterIndex);
+        int npcIndex = gp.cChecker.checkEntity(this, gp.npc, gp.maxNPCPerMap, nextX, nextY);
+        iR.InteractNPC(npcIndex);
+    }
 }

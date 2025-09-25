@@ -76,18 +76,17 @@ public class CollisionChecker {
         }
     }
 
-    public int checkObject(Entity entity , boolean player,int nextX, int nextY){
+    public int checkEntity(Entity entity ,Entity[][] targetArray, int maxx,int nextX, int nextY){
         int index = 999;
-        int currentMap = gp.currentMap;
-        
-        if(currentMap < 0 || currentMap >= gp.numMaps || gp.obj[currentMap] == null){
+        int currentMap = gp.currentMap; 
+        if(currentMap < 0 || currentMap >= gp.numMaps || targetArray[currentMap] == null){
             return index; // tránh NPE
         }
         entity.solidArea.x = nextX + entity.solidArea.x;
         entity.solidArea.y = nextY + entity.solidArea.y;
 
-        for(int i = 0 ; i <gp.maxObjPerMap ; i++){
-            Entity target = gp.obj[currentMap][i];
+        for(int i = 0 ; i < maxx ; i++){
+            Entity target = targetArray[currentMap][i];
             if(target != null){
                 target.solidArea.x = target.worldX + target.solidArea.x;
                 target.solidArea.y = target.worldY + target.solidArea.y;
@@ -96,9 +95,9 @@ public class CollisionChecker {
                     if (target.collision) {
                         entity.collisionOn = true;
                     }
-                    if (player) {
+                   
                         index = i;
-                    }
+                    
                 }
 
                 target.solidArea.x = target.solidAreaDefaultX;
@@ -110,6 +109,5 @@ public class CollisionChecker {
         entity.solidArea.y = entity.solidAreaDefaultY; 
         return index;
     }
-    
 }
 

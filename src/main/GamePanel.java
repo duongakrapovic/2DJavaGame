@@ -63,6 +63,8 @@ public class GamePanel extends JPanel implements Runnable{
     public Entity[][] obj;
     public int maxMonsterPerMap = 10;
     public Entity monster[][];
+    public int maxNPCPerMap = 10;
+    public Entity[][] npc;
    
     // GAME STATE
     public int gameState;
@@ -84,11 +86,13 @@ public class GamePanel extends JPanel implements Runnable{
         
         obj = new Entity[numMaps][maxObjPerMap];
         monster = new Entity[numMaps][maxMonsterPerMap];
+        npc = new Entity[numMaps][maxNPCPerMap];
     }
     
     public void setupGame(){
         aSetter.setObject();
         aSetter.setMonster();
+        aSetter.setNPC();
         player.setDefaultValues();
         chunkM.pathMap = "map1";
         gameState = gameStart;aSetter.setMonster();
@@ -165,6 +169,13 @@ public class GamePanel extends JPanel implements Runnable{
                     m.update();
                 }
             }
+            //npc
+            for(int i = 0 ; i < maxNPCPerMap; i++){
+                Entity n = npc[currentMap][i];
+                if (n != null) {
+                    n.update();
+                }
+            }
         }
         if(gameState == gamePause){
             //nothing happen 
@@ -199,6 +210,11 @@ public class GamePanel extends JPanel implements Runnable{
                     monster[currentMap][i].draw(g2, this);
                 }
             }
+            for(int i = 0 ; i < maxNPCPerMap; i++){
+                if(npc[currentMap][i] != null){
+                    npc[currentMap][i].draw(g2, this);
+                }
+            }
             // PLAYER
             player.drawPlayer(g2);
         
@@ -219,6 +235,11 @@ public class GamePanel extends JPanel implements Runnable{
             for(int i = 0 ; i < maxMonsterPerMap; i++){
                 if(monster[currentMap][i] != null){
                     monster[currentMap][i].draw(g2, this);
+                }
+            }
+            for(int i = 0 ; i < maxNPCPerMap; i++){
+                if(npc[currentMap][i] != null){
+                    npc[currentMap][i].draw(g2, this);
                 }
             }
             // PLAYER
@@ -247,11 +268,11 @@ public class GamePanel extends JPanel implements Runnable{
         se.play();
     }
     public int mapNameToIndex(String mapName){
-    switch(mapName){
+        switch(mapName){
         case "map1": return 0;
         case "map2": return 1;
         case "map3": return 2;
         default: return 0;
+        }
     }
-}
 }
