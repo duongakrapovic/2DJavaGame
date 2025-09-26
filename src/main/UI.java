@@ -46,9 +46,9 @@ public class UI {
         ObjectKey key = new ObjectKey(gp);
         keyImage = key.staticImage;
         ObjectHeart heart = new ObjectHeart (gp);
-        heartHalf = heart.image1;
-        heartBlank = heart.image2;
-        heartFull = heart.image3;
+        heartFull= heart.image1;
+        heartHalf = heart.image2;
+        heartBlank = heart.image3;
     }
     
     //print the message in the middle of the screen
