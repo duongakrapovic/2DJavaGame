@@ -51,6 +51,8 @@ public class Player extends Entity{
         worldY = gp.tileSize * gp.chunkSize / 2;
         defaultSpeed = 15;
         buffSpeed = 4;
+        maxLife = 8 ;
+        life = maxLife ;
         actualSpeed = defaultSpeed;
         direction = "down";
         animationON = true;

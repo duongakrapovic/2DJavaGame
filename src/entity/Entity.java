@@ -49,6 +49,7 @@ public class Entity {
     
     //set for utility
     public int defaultSpeed, actualSpeed, buffSpeed;
+    public int life , maxLife ;
     
     public Entity(GamePanel gp) {
         this.gp = gp;

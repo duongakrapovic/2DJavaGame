@@ -12,13 +12,14 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import entity.Entity;
+import object.ObjectHeart;
 import object.ObjectKey;
 
 public class UI {
     GamePanel gp;
     Graphics2D g2;
     Font arial;
-    BufferedImage keyImage;
+    BufferedImage keyImage ,heartHalf , heartBlank , heartFull;
     
     // normal mess
     public boolean messageOn = false;
@@ -43,7 +44,11 @@ public class UI {
         
         arial = new Font("Arial", Font.PLAIN , 25);
         ObjectKey key = new ObjectKey(gp);
-        keyImage = key.staticImage; 
+        keyImage = key.staticImage;
+        ObjectHeart heart = new ObjectHeart (gp);
+        heartHalf = heart.image1;
+        heartBlank = heart.image2;
+        heartFull = heart.image3;
     }
     
     //print the message in the middle of the screen
@@ -116,6 +121,7 @@ public class UI {
             // normal in java , y = top line of tile, however
             // in drawString , y = bot line of tile,
         }
+        drawPlayerLife() ;
        
         
         // MESSAGE
@@ -244,6 +250,24 @@ public class UI {
             if(alpha <= 0f){
                 alpha = 0f;
                 fading = false; // kết thúc
+            }
+        }
+    }
+    public void drawPlayerLife(){
+        int startX = gp.tileSize / 2;
+        int startY = gp.tileSize / 2 * 3;
+        int step   = gp.tileSize;
+        int life    = gp.player.life ;
+        for (int i = 0; i < gp.player.maxLife / 2; i++) {
+            int x = startX + i * step;
+            if (life >= 2) {
+                g2.drawImage(heartFull, x, startY, 2 * gp.tileSize / 3, 2 * gp.tileSize / 3, null);
+                life -= 2;
+            } else if (life == 1) {
+                g2.drawImage(heartHalf, x, startY, 2 * gp.tileSize / 3, 2 * gp.tileSize / 3, null);
+                life = 0;
+            } else {
+                g2.drawImage(heartBlank, x, startY, 2 * gp.tileSize / 3, 2 * gp.tileSize / 3, null);
             }
         }
     }
