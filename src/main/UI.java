@@ -12,11 +12,12 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import entity.Entity;
-import object.ObjectKey;
+import entity_manager.EntityManager;
 
 public class UI {
     GamePanel gp;
     Graphics2D g2;
+    EntityManager eM;
     Font arial;
     BufferedImage keyImage;
     
@@ -42,10 +43,14 @@ public class UI {
         this.gp = gp;
         
         arial = new Font("Arial", Font.PLAIN , 25);
-        ObjectKey key = new ObjectKey(gp);
-        keyImage = key.staticImage; 
+        
+        for (Entity obj : gp.em.getObjects(gp.currentMap)) {
+            if (obj != null && "key".equals(obj.name)) {
+                keyImage = obj.staticImage;
+                break;
+            }
+        }
     }
-    
     //print the message in the middle of the screen
     public int getXforCenteredText(String text){
         int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();

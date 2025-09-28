@@ -16,4 +16,12 @@ public class UtilityTool {
         
         return scaledImage;
     }
+    public int mapNameToIndex(String mapName){
+        switch(mapName){
+        case "map1": return 0;
+        case "map2": return 1;
+        case "map3": return 2;
+        default: return 0;
+        }
+    }
 }

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package monster;
+package monster_data;
 
 import java.awt.Rectangle;
 
@@ -11,9 +11,10 @@ import main.GamePanel;
 
 public class SlimeMonster extends Entity {
     GamePanel gp;
-    public SlimeMonster(GamePanel gp){
+    public SlimeMonster(GamePanel gp, int mapIndex){
         super(gp);
         this.gp = gp;
+        this.mapIndex = mapIndex;
         name = "Green Slime";
         width = gp.tileSize;
         height = gp.tileSize;

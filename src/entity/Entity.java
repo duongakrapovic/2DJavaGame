@@ -24,6 +24,7 @@ public class Entity {
     // system
     UtilityTool uTool = new UtilityTool();
     protected GamePanel gp;
+    public int mapIndex = 0;
     
     // set for animaion
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
@@ -32,7 +33,7 @@ public class Entity {
     public int spriteNum = 1;
     public int actionLockCounter = 0;
     
-    // set 1 part of player tile is solit 
+    // set collision auto false
     public Rectangle solidArea;
     public boolean collisionXOn = false;
     public boolean collisionYOn = false;
@@ -41,15 +42,20 @@ public class Entity {
     // set for colision area of entity
     public int solidAreaDefaultX, solidAreaDefaultY;
     
-    //OBJECT
-    public BufferedImage staticImage;
+    //enity state
+    public BufferedImage staticImage;// use for enity without animation
     public String name;
     public boolean collision  = false;
     public boolean animationON = false;
     
     //set for utility
     public int defaultSpeed, actualSpeed, buffSpeed;
-    
+    private int HP = 0;
+
+    public int getHP() {return HP;}
+    public void setHP(int HP) {this.HP = HP;}
+   
+
     public Entity(GamePanel gp) {
         this.gp = gp;
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
@@ -69,7 +75,7 @@ public class Entity {
         return image;
     }
     
-    public void draw(Graphics2D g2, GamePanel gp){
+    public void draw(Graphics2D g2){
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
         
@@ -143,14 +149,15 @@ public class Entity {
         int nextY = worldY + deltaMoveY; // posible move Y
         
         gp.cChecker.checkTile(this, nextX, nextY);
-        gp.cChecker.checkEntity(this, gp.obj , gp.maxObjPerMap, nextX, nextY);
+        gp.cChecker.checkEntity(this, gp.em.getObjects(gp.currentMap), nextX, nextY);
+        gp.cChecker.checkPlayer(this, nextX, nextY);
         
         if (!collisionOn) {
             worldX = nextX;
             worldY = nextY;
         }
     }
-    public void setAction(){
+    private void setAction(){
         actionLockCounter++ ;
         if(actionLockCounter >= 120){
             Random rand = new Random() ;

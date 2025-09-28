@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package main;
-
+import sound_manager.SoundManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -43,7 +43,7 @@ public class KeyHandler implements KeyListener{
                 
                 if(gp.ui.commandNum == 0){// new game 
                     gp.gameState = gp.gamePlay;
-                    gp.playMusic(0);
+                    SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
                 if(gp.ui.commandNum == 1){// quit
                     System.exit(0);
@@ -89,7 +89,7 @@ public class KeyHandler implements KeyListener{
             if( code == KeyEvent.VK_ENTER){
                 if(gp.ui.commandNum == 0){ // Resume
                     gp.gameState = gp.gamePlay;
-                    gp.playMusic(0);
+                    SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
                 if(gp.ui.commandNum == 1){ // Quit
                     System.exit(0);
@@ -100,11 +100,11 @@ public class KeyHandler implements KeyListener{
         if( code == KeyEvent.VK_ESCAPE){
             if(gp.gameState == gp.gamePlay){
                 gp.gameState = gp.gamePause;
-                gp.music.stop();
+                SoundManager.getInstance().stopMusic();
             }
             else if(gp.gameState == gp.gamePause){
                 gp.gameState = gp.gamePlay;
-                gp.playMusic(0);
+                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
             }
         }      
     }

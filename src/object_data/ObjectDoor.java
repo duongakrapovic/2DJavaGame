@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package object;
+package object_data;
 
 import java.awt.Rectangle;
 
@@ -10,8 +10,10 @@ import entity.Entity;
 import main.GamePanel;
 
 public class ObjectDoor extends Entity{
-    public ObjectDoor( GamePanel gp){
+    public ObjectDoor( GamePanel gp,int mapIndex){
         super(gp);
+        this.gp = gp;
+        this.mapIndex = mapIndex;
         name = "door";
         width = gp.tileSize;
         height = gp.tileSize;

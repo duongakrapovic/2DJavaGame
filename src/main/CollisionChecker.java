@@ -4,6 +4,8 @@
  */
 package main;
 
+import java.util.List;
+
 import entity.Entity;
 import tile.Chunk;
 
@@ -75,18 +77,16 @@ public class CollisionChecker {
             entity.collisionOn = true;
         }
     }
-
-    public int checkEntity(Entity entity ,Entity[][] targetArray, int maxx,int nextX, int nextY){
+    // this check player -> entity 
+    public int checkEntity(Entity entity ,List<Entity> targets, int nextX, int nextY){
         int index = 999;
-        int currentMap = gp.currentMap; 
-        if(currentMap < 0 || currentMap >= gp.numMaps || targetArray[currentMap] == null){
-            return index; // tránh NPE
-        }
+
+        // set solidArea cho entity
         entity.solidArea.x = nextX + entity.solidArea.x;
         entity.solidArea.y = nextY + entity.solidArea.y;
 
-        for(int i = 0 ; i < maxx ; i++){
-            Entity target = targetArray[currentMap][i];
+        for(int i = 0 ; i < targets.size() ; i++){
+            Entity target = targets.get(i);
             if(target != null){
                 target.solidArea.x = target.worldX + target.solidArea.x;
                 target.solidArea.y = target.worldY + target.solidArea.y;
@@ -95,19 +95,39 @@ public class CollisionChecker {
                     if (target.collision) {
                         entity.collisionOn = true;
                     }
-                   
-                        index = i;
-                    
+                    index = i; // trả về index va chạm
                 }
 
+                // reset
                 target.solidArea.x = target.solidAreaDefaultX;
                 target.solidArea.y = target.solidAreaDefaultY;
             }
         }
 
+        // reset lại entity
         entity.solidArea.x = entity.solidAreaDefaultX;
         entity.solidArea.y = entity.solidAreaDefaultY; 
         return index;
+    }
+    // this check entity -> player 
+    public void checkPlayer(Entity entity , int nextX ,int nextY){
+        // set solidArea for entity 
+        entity.solidArea.x = nextX + entity.solidArea.x;
+        entity.solidArea.y = nextY + entity.solidArea.y;
+
+        // set solidArea for player
+        gp.player.solidArea.x = gp.player.worldX + gp.player.solidArea.x;
+        gp.player.solidArea.y = gp.player.worldY + gp.player.solidArea.y;
+
+        if (entity.solidArea.intersects(gp.player.solidArea)) {
+            entity.collisionOn = true;
+        }
+
+        // reset solidArea
+        entity.solidArea.x = entity.solidAreaDefaultX;
+        entity.solidArea.y = entity.solidAreaDefaultY;
+        gp.player.solidArea.x = gp.player.solidAreaDefaultX;
+        gp.player.solidArea.y = gp.player.solidAreaDefaultY;
     }
 }
 

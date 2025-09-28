@@ -11,12 +11,13 @@ import java.awt.Rectangle;
 
 import main.GamePanel;
 import main.KeyHandler;
+import entity_manager.EntityManager;
 
 public class Player extends Entity{
     GamePanel gp;
     KeyHandler keyH;
     Interact iR;
-    
+
     public final int screenX;
     public final int screenY;
     
@@ -177,7 +178,8 @@ public class Player extends Entity{
         }
     }
     
-    public void drawPlayer(Graphics2D g2){
+    @Override
+    public void draw(Graphics2D g2){
 //      g2.setColor(Color.white);// color to draw objects      
 //      g2.fillRect(x , y, gp.tileSize , gp.tileSize);
 
@@ -207,11 +209,11 @@ public class Player extends Entity{
     
     private void allCheck(int nextX, int nextY){
         gp.cChecker.checkTile(this, nextX, nextY);
-        int objectIndex = gp.cChecker.checkEntity(this, gp.obj, gp.maxObjPerMap, nextX, nextY);
+        int objectIndex = gp.cChecker.checkEntity(this, gp.em.getObjects(gp.currentMap), nextX, nextY);
         iR.InteractObject(objectIndex);
-        int monsterIndex = gp.cChecker.checkEntity(this, gp.monster, gp.maxMonsterPerMap, nextX, nextY);
+        int monsterIndex = gp.cChecker.checkEntity(this, gp.em.getMonsters(gp.currentMap), nextX, nextY);
         iR.InteractMonster(monsterIndex);
-        int npcIndex = gp.cChecker.checkEntity(this, gp.npc, gp.maxNPCPerMap, nextX, nextY);
+        int npcIndex = gp.cChecker.checkEntity(this, gp.em.getNPCs(gp.currentMap), nextX, nextY);
         iR.InteractNPC(npcIndex);
     }
 }

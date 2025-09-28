@@ -4,8 +4,11 @@
  */
 package entity;
 
+import java.util.*;
+
 import main.GamePanel;
 import main.KeyHandler;
+import sound_manager.SoundManager;
 
 public class Interact extends Entity{
     GamePanel gp;
@@ -18,78 +21,96 @@ public class Interact extends Entity{
         this.keyH = keyH;
         this.player = player;
     }
+    //  OBJECT
     public void InteractObject(int index){
-        int i = index;
-        if (i != 999){
-            String objectName = gp.obj[gp.currentMap][i].name;
-            Entity obj = gp.obj[gp.currentMap][i];
-            
-            switch(objectName){
-                case "key":
-                gp.ui.showTouchMessage("press 'F' to pick key", obj, gp);
-                if(keyH.pickPressOnce == true){
-                    gp.playSE(1);
-                    player.hasKey++;
-                    gp.obj[gp.currentMap][i] = null;
-                    gp.ui.showMessage("Ya got a key");
-                    keyH.pickPress = false;
+        if (index != 999){
+            List<Entity> objects = gp.em.getObjects(gp.currentMap);
+
+            if(index >= 0 && index < objects.size()){
+                Entity obj = objects.get(index);
+
+                if(obj != null && obj.mapIndex == gp.currentMap){
+                    String objectName = obj.name;
+
+                    switch(objectName){
+                        case "key":
+                            gp.ui.showTouchMessage("press 'F' to pick key", obj, gp);
+                            if(keyH.pickPressOnce){
+                                SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
+                                player.hasKey++;
+                                objects.remove(index); // xoá object
+                                gp.ui.showMessage("Ya got a key");
+                                keyH.pickPress = false;
+                            }
+                            break;
+
+                        case "portal":
+                            gp.ui.showTouchMessage("press 'F' to tele", obj, gp);
+                            if(keyH.pickPressOnce){
+                                gp.ui.startFade(() -> {
+                                    if("map1".equals(gp.chunkM.pathMap)){
+                                        gp.chunkM.pathMap = "map2";
+                                        gp.chunkM.clearChunks();
+                                        gp.chunkM.updateChunks(player.worldX, player.worldY);
+                                        gp.ui.showMessage("Teleported to hell!");
+                                    }
+                                    else if("map2".equals(gp.chunkM.pathMap)){
+                                        gp.chunkM.pathMap = "map1";
+                                        gp.chunkM.clearChunks();
+                                        gp.chunkM.updateChunks(player.worldX, player.worldY);
+                                        gp.ui.showMessage("Teleported to jungle!");
+                                    }
+                                });
+                                keyH.pickPress = false;
+                            }
+                            break;
+                    }
                 }
-                break;
-                case "portal":
-                gp.ui.showTouchMessage("press 'F' to tele", obj, gp);
-                if(keyH.pickPressOnce == true){
-                    // use ".equal" to compairthe content of the string 
-                    // == only compair memory address
-                    gp.ui.startFade(() -> {
-                        if("map1".equals(gp.chunkM.pathMap)){
-                            gp.chunkM.pathMap = "map2";
-                            gp.chunkM.clearChunks();
-                            gp.chunkM.updateChunks(player.worldX, player.worldY);
-                            gp.ui.showMessage("Teleported to hell!");
-                        }
-                        else if("map2".equals(gp.chunkM.pathMap)){
-                            gp.chunkM.pathMap = "map1";
-                            gp.chunkM.clearChunks();
-                            gp.chunkM.updateChunks(player.worldX, player.worldY);
-                            gp.ui.showMessage("Teleported to jungle!");
-                        }
-                    });
-                    keyH.pickPress = false;
-                }
-                break;    
             }
         }
         else{
-             gp.ui.hideTouchMessage();
+            gp.ui.hideTouchMessage();
         }
     }
+
     
     public void InteractMonster(int index){
-        int i = index;
-        if (i != 999){
-            String monsterName = gp.monster[gp.currentMap][i].name;
-            Entity monster = gp.obj[gp.currentMap][i];
-            
-            switch(monsterName){
-                case "Green Slime":
-                break;
-                  
+        if (index != 999){
+            List<Entity> monsters = gp.em.getMonsters(gp.currentMap);;
+
+            if(index >= 0 && index < monsters.size()){
+                Entity monster = monsters.get(index);
+
+                if(monster != null && monster.mapIndex == gp.currentMap){
+                    String monsterName = monster.name;
+
+                    switch(monsterName){
+                        case "Green Slime":
+                            // xử lý đánh slime hoặc hội thoại
+                            break;
+                    }
+                }
             }
         }
     }
     
     public void InteractNPC(int index){
-        int i = index;
-        if (i != 999){
-            String npcName = gp.npc[gp.currentMap][i].name;
-            Entity npc = gp.npc[gp.currentMap][i];
-            
-            switch(npcName){
-                case "Oldman":
-                break;
-                  
+        if (index != 999){
+            List<Entity> npcs = gp.em.getNPCs(gp.currentMap);
+
+            if(index >= 0 && index < npcs.size()){
+                Entity npc = npcs.get(index);
+
+                if(npc != null && npc.mapIndex == gp.currentMap){
+                    String npcName = npc.name;
+
+                    switch(npcName){
+                        case "Oldman":
+                            // mở hội thoại, quest...
+                            break;
+                    }
+                }
             }
         }
     }
-    
 }

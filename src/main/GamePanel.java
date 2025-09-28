@@ -4,13 +4,14 @@
  */
 package main;
 
+
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import entity.Entity;
+import entity_manager.EntityManager;
 import entity.Player;
 import tile.ChunkManager;
 import tile.TileManager;
@@ -35,67 +36,63 @@ public class GamePanel extends JPanel implements Runnable{
     public final int maxWorldCol = 32 * 3;
     public final int maxWorldRow = 32 * 3;
     public final int chunkSize = 32;
+    
     //FPS
     int FPS = 60;
     
     //SYSTEM
     public TileManager tileM = new TileManager(this);
     public ChunkManager chunkM = new ChunkManager(chunkSize, this);
-    public KeyHandler keyH = new KeyHandler(this);
-    public Sound music = new Sound();
-    public Sound se = new Sound();  
-        // need seperate class for music and sound effect because music and se 
-        // would not play both if they are in 1 class, only process 1 at a time 
+    public KeyHandler keyH = new KeyHandler(this); 
+    
+    // OTHERS
     public CollisionChecker cChecker = new CollisionChecker(this);
-    public AssetSetter aSetter = new AssetSetter(this);
-    
-    public UI ui = new UI(this);// add ui 
-    
-    Thread gameThread; // a thread stared -> game keep running till u stop it 
+    public UtilityTool uTool = new UtilityTool();
         
-    //ENTITY AND OBJECT
+    //ENTITY MANAGER
+    public EntityManager em;
+
+    // ENTITY PLAYER
     public Player player = new Player(this, keyH);
-        //all the stuff here is to control objects on different maps
-    public int numMaps = 3;// exist map
-    public int currentMap = 0;//chunkManager.pathMap -> index 
-    
-    public int maxObjPerMap = 10;//max num of obj per map
-    public Entity[][] obj;
-    public int maxMonsterPerMap = 10;
-    public Entity monster[][];
-    public int maxNPCPerMap = 10;
-    public Entity[][] npc;
    
+    //UI
+    public UI ui; // will be create after manager 
+
+    //MAP 
+    public int numMaps = 3;       // numbers of map 
+    public int currentMap = 0;    // current map index
+    
     // GAME STATE
     public int gameState;
     public int gameStart = 0;
     public int gamePlay = 1;
     public int gamePause = 2;
     
-    public GamePanel(){
-        
-        // set the size of the window
+    // THREAD
+    Thread gameThread; 
+    
+    public GamePanel(){     
+        // set the preferred size of the game window
         this.setPreferredSize(new Dimension(screenWidth , screenHeight));
-        
+        // set background color for the panel (black screen by default)
         this.setBackground(Color.black);
-        // improve redering performent
+        // snable double buffering to reduce flickering and improve rendering performance
         this.setDoubleBuffered(true);
-        
+        // add the key handler so the panel can receive keyboard inputs
         this.addKeyListener(keyH);
+        // make sure the panel can gain focus to properly capture key events
         this.setFocusable(true);
-        
-        obj = new Entity[numMaps][maxObjPerMap];
-        monster = new Entity[numMaps][maxMonsterPerMap];
-        npc = new Entity[numMaps][maxNPCPerMap];
+        // initialize all entity managers before UI 
+        // so that UI can safely access them if needed
+        em = new EntityManager(player, this);
+        // initialize the UI  after managers are ready
+        ui = new UI(this);
     }
     
     public void setupGame(){
-        aSetter.setObject();
-        aSetter.setMonster();
-        aSetter.setNPC();
         player.setDefaultValues();
         chunkM.pathMap = "map1";
-        gameState = gameStart;aSetter.setMonster();
+        gameState = gameStart;
     }
     
     public void startGameThread(){
@@ -109,8 +106,8 @@ public class GamePanel extends JPanel implements Runnable{
         // darw the screen every 0,016s or else upadte + repaint overload
         double nextDrawTime = System.nanoTime() + drawInterval;
         
-        long timer = System.currentTimeMillis();
-        int drawcnt = 0;
+//        long timer = System.currentTimeMillis();
+//        int drawcnt = 0;
         while(gameThread != null){
             // as long as this gameThread exists, it repeats the process
             // that is wirten inside of these brackets          
@@ -123,7 +120,7 @@ public class GamePanel extends JPanel implements Runnable{
             // proof for multithreading
             //System.out.println("GameLoop tick @" + System.nanoTime());
             
-            drawcnt++;// catch 1 frame drew
+//            drawcnt++;// catch 1 frame drew
             
             try{
                 double remainingTime = nextDrawTime - System.nanoTime();
@@ -152,30 +149,9 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void update(){
         if(gameState == gamePlay){
-            player.update();
             chunkM.updateChunks(player.worldX, player.worldY);
-            currentMap = mapNameToIndex(chunkM.pathMap);
-            //object
-            for(int i = 0; i < maxObjPerMap; i++){
-                Entity o = obj[currentMap][i];
-                if(o != null){
-                    o.update();
-                }
-            }
-            // monster
-            for(int i = 0 ; i < maxMonsterPerMap; i++){
-                Entity m = monster[currentMap][i];
-                if (m != null) {
-                    m.update();
-                }
-            }
-            //npc
-            for(int i = 0 ; i < maxNPCPerMap; i++){
-                Entity n = npc[currentMap][i];
-                if (n != null) {
-                    n.update();
-                }
-            }
+            currentMap = uTool.mapNameToIndex(chunkM.pathMap);
+            em.update(currentMap);
         }
         if(gameState == gamePause){
             //nothing happen 
@@ -188,91 +164,35 @@ public class GamePanel extends JPanel implements Runnable{
         Graphics2D g2 = (Graphics2D)g; //  extends the Graphics class for more tool
         
         //DEBUG
-        long drawStart = 0;
-        drawStart = System.nanoTime();
+//        long drawStart = 0;
+//        drawStart = System.nanoTime();
         
         if(gameState == gameStart){
             ui.drawUI(g2);
         }
         
         else if(gameState == gamePlay){
-            tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
-        
-            // OBJECT
-            for(int i = 0 ; i < maxObjPerMap; i++){
-                if(obj[currentMap][i] != null){
-                    obj[currentMap][i].draw(g2, this);
-                }
-            }
-            // monster
-            for(int i = 0 ; i < maxMonsterPerMap; i++){
-                if(monster[currentMap][i] != null){
-                    monster[currentMap][i].draw(g2, this);
-                }
-            }
-            for(int i = 0 ; i < maxNPCPerMap; i++){
-                if(npc[currentMap][i] != null){
-                    npc[currentMap][i].draw(g2, this);
-                }
-            }
-            // PLAYER
-            player.drawPlayer(g2);
-        
+            // DRAW VISIBLE TILES 
+            tileM.draw(g2, chunkM);       
+            // OBJECT + MONSTER + NPC + PLAYER
+            em.draw(g2, currentMap);
             // UI 
             ui.drawUI(g2);
         }
         
         else if(gameState == gamePause){
-            tileM.draw(g2, chunkM);// DRAW VISIBLE TILES
-        
-            // OBJECT
-            for(int i = 0 ; i < maxObjPerMap; i++){
-                if(obj[currentMap][i] != null){
-                    obj[currentMap][i].draw(g2, this);
-                }
-            }
-            // monster
-            for(int i = 0 ; i < maxMonsterPerMap; i++){
-                if(monster[currentMap][i] != null){
-                    monster[currentMap][i].draw(g2, this);
-                }
-            }
-            for(int i = 0 ; i < maxNPCPerMap; i++){
-                if(npc[currentMap][i] != null){
-                    npc[currentMap][i].draw(g2, this);
-                }
-            }
-            // PLAYER
-            player.drawPlayer(g2);
-        
+            // DRAW VISIBLE TILES 
+            tileM.draw(g2, chunkM);
+            // OBJECT + MONSTER + NPC + PLAYER
+            em.draw(g2, currentMap);
             // UI 
             ui.drawUI(g2);
         }
         
-        long drawEnd = System.nanoTime();
-        long passed = drawEnd - drawStart;
+//        long drawEnd = System.nanoTime();
+//        long passed = drawEnd - drawStart;
 //        System.out.println(passed);
         
         g2.dispose();
-    }
-    public void playMusic (int i){
-        music.setFile(i);
-        music.play();
-        music.loop();
-    }
-    public void stopMusic(){
-        music.stop();
-    }
-    public void playSE(int i){// sound effect
-        se.setFile(i);
-        se.play();
-    }
-    public int mapNameToIndex(String mapName){
-        switch(mapName){
-        case "map1": return 0;
-        case "map2": return 1;
-        case "map3": return 2;
-        default: return 0;
-        }
     }
 }
