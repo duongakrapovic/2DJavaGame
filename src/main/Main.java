@@ -5,7 +5,7 @@
 package main;
 
 import javax.swing.JFrame;
- 
+
 public class Main {
 
     public static void main(String[] args) {
@@ -13,7 +13,7 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// click "X" then program end
         window.setResizable(false);// window size is constant
         window.setTitle("2D indie");// name for the window tab
-        
+
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
         // gamepanel show the content , jfram is a container

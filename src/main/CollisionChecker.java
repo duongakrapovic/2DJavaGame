@@ -12,7 +12,6 @@ import tile.Chunk;
 public class CollisionChecker {
 
     GamePanel gp;
-
     public CollisionChecker(GamePanel gp){
         this.gp = gp;
     }
@@ -116,18 +115,18 @@ public class CollisionChecker {
         entity.solidArea.y = nextY + entity.solidArea.y;
 
         // set solidArea for player
-        gp.player.solidArea.x = gp.player.worldX + gp.player.solidArea.x;
-        gp.player.solidArea.y = gp.player.worldY + gp.player.solidArea.y;
+        gp.em.getPlayer().solidArea.x = gp.em.getPlayer().worldX + gp.em.getPlayer().solidArea.x;
+        gp.em.getPlayer().solidArea.y = gp.em.getPlayer().worldY + gp.em.getPlayer().solidArea.y;
 
-        if (entity.solidArea.intersects(gp.player.solidArea)) {
+        if (entity.solidArea.intersects(gp.em.getPlayer().solidArea)) {
             entity.collisionOn = true;
         }
 
         // reset solidArea
         entity.solidArea.x = entity.solidAreaDefaultX;
         entity.solidArea.y = entity.solidAreaDefaultY;
-        gp.player.solidArea.x = gp.player.solidAreaDefaultX;
-        gp.player.solidArea.y = gp.player.solidAreaDefaultY;
+        gp.em.getPlayer().solidArea.x = gp.em.getPlayer().solidAreaDefaultX; 
+        gp.em.getPlayer().solidArea.y = gp.em.getPlayer().solidAreaDefaultY;
     }
 }
 

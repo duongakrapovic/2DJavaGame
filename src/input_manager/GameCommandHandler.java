@@ -2,31 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package main;
-import sound_manager.SoundManager;
+package input_manager;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class KeyHandler implements KeyListener{
-    GamePanel gp;
-    public boolean upPressed , downPressed, leftPressed, rightPressed;
-    public boolean pickPress , pickPressOnce;
+import main.GamePanel;
+import sound_manager.SoundManager;
+import main.GameState;
 
-    public KeyHandler(GamePanel gp) {
+public class GameCommandHandler implements KeyListener {
+    private final GamePanel gp;
+
+    public GameCommandHandler(GamePanel gp) {
         this.gp = gp;
     }
-    
-    // default must be public 
+
     @Override
-    public void keyTyped(KeyEvent e){
-        
-    }
-    @Override
-    public void keyPressed(KeyEvent e){
-        
+    public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
+
         // start mode
-        if(gp.gameState == gp.gameStart){
+        if(gp.gsm.getState() == GameState.START){
             if( code == KeyEvent.VK_UP){
                 gp.ui.commandNum--;
                 if(gp.ui.commandNum < 0){
@@ -42,7 +39,7 @@ public class KeyHandler implements KeyListener{
             if( code == KeyEvent.VK_ENTER){
                 
                 if(gp.ui.commandNum == 0){// new game 
-                    gp.gameState = gp.gamePlay;
+                    gp.gsm.setState(GameState.PLAY);
                     SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
                 if(gp.ui.commandNum == 1){// quit
@@ -50,30 +47,9 @@ public class KeyHandler implements KeyListener{
                 }
             } 
         }
-        // play mode
-        if(gp.gameState == gp.gamePlay){
-            if( code == KeyEvent.VK_W){
-                upPressed = true;
-            } 
-            if( code == KeyEvent.VK_S){
-                downPressed = true;
-            } 
-            if( code == KeyEvent.VK_A){
-                leftPressed = true;
-            } 
-            if( code == KeyEvent.VK_D){
-                rightPressed = true;
-            } 
-            if( code == KeyEvent.VK_F){
-                if(!pickPress){
-                    pickPressOnce = true;
-                }
-                pickPress = true;
-            }
-              
-        }
+
         // while in pause 
-        if(gp.gameState == gp.gamePause){
+        if(gp.gsm.getState() == GameState.PAUSE){
             if( code == KeyEvent.VK_UP){
                 gp.ui.commandNum--;
                 if(gp.ui.commandNum < 0){
@@ -88,7 +64,7 @@ public class KeyHandler implements KeyListener{
             } 
             if( code == KeyEvent.VK_ENTER){
                 if(gp.ui.commandNum == 0){ // Resume
-                    gp.gameState = gp.gamePlay;
+                    gp.gsm.setState(GameState.PLAY);
                     SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
                 if(gp.ui.commandNum == 1){ // Quit
@@ -98,36 +74,18 @@ public class KeyHandler implements KeyListener{
         }
         // switch case of pause key 
         if( code == KeyEvent.VK_ESCAPE){
-            if(gp.gameState == gp.gamePlay){
-                gp.gameState = gp.gamePause;
+            if(gp.gsm.getState() == GameState.PLAY){
+                gp.gsm.setState(GameState.PAUSE);
                 SoundManager.getInstance().stopMusic();
             }
-            else if(gp.gameState == gp.gamePause){
-                gp.gameState = gp.gamePlay;
+            else if(gp.gsm.getState()  == GameState.PAUSE){
+                gp.gsm.setState(GameState.PLAY);
                 SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
             }
-        }      
+        }  
     }
-    @Override
-    public void keyReleased(KeyEvent e){
-        int code = e.getKeyCode();
-        if( code == KeyEvent.VK_W){
-            upPressed = false;
-        } 
-        if( code == KeyEvent.VK_S){
-            downPressed = false;
-        } 
-        if( code == KeyEvent.VK_A){
-            leftPressed = false;
-        } 
-        if( code == KeyEvent.VK_D){
-            rightPressed = false;
-        } 
-        if( code == KeyEvent.VK_K){
-            pickPress = false;
-        }
-        if( code == KeyEvent.VK_F){
-            pickPress = false;
-        }
-    }
+
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e) {}
 }
+

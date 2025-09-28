@@ -4,20 +4,18 @@
  */
 package entity;
 
+import input_manager.InputController;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle;
 
 import main.GamePanel;
-import main.KeyHandler;
-import entity_manager.EntityManager;
 
 public class Player extends Entity{
-    GamePanel gp;
-    KeyHandler keyH;
+    private InputController input;
     Interact iR;
-
+    GamePanel gp;
     public final int screenX;
     public final int screenY;
     
@@ -25,12 +23,11 @@ public class Player extends Entity{
     int speedTimer = 0; // count down time for speed buff
     int standCounter = 0;// return stand image
     
-    public Player(GamePanel gp , KeyHandler keyH){
+    public Player(GamePanel gp , InputController input ){
         super(gp);
         this.gp = gp;
-        this.keyH = keyH;
-        this.iR = new Interact(gp, keyH, this);
-        
+        this.iR = new Interact(gp, this, input);
+        this.input = input;
         
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
@@ -55,6 +52,7 @@ public class Player extends Entity{
         actualSpeed = defaultSpeed;
         direction = "down";
         animationON = true;
+        //System.out.println("complete setdefault");
     }
     
     private void getPlayerImage(){
@@ -70,26 +68,30 @@ public class Player extends Entity{
     }
     @Override
     public void update(){
+        //System.out.println("done");
         // in java , the top left corner is x = 0 and y = 0;
         // x valuaes increase to the right
         // y valuaes increase as they go down
         int deltaMoveX = 0;
         int deltaMoveY = 0;
-        if(keyH.upPressed == true || keyH.downPressed == true ||
-                keyH.leftPressed == true || keyH.rightPressed == true){
-            if(keyH.upPressed == true){//w
+        //if(gp.keyH.upPressed)System.out.println("gia tri cua KeyH khai bao trong Player ben player: " + gp.keyH.upPressed);
+        //if(gp.gp.keyH.upPressed) System.out.println("gia tri cua KeyH khai bao trong Ga ben player: " + gp.keyH.upPressed);
+        if(input.isUpPressed() == true || input.isDownPressed() == true ||
+                input.isLeftPressed() == true || input.isRightPressed() == true){
+            if(input.isUpPressed() == true){//w
                 direction = "up";
                 deltaMoveY -= actualSpeed; 
+                //System.out.println(deltaMoveX);
             }
-            if(keyH.downPressed == true){//s
+            if(input.isDownPressed() == true){//s
                 direction = "down";
                 deltaMoveY += actualSpeed;
             }
-            if(keyH.leftPressed == true){//a
+            if(input.isLeftPressed() == true){//a
                 direction = "left"; 
                 deltaMoveX -= actualSpeed;
             }
-            if(keyH.rightPressed == true){//d
+            if(input.isRightPressed()== true){//d
                 direction = "right";
                 deltaMoveX += actualSpeed;
             }
@@ -166,9 +168,9 @@ public class Player extends Entity{
             //System.out.println(worldY / 16);
         }
         //iR.InteractObject(objectIndex); // check player interact with object 
-    
-        // RESET VAL
-        keyH.pickPressOnce = false;
+        
+       //System.out.println(worldX + " " + worldY);
+        // RESET VAl
         // COUNTER FOR SPEED
         if(speedTimer > 0){
             speedTimer--;

@@ -6,6 +6,7 @@ package entity_manager;
 
 import entity.Entity;
 import entity.Player;
+import input_manager.InputController;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -19,8 +20,8 @@ public class EntityManager {
     private NPCManager npcM;
     private ObjectManager oM;
 
-    public EntityManager(Player player, GamePanel gp) {
-        this.player = player;
+    public EntityManager(GamePanel gp, InputController input) {
+        this.player = new Player(gp, input);
         this.mM = new MonsterManager(gp);
         this.npcM = new NPCManager(gp);
         this.oM = new ObjectManager(gp);

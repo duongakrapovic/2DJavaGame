@@ -12,13 +12,12 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import entity.Entity;
-import entity_manager.EntityManager;
 
 public class UI {
-    GamePanel gp;
-    Graphics2D g2;
-    EntityManager eM;
+    private GamePanel gp;
+    private Graphics2D g2;
     Font arial;
+    
     BufferedImage keyImage;
     
     // normal mess
@@ -41,7 +40,6 @@ public class UI {
     
     public UI(GamePanel gp){
         this.gp = gp;
-        
         arial = new Font("Arial", Font.PLAIN , 25);
         
         for (Entity obj : gp.em.getObjects(gp.currentMap)) {
@@ -81,8 +79,8 @@ public class UI {
         touchMessageOn = true;
         
         // print posision will be higher than object a little as 10 pixel
-        messPosX = obj.worldX - gp.player.worldX + gp.player.screenX;
-        messPosY = obj.worldY - gp.player.worldY + gp.player.screenY - 10;
+        messPosX = obj.worldX - gp.em.getPlayer().worldX + gp.em.getPlayer().screenX;
+        messPosY = obj.worldY - gp.em.getPlayer().worldY + gp.em.getPlayer().screenY - 10;
     }
     
     public void hideTouchMessage(){ // delete mess if non touch 
@@ -90,6 +88,7 @@ public class UI {
     }
     
     public void drawUI(Graphics2D g2){
+        //System.out.println("run drawui");
         this.g2 = g2;
         
         g2.setFont(arial);
@@ -97,27 +96,27 @@ public class UI {
                             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.WHITE);
         
-        if(gp.gameState == gp.gamePlay){
+        if(gp.gsm.getState() == GameState.PLAY){
             drawMessage();
         }
-        if(gp.gameState == gp.gameStart){
+        if(gp.gsm.getState() == GameState.START){
             drawGameStartScene();
         }
-        if(gp.gameState == gp.gamePause){
+        if(gp.gsm.getState() == GameState.PAUSE){
             drawGamePauseScene();
         }
         drawFade(g2);
     }
     
     public void drawMessage(){
-        if(gp.player.hasKey > 0){
+        if(gp.em.getPlayer().hasKey > 0){
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30F));
             g2.setColor(Color.white);
             
             // draw the key and number of keys
             g2.drawImage(keyImage, gp.tileSize/2, gp.tileSize/2, 2*gp.tileSize/3, 2*gp.tileSize/3, null);
             // image , pos x and y , size x and y , null
-            g2.drawString("x " + gp.player.hasKey , gp.tileSize + 30 ,50);
+            g2.drawString("x " + gp.em.getPlayer().hasKey , gp.tileSize + 30 ,50);
             // normal in java , y = top line of tile, however
             // in drawString , y = bot line of tile,
         }
@@ -147,31 +146,34 @@ public class UI {
     }
     
     public void drawGameStartScene(){
+        //System.out.println("run drawGT");
         //backGround color
         g2.setColor(new Color(70 , 120 , 90));// red green blue 
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-        
+       // System.out.println("1");
         // title name
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 80F));
         String text = "BLUE AND JUNGLE";
         int x = getXforCenteredText(text) + 16;
         int y = gp.tileSize * 3;
-        
+        //System.out.println("2");
         //shadow
         g2.setColor(Color.gray);
         g2.drawString(text, x+5, y+5);
-        
+        //System.out.println("3");
         //main color
         g2.setColor(Color.white);
         g2.drawString(text, x, y);
-        
+        //System.out.println("4");
         // charactor
         x = gp.screenWidth / 2 - gp.tileSize;
         y = gp.screenHeight / 2 - 2 * gp.tileSize;
-        g2.drawImage(gp.player.down1, x, y , gp.tileSize*2 , gp.tileSize *2 , null);
-        
+        //System.out.println("5,,,,");
+        g2.drawImage(gp.em.getPlayer().down1, x, y , gp.tileSize*2 , gp.tileSize *2 , null);
+        //System.out.println("5");
         //menu
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        //System.out.println("6");
         
         text = "NEW GAME";
         x = getXforCenteredText(text);

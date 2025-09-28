@@ -13,10 +13,9 @@ import main.GamePanel;
 public class TileManager {
     GamePanel gp;
     public Tile[] tile;
-
+    
     public TileManager(GamePanel gp){
         this.gp = gp;
-
         tile = null; // load tileset, and collision of tiles 
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
         loadTilesetProperties("/maptiles/tileset.tsx");  
@@ -75,13 +74,13 @@ public class TileManager {
     }
     
     public void draw(Graphics2D g2 ,ChunkManager chunkM){
-        int playerPosX = gp.player.worldX;
-        int playerPosY = gp.player.worldY;
+        int playerPosX = gp.em.getPlayer().worldX;
+        int playerPosY = gp.em.getPlayer().worldY;
 
-        int screenLeft   = playerPosX - gp.player.screenX;
-        int screenTop    = playerPosY - gp.player.screenY;
-        int screenRight  = playerPosX + gp.player.screenX + 5*gp.tileSize;
-        int screenBottom = playerPosY + gp.player.screenY + 5*gp.tileSize;
+        int screenLeft   = playerPosX - gp.em.getPlayer().screenX;
+        int screenTop    = playerPosY - gp.em.getPlayer().screenY;
+        int screenRight  = playerPosX + gp.em.getPlayer().screenX + 5*gp.tileSize;
+        int screenBottom = playerPosY + gp.em.getPlayer().screenY + 5*gp.tileSize;
 
         for(Chunk c : chunkM.getActiveChunks()){
             int chunkWorldX = c.chunkX * c.size * gp.tileSize;
@@ -99,8 +98,8 @@ public class TileManager {
 
                     int tileWorldX = chunkWorldX + col*gp.tileSize;
                     int tileWorldY = chunkWorldY + row*gp.tileSize;
-                    int tileScreenX = tileWorldX - playerPosX + gp.player.screenX;
-                    int tileScreenY = tileWorldY - playerPosY + gp.player.screenY;
+                    int tileScreenX = tileWorldX - playerPosX + gp.em.getPlayer().screenX;
+                    int tileScreenY = tileWorldY - playerPosY + gp.em.getPlayer().screenY;
 
                     g2.drawImage(tile[tileNum].image, tileScreenX, tileScreenY, gp.tileSize, gp.tileSize, null);
                 }
@@ -108,8 +107,8 @@ public class TileManager {
 
             // draw red outline to recognize each chunk 
             g2.setColor(Color.RED);
-            int rectX = chunkWorldX - playerPosX + gp.player.screenX;
-            int rectY = chunkWorldY - playerPosY + gp.player.screenY;
+            int rectX = chunkWorldX - playerPosX + gp.em.getPlayer().screenX;
+            int rectY = chunkWorldY - playerPosY + gp.em.getPlayer().screenY;
             int rectSize = c.size * gp.tileSize;
             g2.drawRect(rectX, rectY, rectSize, rectSize);
         }

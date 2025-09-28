@@ -1,10 +1,7 @@
 package tile;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,7 +11,6 @@ public class ChunkManager {
     private final int chunkSize;
     private final Map<String, Chunk> chunks;
     private final GamePanel gp;
-
     private ExecutorService loader = Executors.newSingleThreadExecutor(); // private thread for load chunk
 
     public String pathMap = "map1"; 
@@ -103,10 +99,10 @@ public class ChunkManager {
     public void updateChunks(int playerWorldX, int playerWorldY){
         int buffer = gp.tileSize * (chunkSize / 2);
 
-        int screenLeft   = playerWorldX - gp.player.screenX - buffer;
-        int screenRight  = playerWorldX + gp.player.screenX + buffer;
-        int screenTop    = playerWorldY - gp.player.screenY - buffer;
-        int screenBottom = playerWorldY + gp.player.screenY + buffer;
+        int screenLeft   = playerWorldX - gp.em.getPlayer().screenX - buffer;
+        int screenRight  = playerWorldX + gp.em.getPlayer().screenX + buffer;
+        int screenTop    = playerWorldY - gp.em.getPlayer().screenY - buffer;
+        int screenBottom = playerWorldY + gp.em.getPlayer().screenY + buffer;
 
         int chunkLeft   = screenLeft / (chunkSize * gp.tileSize);
         int chunkRight  = screenRight / (chunkSize * gp.tileSize);
@@ -122,6 +118,7 @@ public class ChunkManager {
             }
         }
         unloadFarChunks(chunkLeft, chunkRight, chunkTop, chunkBottom);
+        //System.out.println("complete update chunk");
     }
 
     /** clear all chunks */
