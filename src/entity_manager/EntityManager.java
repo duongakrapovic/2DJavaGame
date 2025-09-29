@@ -5,7 +5,7 @@
 package entity_manager;
 
 import entity.Entity;
-import entity.Player;
+import player_manager.Player;
 import input_manager.InputController;
 
 import java.awt.Graphics2D;

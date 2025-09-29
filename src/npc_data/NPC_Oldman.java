@@ -9,21 +9,36 @@ import java.awt.Rectangle;
 import entity.Entity;
 import main.GamePanel;
 
+/**
+ * NPC_Oldman.java
+ * Represents an old man NPC in the game.
+ * Moves slowly and has basic animations in all directions.
+ */
 public class NPC_Oldman extends Entity {
+    // Reference to main GamePanel
     GamePanel gp;
+    /**
+     * Constructor: initializes old man NPC with size, images, speed, and collision settings.
+     * @param gp Reference to the main GamePanel
+     * @param mapIndex Index of the map where this NPC is placed
+     */
     public NPC_Oldman(GamePanel gp, int mapIndex){
         super(gp);
         this.gp = gp;
         this.mapIndex = mapIndex;
+        // NPC name
         name = "oldman" ;
+        // Set size equal to one tile
         width = gp.tileSize;
-        height = gp.tileSize;    
+        height = gp.tileSize;
+        // Load images for all directions    
         getImage();    
-        
+        // Enable collision and animation
         collision = true;
         animationON = true;
+        // Movement speed
         actualSpeed = 1 ;
-        
+        // Define solid area for collision detection
         solidArea = new Rectangle();
         solidArea.x = 3 ;
         solidArea.y = 18 ;
@@ -32,6 +47,9 @@ public class NPC_Oldman extends Entity {
         solidAreaDefaultX = solidArea.x ;
         solidAreaDefaultY = solidArea.y ;       
     }
+    /**
+     * Load images for all directions and animation frames.
+     */
     private void getImage(){
         up1 = setup("/npc/oldman_up_1" , width , height) ;
         up2 = setup("/npc/oldman_up_2" , width ,  height) ;

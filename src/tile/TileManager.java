@@ -9,17 +9,28 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
-
+/**
+ * TileManager.java
+ * Manages loading of tile.set images, tile properties (like collision),
+ * and draws visible tiles on the screen based on active chunks.
+ */
 public class TileManager {
+    // Reference to main game panel
     GamePanel gp;
+    // Array of all tiles loaded from tileset
     public Tile[] tile;
     
     public TileManager(GamePanel gp){
         this.gp = gp;
-        tile = null; // load tileset, and collision of tiles 
+        tile = null; // initialize tile array
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
         loadTilesetProperties("/maptiles/tileset.tsx");  
     }
+     /**
+     * Load tileset image and split it into individual tiles.
+     * @param path path to tileset image
+     * @param tileSize size of each tile in pixels
+     */
     public void loadTileset(String path, int tileSize) {
         try {
             BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream(path));
@@ -42,7 +53,10 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    
+    /**
+     * Load tile properties (like collision) from TSX file.
+     * @param tsxPath path to TSX file
+     */
     public void loadTilesetProperties(String tsxPath) {
         try {
             InputStream is = getClass().getResourceAsStream(tsxPath);
@@ -72,7 +86,11 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    
+    /**
+     * Draw tiles from active chunks on the screen
+     * @param g2 Graphics2D context
+     * @param chunkM ChunkManager containing active chunks
+     */
     public void draw(Graphics2D g2 ,ChunkManager chunkM){
         int playerPosX = gp.em.getPlayer().worldX;
         int playerPosY = gp.em.getPlayer().worldY;
@@ -85,12 +103,14 @@ public class TileManager {
         for(Chunk c : chunkM.getActiveChunks()){
             int chunkWorldX = c.chunkX * c.size * gp.tileSize;
             int chunkWorldY = c.chunkY * c.size * gp.tileSize;
-
+            
+            // Skip chunks outside the screen
             if(chunkWorldX + c.size*gp.tileSize < screenLeft) continue;
             if(chunkWorldX > screenRight) continue;
             if(chunkWorldY + c.size*gp.tileSize < screenTop) continue;
             if(chunkWorldY > screenBottom) continue;
 
+            // Draw each tile in the chunk
             for(int row=0; row<c.size; row++){
                 for(int col=0; col<c.size; col++){
                     int tileNum = c.mapTileNum[row][col]; // take tile num from chunk

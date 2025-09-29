@@ -7,12 +7,21 @@ import java.util.concurrent.Executors;
 
 import main.GamePanel;
 
+/**
+ * ChunkManager.java
+ * Handles loading, unloading, and managing chunks (sections of the tile map) around the player.
+ * Supports asynchronous loading to avoid blocking the main game thread.
+ */
 public class ChunkManager {
+    // Size of each chunk (number of tiles per side)
     private final int chunkSize;
+    // Map storing loaded chunks using "chunkX_chunkY" as key
     private final Map<String, Chunk> chunks;
+    // Reference to the main game panel
     private final GamePanel gp;
+    // Single-thread executor for background chunk loading
     private ExecutorService loader = Executors.newSingleThreadExecutor(); // private thread for load chunk
-
+    // Current map path
     public String pathMap = "map1"; 
 
     public ChunkManager(int chunkSize , GamePanel gp){
@@ -20,12 +29,18 @@ public class ChunkManager {
         this.chunks = new HashMap<>();
         this.gp = gp;
     }
-
+    // Generate a unique key for chunk coordinates
     private String chunkKey(int x, int y){
         return x + "_" + y;
     }
 
-    /** Load chunk from file (run in background) */
+    /**
+     * Load a chunk from file (runs in background thread)
+     * @param chunkX chunk X index
+     * @param chunkY chunk Y index
+     * @param pathMap map folder
+     * @return loaded Chunk or null if file not found/error
+     */
     private Chunk loadChunkFromFile(int chunkX, int chunkY, String pathMap){
         Chunk c = new Chunk(chunkX, chunkY, chunkSize);
         try {
@@ -64,7 +79,9 @@ public class ChunkManager {
         }
     }
 
-    /** Load chunk asynchronous */
+    /**
+     * Load chunk asynchronously (non-blocking)
+     */
     public void loadChunkAsync(int chunkX, int chunkY , String pathMap){
         String key = chunkKey(chunkX, chunkY);
         synchronized (chunks) {
@@ -84,7 +101,9 @@ public class ChunkManager {
         });
     }
 
-    /** clear chunks that is too far */
+    /**
+     * Unload chunks that are far outside the visible area
+     */
     private void unloadFarChunks(int left, int right, int top, int bottom){
         synchronized (chunks) {
             chunks.entrySet().removeIf(e -> {
@@ -95,7 +114,11 @@ public class ChunkManager {
         }
     }
 
-    /** Update chunks around player */
+    /**
+     * Update chunks around the player: load visible chunks and unload distant chunks
+     * @param playerWorldX player's world X coordinate
+     * @param playerWorldY player's world Y coordinate
+     */
     public void updateChunks(int playerWorldX, int playerWorldY){
         int buffer = gp.tileSize * (chunkSize / 2);
 
@@ -128,14 +151,14 @@ public class ChunkManager {
         }
     }
 
-    /** get active chunks  */
+     /** Get currently active chunks (returns a copy to avoid concurrent modification) */
     public Iterable<Chunk> getActiveChunks(){
         synchronized (chunks) {
-            return new HashMap<>(chunks).values(); // trả về bản copy để tránh ConcurrentModificationException
+            return new HashMap<>(chunks).values(); 
         }
     }
 
-    /** end chunk's thread if end game */
+    /** Shutdown the background loader thread */
     public void shutdown(){
         loader.shutdownNow();
     }

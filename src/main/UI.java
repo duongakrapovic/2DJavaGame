@@ -78,7 +78,7 @@ public class UI {
         touchMessage = text;
         touchMessageOn = true;
         
-        // print posision will be higher than object a little as 10 pixel
+        // print posision will be higher than entity a little as 10 pixel
         messPosX = obj.worldX - gp.em.getPlayer().worldX + gp.em.getPlayer().screenX;
         messPosY = obj.worldY - gp.em.getPlayer().worldY + gp.em.getPlayer().screenY - 10;
     }

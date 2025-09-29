@@ -8,22 +8,38 @@ import java.awt.Rectangle;
 
 import entity.Entity;
 import main.GamePanel;
-
+/**
+ * NPC_Frog.java
+ * Represents a frog NPC in the game.
+ * Stationary enemy or interactable character with basic animation.
+ */
 public class NPC_Frog extends Entity{
+    // Reference to main GamePanel
     GamePanel gp;
+    /**
+     * Constructor: initializes frog NPC with size, images, collision, and animation settings.
+     * @param gp Reference to the main GamePanel
+     * @param mapIndex Index of the map where this NPC is placed
+     */
     public NPC_Frog(GamePanel gp,int mapIndex){
         super(gp);
         this.gp = gp;
         this.mapIndex = mapIndex;
+        // NPC name
         name = "frog" ;
+        // Set size equal to one tile
         width = gp.tileSize;
-        height = gp.tileSize;    
+        height = gp.tileSize;
+        // Load images for all directions
         getImage();    
-        
+        // Enable collision and animation
         collision = true;
         animationON = true;
+        
+        // Stationary by default
         actualSpeed = 0 ;
         
+        // Define solid area for collision detection
         solidArea = new Rectangle();
         solidArea.x = 3 ;
         solidArea.y = 18 ;
@@ -32,6 +48,9 @@ public class NPC_Frog extends Entity{
         solidAreaDefaultX = solidArea.x ;
         solidAreaDefaultY = solidArea.y ;       
     }
+    /**
+     * Load images for all directions and animation frames.
+     */
     private void getImage(){
         up1 = setup("/npc/frog1" , width , height) ;
         up2 = setup("/npc/frog2" , width ,  height) ;
