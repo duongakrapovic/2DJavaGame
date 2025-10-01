@@ -1,29 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// PlayerAnimation.java
 package player_manager;
 
 public class PlayerAnimation {
-    private final Player player;
-    private int counter = 0;
+    private final Player p;
+    private int frameDelay = 8;
 
-    public PlayerAnimation(Player player){this.player = player;}
+    public PlayerAnimation(Player p) { this.p = p; }
 
-    public void update(boolean isMoving){
-        if(isMoving){
-            counter++;
-            if(counter > 8){
-                player.spriteNum = (player.spriteNum==1) ? 2 : 1;
-                counter = 0;
+    // nhận trạng thái từ Player, không chạm combat trực tiếp
+    public void update(boolean moving, boolean attacking, int attackPhase) {
+        // ví dụ flip 1-2 cho chạy/đánh
+        if (attacking) {
+            p.spriteCounter++;
+            if (p.spriteCounter > frameDelay) {
+                p.spriteNum = (p.spriteNum == 1 ? 2 : 1);
+                p.spriteCounter = 0;
+            }
+            return;
+        }
+
+        if (moving) {
+            p.spriteCounter++;
+            if (p.spriteCounter > frameDelay) {
+                p.spriteNum = (p.spriteNum == 1 ? 2 : 1);
+                p.spriteCounter = 0;
             }
         } else {
-            counter++;
-            if(counter > 15){
-                counter = 0;
-                player.spriteNum = 1;
-            }
+            p.spriteNum = 1; // đứng yên
         }
     }
 }
-

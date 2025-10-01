@@ -8,7 +8,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener, InputController{
     public boolean  down, left, right, up;
-    public boolean pick;
+    public boolean pick ,attack;
 
     // default must be public 
     @Override
@@ -29,7 +29,7 @@ public class KeyHandler implements KeyListener, InputController{
         if( code == KeyEvent.VK_D){right = true;}
             
         if( code == KeyEvent.VK_F){pick = true;}
-        
+        if (code == KeyEvent.VK_J){attack = true; }
     }
     @Override
     public void keyReleased(KeyEvent e){
@@ -43,7 +43,7 @@ public class KeyHandler implements KeyListener, InputController{
         if( code == KeyEvent.VK_D){right = false;} 
         
         if( code == KeyEvent.VK_F){pick = false;}
-       
+        if (code == KeyEvent.VK_J){attack = false;}
     }
     
     @Override
@@ -56,4 +56,5 @@ public class KeyHandler implements KeyListener, InputController{
     public boolean isRightPressed() {return right;}
     @Override
     public boolean isPicked(){return pick;}
+    public boolean isAttackPressed(){return attack;}
 }

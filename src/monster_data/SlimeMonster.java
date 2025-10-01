@@ -14,7 +14,7 @@ import main.GamePanel;
  * Represents a green slime monster in the game.
  * Simple moving enemy with basic animation and collision.
  */
-public class SlimeMonster extends Entity {
+public class SlimeMonster extends Monster {
     // Reference to main GamePanel
     GamePanel gp;
     /**
@@ -47,7 +47,8 @@ public class SlimeMonster extends Entity {
         solidArea.height = 30 ;
         solidAreaDefaultX = solidArea.x ;
         solidAreaDefaultY = solidArea.y ;
-        
+
+        setStats(10, 2, 0);
     }
     /**
      * Load images for all directions and animation frames.

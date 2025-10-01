@@ -44,7 +44,8 @@ public class GamePanel extends JPanel{
     // OTHERS
     public CollisionChecker cChecker;// xu ly tach 1 class khac 
     public UtilityTool uTool = new UtilityTool();// vut 
-        
+    public int frameCounter = 0;
+
     //ENTITY MANAGER
     public EntityManager em;
    
@@ -132,7 +133,11 @@ public class GamePanel extends JPanel{
 //        long drawEnd = System.nanoTime();
 //        long passed = drawEnd - drawStart;
 //        System.out.println(passed);
-        
+        //Frame Counter
+        frameCounter++;
+        if (frameCounter >= 1000000) { // tránh tràn số
+            frameCounter = 0;
+        }
         g2.dispose();
     }
 }
