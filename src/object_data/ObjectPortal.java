@@ -22,7 +22,6 @@ public class ObjectPortal extends Entity{
      */
     public ObjectPortal( GamePanel gp,int mapIndex){
         super(gp);
-        this.gp = gp;
         this.mapIndex = mapIndex;
         // Object name
         name = "portal";

@@ -22,7 +22,6 @@ public class ObjectBoots extends Entity {
      */
     public ObjectBoots(GamePanel gp,int mapIndex){
         super(gp);
-        this.gp = gp;
         this.mapIndex = mapIndex;
         // Object name
         name = "boots";

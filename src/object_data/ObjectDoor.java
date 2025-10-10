@@ -21,7 +21,6 @@ public class ObjectDoor extends Entity{
      */
     public ObjectDoor( GamePanel gp,int mapIndex){
         super(gp);
-        this.gp = gp;
         this.mapIndex = mapIndex;
         
         // Object name
