@@ -12,14 +12,11 @@ public abstract class Monster extends Entity {
     }
 
     @Override
-    protected void onDamaged(int dmg) {
-        // hiệu ứng bị đánh
-        if (isDead()) {
-            onDeath();
-        }
+    public void onDamaged(int damage) {
+        // hiệu ứng khi quái bị trúng đòn: flash, drop, âm thanh...
     }
 
-    protected void onDeath() {
+    public void onDeath() {
         // drop đồ/exp ở đây
     }
 }

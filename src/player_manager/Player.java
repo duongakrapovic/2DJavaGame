@@ -81,9 +81,10 @@ public class Player extends Entity {
 
         // combat
         handleAttackInput();
-        CombatSystem.update(combat, this); // tick pha tấn công
-        updateCombatTick();                // knockback + i-frame
+        // ⬇️ GỘP: phase tấn công + i-frame + knockback
+        CombatSystem.tick(this);
     }
+
 
     /** Draw the player on the screen with proper sprite */
     @Override

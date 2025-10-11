@@ -2,18 +2,25 @@ package combat;
 
 import entity.Entity;
 
-/** Bộ xử lý sát thương – bọc lệnh gây damage/knockback/i-frame. */
 public final class DamageProcessor {
-    private DamageProcessor() {}
+    private DamageProcessor(){}
 
-    /**
-     * Áp dụng sát thương lên target:
-     * - Tự trừ máu (tối thiểu 1 sau DEF)
-     * - Kích hoạt i-frame theo cấu hình của target
-     * - Áp dụng knockback (nếu kx, ky != 0)
-     */
     public static void applyDamage(Entity target, int rawDamage, int knockbackX, int knockbackY) {
-        if (target == null) return;
-        target.takeDamage(rawDamage, knockbackX, knockbackY);
+        if (target == null || target.isDead() || target.isInvulnerable()) return;
+
+        int damage = Math.max(1, rawDamage - target.getDEF());
+
+        // trừ HP
+        target.reduceHP(damage);
+
+        // i-frame
+        target.setInvulnerable(true);
+        target.setInvulnCounter(target.getInvulnFrames());
+
+        // knockback
+        target.applyKnockback(knockbackX, knockbackY, target.getKnockbackFrames());
+
+        // hook hiệu ứng riêng
+        target.onDamaged(damage);
     }
 }

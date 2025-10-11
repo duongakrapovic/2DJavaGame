@@ -3,15 +3,13 @@ package entity;
 import combat.CombatComponent;
 import combat.CombatContext;
 import combat.CombatSystem;
+import combat.DamageProcessor;   // <- dùng để delegate takeDamage
 import main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-/**
- * Base class for all world entities (player, monsters, NPCs).
- * Implements CombatContext so CombatSystem can compute attack boxes.
- */
+/** Base class for all world entities (player, monsters, NPCs). */
 public class Entity implements CombatContext {
 
     // --- world/screen ---
@@ -76,10 +74,8 @@ public class Entity implements CombatContext {
         this.esm = new EntitySpriteManager();
         this.ed  = new EntityDraw(gp);
 
-        // Combat component thay cho EntityCombat
         this.combat = new CombatComponent();
-        // Dùng chung Rectangle cho attackBox để code vẽ/va chạm cũ không phải đổi nhiều
-        this.attackBox = combat.getAttackBox();
+        this.attackBox = combat.getAttackBox(); // dùng chung rect để code vẽ cũ không phải đổi
     }
 
     // -------- stats ----------
@@ -93,73 +89,56 @@ public class Entity implements CombatContext {
     public int  getMaxHP()  { return maxHp; }
     public int  getATK()    { return atk; }
     public int  getDEF()    { return def; }
+
+    // Cho hệ thống giảm HP
+    public void reduceHP(int amount) { hp = Math.max(0, hp - Math.max(0, amount)); }
+
+    // i-frame config
     public void setInvulnFrames(int frames) { invulnFrames = Math.max(0, frames); }
     public int  getInvulnFrames() { return invulnFrames; }
 
-    // -------- knockback / life ----------
-    @Override
-    public boolean isDead() { return hp <= 0; }  // implements CombatContext.isDead()
+    // trạng thái sống/chết
+    @Override public boolean isDead() { return hp <= 0; }
 
-    public boolean isInvulnerable() { return invulnerable; }
+    // i-frame state (để CombatSystem cập nhật)
+    public boolean isInvulnerable()           { return invulnerable; }
+    public void    setInvulnerable(boolean v) { invulnerable = v; }
+    public int     getInvulnCounter()         { return invulnCounter; }
+    public void    setInvulnCounter(int v)    { invulnCounter = v; }
 
+    // knockback API (để CombatSystem cập nhật)
     public void applyKnockback(int kbX, int kbY, int durationFrames) {
-        this.velX = kbX;
-        this.velY = kbY;
-        this.knockbackCounter = durationFrames;
+        velX = kbX; velY = kbY; knockbackCounter = durationFrames;
     }
+    public int  getKnockbackCounter()      { return knockbackCounter; }
+    public void setKnockbackCounter(int v) { knockbackCounter = v; }
+    public int  getKnockbackFrames()       { return knockbackFrames; }
+    public boolean isKnockbackActive()     { return knockbackCounter > 0; }
 
-    public boolean isKnockbackActive() { return knockbackCounter > 0; }
-
-    // -------- tick chuẩn ----------
+    // -------- game tick ----------
     public void update() {
         if (!isKnockbackActive()) {
             emo.setAction(this);
             emo.move(this);
         }
 
-        // Combat phase (thay cho combat.update() của bản cũ)
-        CombatSystem.update(combat, this);
+        // Combat phase + i-frame + knockback (gói gọn trong CombatSystem)
+        CombatSystem.tick(this);
 
+        // sprite
         esm.updateSprite(this);
-        updateCombatTick();
     }
 
     public void draw(Graphics2D g2) { ed.draw(g2, this); }
+    public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
 
-    public BufferedImage setup(String path, int w, int h) {
-        return esm.setup(path, w, h);
-    }
-
-    // -------- nhận sát thương (được gọi bởi DamageProcessor / EntityManager) ----------
+    // -------- nhận sát thương: chỉ delegate sang hệ thống ----------
     public void takeDamage(int rawDamage, int knockbackX, int knockbackY) {
-        if (invulnerable || isDead()) return;
-
-        int damage = Math.max(1, rawDamage - def);
-        hp = Math.max(0, hp - damage);
-
-        // i-frame
-        invulnerable  = true;
-        invulnCounter = invulnFrames;
-
-        // knockback
-        applyKnockback(knockbackX, knockbackY, knockbackFrames);
-
-        onDamaged(damage); // hook override ở Player/Monster nếu cần
+        DamageProcessor.applyDamage(this, rawDamage, knockbackX, knockbackY);
     }
 
-    protected void onDamaged(int damage) {}
-
-    public void updateCombatTick() {
-        // i-frames
-        if (invulnerable && --invulnCounter <= 0) invulnerable = false;
-
-        // knockback motion
-        if (knockbackCounter > 0) {
-            worldX += velX;
-            worldY += velY;
-            if (--knockbackCounter <= 0) { velX = 0; velY = 0; }
-        }
-    }
+    // Hook cho hiệu ứng riêng khi dính đòn (override ở Player/Monster nếu cần)
+    public void onDamaged(int damage) {}
 
     // ===== CombatContext implementation =====
     @Override public int getWorldX() { return worldX; }
