@@ -1,104 +1,215 @@
 package combat;
 
 import entity.Entity;
+import monster_data.Monster;
+import player_manager.Player;
+
 import java.awt.Rectangle;
+import java.util.List;
 
 public final class CombatSystem {
     private CombatSystem() {}
 
     // --------- API công khai (đọc trạng thái) ----------
-    public static boolean isAttacking(CombatComponent cc)   { return cc.isAttacking(); }
-    public static int     getPhase(CombatComponent cc)      { return cc.getAttackPhase(); }
-    public static boolean isAttackActive(CombatComponent cc) { return cc.isAttackActive(); }
+    public static boolean isAttacking(CombatComponent cc)     { return cc.isAttacking(); }
+    public static int     getPhase(CombatComponent cc)        { return cc.getAttackPhase(); }
+    public static boolean isAttackActive(CombatComponent cc)  { return cc.isAttackActive(); }
 
     public static boolean canStartAttack(CombatComponent cc) {
         return !cc.isAttacking() && cc.getCooldownCounterFrames() == 0;
     }
 
     public static void startAttack(CombatComponent cc, CombatContext owner) {
-        // Nếu đã chết thì không cho bắt đầu
-        if (owner.isDead()) return; // << thêm
+        if (owner == null || owner.isDead()) return;
+        if (cc.getAttackWidth() <= 0 || cc.getAttackHeight() <= 0) return;
+
         cc.setIsAttacking(true);
         cc.setAttackPhaseInternal(1); // windup
         cc.setPhaseTimerFrames(cc.getWindupFrames());
         updateAttackBoxToOwnerFacing(cc, owner);
+        cc.clearHitThisSwing(); // chuẩn bị swing mới
     }
 
     public static void update(CombatComponent cc, CombatContext owner) {
-        // Nếu owner chết: tắt hẳn trạng thái tấn công và hitbox
-        if (owner.isDead()) { // << thêm
+        if (owner == null || owner.isDead()) {
             cc.setIsAttacking(false);
             cc.setAttackPhaseInternal(0);
             cc.setCooldownCounterFrames(0);
             cc.getAttackBox().setBounds(0, 0, 0, 0);
+            cc.clearHitThisSwing();
             return;
         }
 
-        // hồi chiêu
-        if (cc.getCooldownCounterFrames() > 0) {
-            cc.setCooldownCounterFrames(Math.max(0, cc.getCooldownCounterFrames() - 1)); // << clamp
-        }
+        // cooldown
+
+        int cd = cc.getCooldownCounterFrames();
+        if (cd > 0) cc.setCooldownCounterFrames(Math.max(0, cd - 1));
 
         if (!cc.isAttacking()) return;
 
-        // đếm lùi phase
-        cc.setPhaseTimerFrames(Math.max(0, cc.getPhaseTimerFrames() - 1)); // << clamp
-        if (cc.getPhaseTimerFrames() > 0) return;
+        if (cc.getAttackPhase() == 2) {
+            updateAttackBoxToOwnerFacing(cc, owner);
+        }
+
+        // phase counter
+        int timer = Math.max(0, cc.getPhaseTimerFrames() - 1);
+        cc.setPhaseTimerFrames(timer);
+        if (timer > 0) return;
 
         int phase = cc.getAttackPhase();
         if (phase == 1) { // Windup -> Active
             cc.setAttackPhaseInternal(2);
             cc.setPhaseTimerFrames(cc.getActiveFrames());
             updateAttackBoxToOwnerFacing(cc, owner);
+            cc.clearHitThisSwing();
         } else if (phase == 2) { // Active -> Recover
             cc.setAttackPhaseInternal(3);
             cc.setPhaseTimerFrames(cc.getRecoverFrames());
-            cc.getAttackBox().setBounds(0, 0, 0, 0); // clear khi sang recover
+            cc.getAttackBox().setBounds(0, 0, 0, 0);
+            cc.clearHitThisSwing();
         } else { // Recover -> End
             cc.setIsAttacking(false);
             cc.setAttackPhaseInternal(0);
             cc.setCooldownCounterFrames(cc.getCooldownFrames());
-            cc.getAttackBox().setBounds(0, 0, 0, 0); // << đảm bảo clear
+            cc.getAttackBox().setBounds(0, 0, 0, 0);
+            cc.clearHitThisSwing();
         }
     }
 
+    // attack box counting
     public static void updateAttackBoxToOwnerFacing(CombatComponent cc, CombatContext owner) {
         Rectangle body = owner.getSolidArea();
         int boxX = owner.getWorldX() + body.x;
         int boxY = owner.getWorldY() + body.y;
 
-        switch (owner.getDirection()) {
-            case "up":    boxY -= cc.getAttackHeight(); break;
-            case "down":  boxY += body.height;          break;
-            case "left":  boxX -= cc.getAttackWidth();  break;
-            default:      boxX += body.width;           break; // "right" hoặc null
+        String dir = owner.getDirection();
+        if ("up".equals(dir)) {
+            boxY -= cc.getAttackHeight();
+        } else if ("down".equals(dir)) {
+            boxY += body.height;
+        } else if ("left".equals(dir)) {
+            boxX -= cc.getAttackWidth();
+        } else { // right (mặc định)
+            boxX += body.width;
         }
         cc.getAttackBox().setBounds(boxX, boxY, cc.getAttackWidth(), cc.getAttackHeight());
     }
-
+    // mark hit
+    public static boolean wasHitThisSwing(CombatComponent cc, Object target) {
+        return cc.wasHitThisSwing(target);
+    }
     public static void markHitLanded(CombatComponent cc, Object target) {
-        // chỗ này bạn có thể lưu Set<Object> nếu muốn chống multi-hit
+        cc.markHit(target);
     }
 
+    // i -frames
     /** Cập nhật i-frame & knockback mỗi frame. */
     public static void updateStatus(Entity e) {
+        if (e == null) return;
+
+        // i-frames
         if (e.isInvulnerable()) {
-            int c = e.getInvulnCounter() - 1;
-            e.setInvulnCounter(Math.max(0, c));                 // << clamp
-            if (c <= 0) e.setInvulnerable(false);
+            int next = e.getInvulnCounter() - 1;
+            if (next <= 0) {
+                e.setInvulnCounter(0);
+                e.setInvulnerable(false);
+            } else {
+                e.setInvulnCounter(next);
+            }
         }
-        if (e.getKnockbackCounter() > 0) {
+
+        // knockback
+        int kb = e.getKnockbackCounter();
+        if (kb > 0) {
             e.worldX += e.velX;
             e.worldY += e.velY;
-            int k = e.getKnockbackCounter() - 1;
-            e.setKnockbackCounter(Math.max(0, k));              // << clamp
-            if (k <= 0) { e.velX = 0; e.velY = 0; }
+            int next = kb - 1;
+            if (next <= 0) {
+                e.setKnockbackCounter(0);
+                e.velX = 0;
+                e.velY = 0;
+            } else {
+                e.setKnockbackCounter(next);
+            }
         }
     }
 
-    /** Tick tổng hợp: combat phase + status (i-frame/knockback). */
     public static void tick(Entity e) {
         update(e.combat, e);
         updateStatus(e);
+    }
+
+   // KnockBack
+    public static int[] computePlayerAttackKnockback(Player p) {
+        int force = 8; // px/frame
+        String dir = p.direction;
+        if ("up".equals(dir))    return new int[] { 0, -force };
+        if ("down".equals(dir))  return new int[] { 0,  force };
+        if ("left".equals(dir))  return new int[] { -force, 0 };
+        return new int[] { force, 0 }; // right
+    }
+
+    // touch to hit for Monsetr
+    public static void resolvePlayerHits(Player player, List<Entity> monsters) {
+        if (player == null) return;
+        if (!isAttackActive(player.combat)) return;
+
+        Rectangle attack = player.combat.getAttackBox();
+        if (attack == null || attack.width <= 0 || attack.height <= 0) return;
+
+        int rawDamage = Math.max(1, player.getATK());
+        int[] knockback = computePlayerAttackKnockback(player); // {kx, ky}
+
+        for (Entity e : monsters) {
+            if (!(e instanceof Monster)) continue;
+            Monster m = (Monster) e;
+            if (m.isDead()) continue;
+
+            Rectangle monsterBody = CollisionUtil.getEntityBodyWorldRect(m);
+            if (attack.intersects(monsterBody)) {
+                // use markhit to avoid multi hit
+                if (!wasHitThisSwing(player.combat, m)) {
+                    DamageProcessor.applyDamage(m, rawDamage, knockback[0], knockback[1]);
+                    markHitLanded(player.combat, m);
+                }
+            }
+        }
+    }
+
+    /** Thân Player chạm thân quái → Player nhận sát thương/knockback. */
+    public static void resolveMonsterContacts(Player player, List<Entity> monsters) {
+        if (player == null || player.isDead()) return;
+
+        Rectangle playerBody = CollisionUtil.getEntityBodyWorldRect(player);
+
+        // Nới 1px để “chạm mép” cũng tính
+        Rectangle playerContact = new Rectangle(playerBody);
+        playerContact.grow(1, 1);
+
+        for (Entity e : monsters) {
+            if (!(e instanceof Monster)) continue;
+            Monster m = (Monster) e;
+            if (m.isDead()) continue;
+
+            Rectangle monsterBody = CollisionUtil.getEntityBodyWorldRect(m);
+            if (playerContact.intersects(monsterBody)) {
+                if (!player.isInvulnerable()) {
+                    int raw = Math.max(1, m.getATK());
+
+                    // Knockback từ quái -> player (dựa trên tâm)
+                    int pcx = playerBody.x + playerBody.width  / 2;
+                    int pcy = playerBody.y + playerBody.height / 2;
+                    int mcx = monsterBody.x + monsterBody.width  / 2;
+                    int mcy = monsterBody.y + monsterBody.height / 2;
+
+                    int kx = Integer.compare(pcx, mcx) * 6;
+                    int ky = Integer.compare(pcy, mcy) * 6;
+
+                    player.takeDamage(raw, kx, ky);
+                    System.out.println("[CONTACT DMG] " + m.name + " -> Player HP="
+                            + player.getHP() + "/" + player.getMaxHP());
+                }
+            }
+        }
     }
 }

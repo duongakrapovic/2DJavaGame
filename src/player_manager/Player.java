@@ -13,8 +13,8 @@ import java.awt.image.BufferedImage;
 
 public class Player extends Entity {
 
-    public int hasKey = 0;      // số chìa đang giữ
-    int speedTimer = 0;         // đếm ngược buff tốc
+    public int hasKey = 0;
+    int speedTimer = 0;
 
     // managers
     public Interact iR;
@@ -31,7 +31,7 @@ public class Player extends Entity {
         this.iR = new Interact(gp, this, input);
         this.input = input;
 
-        // Collision box mặc định
+        // default collision hitbox
         solidArea = new Rectangle(11, 16, 25, 25);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -44,13 +44,12 @@ public class Player extends Entity {
         pm = new PlayerMovement(this, gp);
         pa = new PlayerAnimation(this);
 
-        // ---- Combat config (dùng CombatComponent mới) ----
+        // ---- Combat config
         combat.setAttackBoxSize(36, 36);           // kích thước hitbox
         combat.setTimingFrames(4, 6, 8, 10);       // windup, active, recover, cooldown
         setStats(10, 3, 1);                        // maxHp, atk, def
     }
 
-    /** Set default values for position, speed, direction, and animation */
     public void setDefaultValues() {
         // trung tâm chunk
         worldX = gp.tileSize * gp.chunkSize / 2;
@@ -62,36 +61,29 @@ public class Player extends Entity {
         animationON = true;
     }
 
-    /** Update player's state, movement, collision, and interactions */
     @Override
     public void update() {
         int[] delta = pm.calculateMovement();
         pm.move(delta[0], delta[1]);
 
-        // cập nhật animation dựa trên trạng thái combat mới
+        // update animation
         pa.update(
                 pm.isMoving(),
                 CombatSystem.isAttacking(combat),
                 CombatSystem.getPhase(combat)
         );
 
-        // Speed buff timer
         if (speedTimer > 0) speedTimer--;
         if (speedTimer == 0) actualSpeed = defaultSpeed;
 
-        // combat
         handleAttackInput();
-        // ⬇️ GỘP: phase tấn công + i-frame + knockback
         CombatSystem.tick(this);
     }
-
-
-    /** Draw the player on the screen with proper sprite */
     @Override
     public void draw(Graphics2D g2) {
         if (isInvulnerable()) {
-            int fc = gp.frameCounter;            // cần biến frameCounter trong GamePanel
-            boolean visible = (fc / 6) % 2 == 0; // nháy 6 frame
+            int fc = gp.frameCounter;
+            boolean visible = (fc / 6) % 2 == 0;
             if (!visible) return;
         }
 
@@ -128,11 +120,11 @@ public class Player extends Entity {
 
         g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-        // debug: vẽ body rect
+        // debug: body rect
         g2.setColor(Color.red);
         g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 
-        // debug: vẽ attack box khi Active (world -> screen)
+        // debug: attackBox
         if (CombatSystem.isAttackActive(combat)) {
             Rectangle atk = combat.getAttackBox();
             if (atk.width > 0 && atk.height > 0) {

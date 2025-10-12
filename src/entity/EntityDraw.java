@@ -23,7 +23,7 @@ public class EntityDraw {
            e.worldY + gp.tileSize > gp.em.getPlayer().worldY - gp.em.getPlayer().screenY &&
            e.worldY - gp.tileSize < gp.em.getPlayer().worldY + gp.em.getPlayer().screenY){
             // only draw if object in the right area
-            // i dont know how to apply culling methot same as the movement 
+            // i dont know how to apply culling method same as the movement
             
             BufferedImage image = null;
             if(e.animationON == true){

@@ -10,7 +10,7 @@ public final class DamageProcessor {
 
         int damage = Math.max(1, rawDamage - target.getDEF());
 
-        // trừ HP
+        // reduceHP
         target.reduceHP(damage);
 
         // i-frame
@@ -20,7 +20,7 @@ public final class DamageProcessor {
         // knockback
         target.applyKnockback(knockbackX, knockbackY, target.getKnockbackFrames());
 
-        // hook hiệu ứng riêng
+        // hook effect (sound , sfx .. )
         target.onDamaged(damage);
     }
 }

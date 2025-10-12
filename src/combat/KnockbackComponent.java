@@ -1,8 +1,6 @@
 package combat;
 
 import entity.Entity;
-
-/** Tiện ích áp knockback – để sau này tách khỏi Entity nếu cần. */
 public final class KnockbackComponent {
     private KnockbackComponent() {}
 

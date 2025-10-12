@@ -90,23 +90,17 @@ public class Entity implements CombatContext {
     public int  getATK()    { return atk; }
     public int  getDEF()    { return def; }
 
-    // Cho hệ thống giảm HP
     public void reduceHP(int amount) { hp = Math.max(0, hp - Math.max(0, amount)); }
-
-    // i-frame config
     public void setInvulnFrames(int frames) { invulnFrames = Math.max(0, frames); }
     public int  getInvulnFrames() { return invulnFrames; }
 
-    // trạng thái sống/chết
     @Override public boolean isDead() { return hp <= 0; }
 
-    // i-frame state (để CombatSystem cập nhật)
     public boolean isInvulnerable()           { return invulnerable; }
     public void    setInvulnerable(boolean v) { invulnerable = v; }
     public int     getInvulnCounter()         { return invulnCounter; }
     public void    setInvulnCounter(int v)    { invulnCounter = v; }
 
-    // knockback API (để CombatSystem cập nhật)
     public void applyKnockback(int kbX, int kbY, int durationFrames) {
         velX = kbX; velY = kbY; knockbackCounter = durationFrames;
     }
@@ -115,7 +109,6 @@ public class Entity implements CombatContext {
     public int  getKnockbackFrames()       { return knockbackFrames; }
     public boolean isKnockbackActive()     { return knockbackCounter > 0; }
 
-    // -------- game tick ----------
     public void update() {
         if (!isKnockbackActive()) {
             emo.setAction(this);
@@ -132,15 +125,12 @@ public class Entity implements CombatContext {
     public void draw(Graphics2D g2) { ed.draw(g2, this); }
     public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
 
-    // -------- nhận sát thương: chỉ delegate sang hệ thống ----------
     public void takeDamage(int rawDamage, int knockbackX, int knockbackY) {
         DamageProcessor.applyDamage(this, rawDamage, knockbackX, knockbackY);
     }
 
-    // Hook cho hiệu ứng riêng khi dính đòn (override ở Player/Monster nếu cần)
     public void onDamaged(int damage) {}
 
-    // ===== CombatContext implementation =====
     @Override public int getWorldX() { return worldX; }
     @Override public int getWorldY() { return worldY; }
     @Override public Rectangle getSolidArea() {

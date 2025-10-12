@@ -3,32 +3,31 @@ package combat;
 import entity.Entity;
 import java.awt.Rectangle;
 
-/** Tiện ích va chạm: trả về body-rectangle ở tọa độ world. */
 public final class CollisionUtil {
     private CollisionUtil() {}
+    public static Rectangle getEntityBodyWorldRect(Entity e) {
+        if (e == null) return new Rectangle(0, 0, 0, 0);
+        final int offX = (e.solidArea != null) ? e.solidArea.x : 0;
+        final int offY = (e.solidArea != null) ? e.solidArea.y : 0;
+        final int w    = Math.max(0, (e.solidArea != null) ? e.solidArea.width  : Math.max(1, e.width));
+        final int h    = Math.max(0, (e.solidArea != null) ? e.solidArea.height : Math.max(1, e.height));
 
-    /** Body rect của một Entity theo world-space. */
-    public static Rectangle getEntityBodyWorldRect(Entity entity) {
-        if (entity == null) return null;
-        Rectangle solid = (entity.solidArea != null)
-                ? entity.solidArea
-                : new Rectangle(0, 0, Math.max(1, entity.width), Math.max(1, entity.height));
+        return new Rectangle(e.worldX + offX, e.worldY + offY, w, h);
+    }
+
+    public static Rectangle getContextBodyWorldRect(CombatContext ctx) {
+        if (ctx == null) return new Rectangle(0, 0, 0, 0);
+
+        Rectangle sa = ctx.getSolidArea();
+        int offX = (sa != null) ? sa.x : 0;
+        int offY = (sa != null) ? sa.y : 0;
+        int w    = Math.max(0, (sa != null) ? sa.width  : 1);
+        int h    = Math.max(0, (sa != null) ? sa.height : 1);
         return new Rectangle(
-                entity.worldX + solid.x,
-                entity.worldY + solid.y,
-                solid.width,
-                solid.height
+                ctx.getWorldX() + offX,
+                ctx.getWorldY() + offY,
+                w, h
         );
     }
 
-    /** Body rect từ một CombatContext theo world-space. */
-    public static Rectangle getContextBodyWorldRect(CombatContext context) {
-        Rectangle solid = context.getSolidArea();
-        return new Rectangle(
-                context.getWorldX() + solid.x,
-                context.getWorldY() + solid.y,
-                solid.width,
-                solid.height
-        );
-    }
 }
