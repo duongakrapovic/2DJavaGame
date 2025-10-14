@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package player_manager;
 
 import main.GamePanel;
+import object_data.WorldObject; // chỉ để rõ ràng; không dùng trực tiếp cũng OK
 
 public class PlayerInteractor {
     private final Player player;
@@ -17,7 +14,17 @@ public class PlayerInteractor {
 
     public void allCheck(int nextX, int nextY){
         gp.cChecker.checkTile(player, nextX, nextY);
-        int objIndex = gp.cChecker.checkEntity(player, gp.em.getObjects(gp.currentMap), nextX, nextY);
+
+        // TÍNH delta từ vị trí hiện tại -> vị trí kế tiếp
+        int dx = nextX - player.worldX;
+        int dy = nextY - player.worldY;
+
+        // DÙNG API MỚI cho object (WorldObject)
+        int objIndex = gp.cChecker.checkWorldObject(
+                player,
+                gp.em.getWorldObjects(gp.currentMap),
+                dx, dy
+        );
         player.iR.InteractObject(objIndex);
 
         int monsterIndex = gp.cChecker.checkEntity(player, gp.em.getMonsters(gp.currentMap), nextX, nextY);
@@ -27,4 +34,3 @@ public class PlayerInteractor {
         player.iR.InteractNPC(npcIndex);
     }
 }
-

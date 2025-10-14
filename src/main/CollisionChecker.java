@@ -1,13 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package main;
 
-import java.util.List;
-
 import entity.Entity;
+import object_data.WorldObject;
 import tile.Chunk;
+
+import java.awt.Rectangle;
+import java.util.List;
 
 public class CollisionChecker {
 
@@ -128,5 +126,47 @@ public class CollisionChecker {
         gp.em.getPlayer().solidArea.x = gp.em.getPlayer().solidAreaDefaultX; 
         gp.em.getPlayer().solidArea.y = gp.em.getPlayer().solidAreaDefaultY;
     }
+    // trả về index object chạm, hoặc 999 nếu không chạm
+    public int checkWorldObject(Entity mover, List<WorldObject> objects, int nextDX, int nextDY) {
+        if (mover == null || objects == null || objects.isEmpty()) return 999;
+
+        Rectangle moverSolid = (mover.solidArea != null)
+                ? new Rectangle(mover.solidArea)
+                : new Rectangle(0, 0, Math.max(1, mover.width), Math.max(1, mover.height));
+
+        int nextWorldX = mover.worldX + nextDX;
+        int nextWorldY = mover.worldY + nextDY;
+
+        Rectangle moverNextBody = new Rectangle(
+                nextWorldX + moverSolid.x,
+                nextWorldY + moverSolid.y,
+                moverSolid.width,
+                moverSolid.height
+        );
+
+        for (int i = 0; i < objects.size(); i++) {
+            WorldObject obj = objects.get(i);
+            if (obj == null || obj.mapIndex != mover.mapIndex) continue;
+
+            Rectangle objSolid = (obj.solidArea != null)
+                    ? obj.solidArea
+                    : new Rectangle(0, 0, Math.max(1, obj.width), Math.max(1, obj.height));
+
+            Rectangle objBody = new Rectangle(
+                    obj.worldX + objSolid.x,
+                    obj.worldY + objSolid.y,
+                    objSolid.width,
+                    objSolid.height
+            );
+
+            if (moverNextBody.intersects(objBody)) {
+                // nếu object có collision=true thì chặn di chuyển
+                if (obj.collision) mover.collisionOn = true;
+                return i;
+            }
+        }
+        return 999;
+    }
+
 }
 
