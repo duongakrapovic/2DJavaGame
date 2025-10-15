@@ -3,7 +3,6 @@ package object_data;
 import java.awt.Rectangle;
 import main.GamePanel;
 
-/** Chìa khoá — có thể nhặt. */
 public class ObjectKey extends WorldObject {
 
     public ObjectKey(GamePanel gp, int mapIndex) {

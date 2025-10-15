@@ -4,10 +4,11 @@ import object_data.WorldObject;
 import object_data.ObjectKey;
 import object_data.ObjectDoor;
 import object_data.ObjectPortal;
-import entity.Entity;            // dùng để lấy player (worldX/Y, screenX/Y)
+import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class ObjectManager {
@@ -21,7 +22,7 @@ public class ObjectManager {
         spawnObjects();
     }
 
-    // ==== Khởi tạo vật phẩm mẫu ====
+    // ==== Khởi tạo mẫu ====
     private void spawnObjects() {
         // Map 0
         ObjectKey key = new ObjectKey(gp, 0);
@@ -62,9 +63,11 @@ public class ObjectManager {
 
     // ==== Tick ====
     public void update() {
-        for (WorldObject o : getObjects(gp.currentMap)) {
-            o.update();
-        }
+        update(gp.currentMap);
+    }
+
+    public void update(int mapId) {
+        for (WorldObject o : getObjects(mapId)) o.update();
     }
 
     /**
@@ -72,17 +75,19 @@ public class ObjectManager {
      * Gọi từ EntityManager.draw(g2) với player hiện tại.
      */
     public void draw(Graphics2D g2, Entity player) {
+        draw(g2, gp.currentMap, player);
+    }
+
+    public void draw(Graphics2D g2, int mapId, Entity player) {
         if (player == null) return;
 
-        final int leftWorld  = player.worldX - player.screenX - gp.tileSize;             // thêm đệm 1 tile
+        final int leftWorld  = player.worldX - player.screenX - gp.tileSize;
         final int rightWorld = player.worldX + (gp.screenWidth - player.screenX) + gp.tileSize;
         final int topWorld   = player.worldY - player.screenY - gp.tileSize;
         final int botWorld   = player.worldY + (gp.screenHeight - player.screenY) + gp.tileSize;
 
-        for (WorldObject o : getObjects(gp.currentMap)) {
-            if (o.staticImage == null) continue;
-
-            // culling thô: bỏ qua nếu object nằm ngoài camera nhiều
+        for (WorldObject o : getObjects(mapId)) {
+            // culling thô
             int ow = (o.width  > 0 ? o.width  : gp.tileSize);
             int oh = (o.height > 0 ? o.height : gp.tileSize);
             int ox2 = o.worldX + ow;
@@ -96,10 +101,22 @@ public class ObjectManager {
             int sx = o.worldX - player.worldX + player.screenX;
             int sy = o.worldY - player.worldY + player.screenY;
 
-            g2.drawImage(o.staticImage, sx, sy, null);
-            //  debug hitbox:
+            // hình vẽ (ưu tiên getRenderImage nếu object có animation)
+            BufferedImage img = null;
+            try {
+                img = o.getRenderImage(); // nếu WorldObject không có hàm này, dùng staticImage
+            } catch (NoSuchMethodError | Exception ignored) {
+                // bỏ qua, fallback xuống staticImage
+            }
+            if (img == null) img = o.staticImage;
+
+            if (img != null) g2.drawImage(img, sx, sy, null);
+
+            // debug hitbox (tuỳ bật/tắt)
+            /*
             g2.setColor(java.awt.Color.YELLOW);
             g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y, o.solidArea.width, o.solidArea.height);
+            */
         }
     }
 }

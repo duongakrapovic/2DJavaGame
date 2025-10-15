@@ -3,7 +3,6 @@ package object_data;
 import java.awt.Rectangle;
 import main.GamePanel;
 
-/** Rương — có thể mở lấy đồ. */
 public class ObjectChest extends WorldObject {
 
     public boolean opened = false;
@@ -24,7 +23,6 @@ public class ObjectChest extends WorldObject {
         solidAreaDefaultY = solidArea.y;
     }
 
-    /** Gọi khi mở rương (ví dụ từ Interact). */
     public void open() {
         if (opened) return;
         opened = true;

@@ -50,21 +50,28 @@ public class Interact {
                                 gp.ui.startFade(() -> {
                                     if ("map1".equals(gp.chunkM.pathMap)) {
                                         gp.chunkM.pathMap = "map2";
-                                        gp.chunkM.clearChunks();
-                                        gp.chunkM.updateChunks(player.worldX, player.worldY);
-                                        gp.ui.showMessage("Teleported to hell!");
+                                        gp.currentMap = 1;                         // <<< QUAN TRỌNG
                                     } else if ("map2".equals(gp.chunkM.pathMap)) {
                                         gp.chunkM.pathMap = "map1";
-                                        gp.chunkM.clearChunks();
-                                        gp.chunkM.updateChunks(player.worldX, player.worldY);
-                                        gp.ui.showMessage("Teleported to jungle!");
+                                        gp.currentMap = 0;                         // <<< QUAN TRỌNG
                                     }
+
+                                    // (khuyến nghị) đặt player tới portal của map mới
+                                    var destList = gp.em.getWorldObjects(gp.currentMap);
+                                    WorldObject dest = null;
+                                    for (var wo : destList) { if (wo != null && "portal".equals(wo.name)) { dest = wo; break; } }
+                                    if (dest != null) {
+                                        gp.em.getPlayer().worldX = dest.worldX;
+                                        gp.em.getPlayer().worldY = dest.worldY + gp.tileSize; // đứng ngay dưới cổng
+                                        gp.em.getPlayer().mapIndex = gp.currentMap;
+                                    }
+
+                                    gp.chunkM.clearChunks();
+                                    gp.chunkM.updateChunks(gp.em.getPlayer().worldX, gp.em.getPlayer().worldY);
+
+                                    gp.ui.showMessage("Teleported!");
                                 });
                             }
-                            break;
-
-                        default:
-                            // các object khác nếu có
                             break;
                     }
                 }

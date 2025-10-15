@@ -4,12 +4,17 @@ package object_data;
 import main.GamePanel;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-/** Cổng dịch chuyển – đồ vật (không combat). */
 public class ObjectPortal extends WorldObject {
 
-    // Tuỳ chọn: thông tin dịch chuyển
-    public int targetMap = 0;
+    // 2 frame animation
+    private BufferedImage f1, f2;
+    private int animCounter = 0;
+    private int frameDuration = 10; // số frame mỗi ảnh
+
+    // Thông tin dịch chuyển (bạn đang dùng ở constructor)
+    public int targetMap;
     public int targetWorldX;
     public int targetWorldY;
 
@@ -18,22 +23,36 @@ public class ObjectPortal extends WorldObject {
         this.mapIndex = mapIndex;
 
         name   = "portal";
-        width  = gp.tileSize;     // có thể chỉnh 2*tileSize nếu sprite lớn
-        height = gp.tileSize;
+        width  = gp.tileSize * 3/2;
+        height = gp.tileSize * 3/2;
 
-        // Đổi đường dẫn này cho đúng sprite của bạn
-        staticImage = setup("/object/portal", width, height);
+        // nạp 2 ảnh
+        f1 = setup("/object/portal1", width, height);
+        f2 = setup("/object/portal2", width, height);
+        staticImage = (f1 != null ? f1 : f2); // fallback
 
-        collision = false; // thường cho phép đi vào
+        collision = false;
 
-        // hitbox để player “bước vào” là hoạt động
         solidArea = new Rectangle(2, 2, width - 4, height - 4);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        // ví dụ thiết lập mặc định
-        targetMap = mapIndex; // ở nguyên map nếu bạn chưa dùng dịch chuyển map
+        // mặc định dịch chuyển (tùy bạn đổi)
+        targetMap = mapIndex;
         targetWorldX = 10 * gp.tileSize;
         targetWorldY = 10 * gp.tileSize;
+    }
+
+    @Override
+    public void update() {
+        animCounter++;
+    }
+
+    @Override
+    public BufferedImage getRenderImage() {
+        // chọn frame theo animCounter
+        int idx = (animCounter / frameDuration) % 2;
+        if (idx == 0) return (f1 != null ? f1 : f2);
+        return (f2 != null ? f2 : f1);
     }
 }

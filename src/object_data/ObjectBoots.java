@@ -3,7 +3,6 @@ package object_data;
 import java.awt.Rectangle;
 import main.GamePanel;
 
-/** Ủng — nhặt tăng tốc/chỉ số. */
 public class ObjectBoots extends WorldObject {
 
     public ObjectBoots(GamePanel gp, int mapIndex) {

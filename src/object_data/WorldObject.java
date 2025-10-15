@@ -62,4 +62,9 @@ public class WorldObject {
             return null;
         }
     }
+    // WorldObject.java
+    public BufferedImage getRenderImage() {
+        return staticImage;
+    }
+
 }

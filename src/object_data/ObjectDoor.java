@@ -3,7 +3,6 @@ package object_data;
 import java.awt.Rectangle;
 import main.GamePanel;
 
-/** Cánh cửa — thường có collision. */
 public class ObjectDoor extends WorldObject {
 
     public ObjectDoor(GamePanel gp, int mapIndex) {
