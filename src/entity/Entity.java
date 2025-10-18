@@ -3,11 +3,12 @@ package entity;
 import combat.CombatComponent;
 import combat.CombatContext;
 import combat.CombatSystem;
-import combat.DamageProcessor;   // <- dùng để delegate takeDamage
+import combat.DamageProcessor;
 import main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import ai.movement.MovementController;
 
 /** Base class for all world entities (player, monsters, NPCs). */
 public class Entity implements CombatContext {
@@ -65,6 +66,9 @@ public class Entity implements CombatContext {
     // --- Combat ECS ---
     public final CombatComponent combat;
 
+    // --- Movement Controller (AI / input strategy) ---
+    protected MovementController controller;
+
     public Entity(GamePanel gp) {
         this.gp = gp;
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
@@ -77,6 +81,10 @@ public class Entity implements CombatContext {
         this.combat = new CombatComponent();
         this.attackBox = combat.getAttackBox(); // dùng chung rect để code vẽ cũ không phải đổi
     }
+
+    // -------- controller ----------
+    public void setController(MovementController c){ this.controller = c; }
+    public MovementController getController(){ return controller; }
 
     // -------- stats ----------
     public void setStats(int maxHp, int atk, int def) {
@@ -109,16 +117,36 @@ public class Entity implements CombatContext {
     public int  getKnockbackFrames()       { return knockbackFrames; }
     public boolean isKnockbackActive()     { return knockbackCounter > 0; }
 
+    /** Mặc định: di chuyển theo direction * actualSpeed.
+     *  (Giữ để Player hoặc entity đơn giản vẫn chạy nếu không có controller).
+     */
+    protected int[] computeDelta() {
+        int dx = 0, dy = 0;
+        switch (direction) {
+            case "up":    dy = -actualSpeed; break;
+            case "down":  dy =  actualSpeed; break;
+            case "left":  dx = -actualSpeed; break;
+            case "right": dx =  actualSpeed; break;
+        }
+        return new int[]{dx, dy};
+    }
+
     public void update() {
         if (!isKnockbackActive()) {
-            emo.setAction(this);
-            emo.move(this);
+            // 1) AI/input quyết định hướng & tốc độ
+            if (controller != null) {
+                controller.decide(this);     // -> có thể chỉnh direction + actualSpeed
+                emo.moveByDirection(this);   // di chuyển dựa vào direction/speed
+            } else {
+                int[] d = computeDelta();    // fallback: không có controller thì dùng dx,dy mặc định
+                emo.moveWithDelta(this, d[0], d[1]);
+            }
         }
 
-        // Combat phase + i-frame + knockback (gói gọn trong CombatSystem)
+        // 2) Combat phase + i-frame + knockback
         CombatSystem.tick(this);
 
-        // sprite
+        // 3) sprite
         esm.updateSprite(this);
     }
 
