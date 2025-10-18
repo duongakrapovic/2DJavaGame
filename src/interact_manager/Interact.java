@@ -35,19 +35,19 @@ public class Interact {
 
                     switch (objectName) {
                         case "key":
-                            gp.ui.showTouchMessage("press 'F' to pick key", obj, gp);
+                            gp.messageUI.showTouchMessage("press 'F' to pick key", obj, gp);
                             if (input.isPicked()) {
                                 SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
                                 player.hasKey++;
                                 objects.remove(index); // xoá object ra khỏi map
-                                gp.ui.showMessage("Ya got a key");
+                                gp.messageUI.showMessage("Ya got a key!");
                             }
                             break;
 
                         case "portal":
-                            gp.ui.showTouchMessage("press 'F' to tele", obj, gp);
+                            gp.messageUI.showTouchMessage("press 'F' to tele", obj, gp);
                             if (input.isPicked()) {
-                                gp.ui.startFade(() -> {
+                                gp.fadeUI.startFade(() -> {
                                     if ("map1".equals(gp.chunkM.pathMap)) {
                                         gp.chunkM.pathMap = "map2";
                                         gp.currentMap = 1;                         // <<< QUAN TRỌNG
@@ -69,7 +69,7 @@ public class Interact {
                                     gp.chunkM.clearChunks();
                                     gp.chunkM.updateChunks(gp.em.getPlayer().worldX, gp.em.getPlayer().worldY);
 
-                                    gp.ui.showMessage("Teleported!");
+                                    gp.messageUI.showMessage("Teleported!");
                                 });
                             }
                             break;
@@ -77,7 +77,7 @@ public class Interact {
                 }
             }
         } else {
-            gp.ui.hideTouchMessage();
+            gp.messageUI.hideTouchMessage();
         }
     }
 

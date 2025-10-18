@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package input_manager;
 
 import java.awt.event.KeyEvent;
@@ -22,70 +18,88 @@ public class GameCommandHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        // start mode
-        if(gp.gsm.getState() == GameState.START){
-            if( code == KeyEvent.VK_UP){
-                gp.ui.commandNum--;
-                if(gp.ui.commandNum < 0){
-                    gp.ui.commandNum = 1    ;
+        // ===== MAIN MENU =====
+        if (gp.gsm.getState() == GameState.START) {
+
+            // Case 1: NORMAL MENU (New Game / About / Quit)
+            if (!gp.mainMenuUI.isShowingAbout()) {
+                if (code == KeyEvent.VK_UP) {
+                    gp.mainMenuUI.commandNum--;
+                    if (gp.mainMenuUI.commandNum < 0) {
+                        gp.mainMenuUI.commandNum = 2; // wrap around
+                    }
                 }
-            } 
-            if( code == KeyEvent.VK_DOWN){
-                gp.ui.commandNum++;
-                if(gp.ui.commandNum > 1){
-                    gp.ui.commandNum = 0;
+                if (code == KeyEvent.VK_DOWN) {
+                    gp.mainMenuUI.commandNum++;
+                    if (gp.mainMenuUI.commandNum > 2) {
+                        gp.mainMenuUI.commandNum = 0; // wrap around
+                    }
                 }
-            } 
-            if( code == KeyEvent.VK_ENTER){
-                
-                if(gp.ui.commandNum == 0){// new game 
-                    gp.gsm.setState(GameState.PLAY);
-                    SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+                if (code == KeyEvent.VK_ENTER) {
+                    if (gp.mainMenuUI.commandNum == 0) {
+                        // New Game
+                        gp.gsm.setState(GameState.PLAY);
+                        SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+                    }
+                    if (gp.mainMenuUI.commandNum == 1) {
+                        // Open About screen
+                        gp.toggleMainMenuAbout();
+                        ;
+                    }
+                    if (gp.mainMenuUI.commandNum == 2) {
+                        // Quit game
+                        System.exit(0);
+                    }
                 }
-                if(gp.ui.commandNum == 1){// quit
-                    System.exit(0);
+            }
+            // Case 2: ABOUT SCREEN (Only ENTER to go back)
+            else {
+                if (code == KeyEvent.VK_ENTER) {
+                    gp.toggleMainMenuAbout();
+                    ; // back to main menu
                 }
-            } 
+            }
         }
 
-        // while in pause 
-        if(gp.gsm.getState() == GameState.PAUSE){
-            if( code == KeyEvent.VK_UP){
-                gp.ui.commandNum--;
-                if(gp.ui.commandNum < 0){
-                    gp.ui.commandNum = 1;
+        // ===== PAUSE MENU =====
+        if (gp.gsm.getState() == GameState.PAUSE) {
+            if (code == KeyEvent.VK_LEFT) {
+                gp.pauseMenuUI.commandNum--;
+                if (gp.pauseMenuUI.commandNum < 0) {
+                    gp.pauseMenuUI.commandNum = 1;
                 }
-            } 
-            if( code == KeyEvent.VK_DOWN){
-                gp.ui.commandNum++;
-                if(gp.ui.commandNum > 1){
-                    gp.ui.commandNum = 0;
+            }
+            if (code == KeyEvent.VK_RIGHT) {
+                gp.pauseMenuUI.commandNum++;
+                if (gp.pauseMenuUI.commandNum > 1) {
+                    gp.pauseMenuUI.commandNum = 0;
                 }
-            } 
-            if( code == KeyEvent.VK_ENTER){
-                if(gp.ui.commandNum == 0){ // Resume
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.pauseMenuUI.commandNum == 0) {
+                    // Resume game
                     gp.gsm.setState(GameState.PLAY);
                     SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
-                if(gp.ui.commandNum == 1){ // Quit
+                if (gp.pauseMenuUI.commandNum == 1) {
+                    // Quit
                     System.exit(0);
                 }
             }
         }
-        // switch case of pause key 
-        if( code == KeyEvent.VK_ESCAPE){
-            if(gp.gsm.getState() == GameState.PLAY){
+
+        // ===== ESC key → toggle pause =====
+        if (code == KeyEvent.VK_ESCAPE) {
+            if (gp.gsm.getState() == GameState.PLAY) {
                 gp.gsm.setState(GameState.PAUSE);
                 SoundManager.getInstance().stopMusic();
-            }
-            else if(gp.gsm.getState()  == GameState.PAUSE){
+            } else if (gp.gsm.getState() == GameState.PAUSE) {
                 gp.gsm.setState(GameState.PLAY);
                 SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
             }
-        }  
+        }
     }
 
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
 }
-
