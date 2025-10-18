@@ -11,4 +11,5 @@ public interface InputController {
     boolean isLeftPressed();   
     boolean isRightPressed();
     boolean isPicked();
+    boolean isAttackPressed();
 }

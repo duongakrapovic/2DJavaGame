@@ -4,7 +4,7 @@
  */
 package main;
 
-
+import ui.*;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Color;
@@ -16,123 +16,152 @@ import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
 
-public class GamePanel extends JPanel{
-    //SCREEN SETTING
+public class GamePanel extends JPanel {
+    // ===== SCREEN SETTING =====
     public final int originalTileSize = 16; // 16x16 tile
     final int scale = 3;
-    public final int tileSize = originalTileSize * scale; // 48x48 tile 
-     // 16x16 is so small on modern moniter
-    //therefore we time it up so now  
-    // the 16x16 look "scale" time on moniter
-    // need to be public otherwise the Player class cannot access
-    // need to be public to br access from other packages
+    public final int tileSize = originalTileSize * scale; // 48x48 tile
     public final int maxScreenCol = 25; // width
     public final int maxScreenRow = 14; // height
-    public final int screenWidth = tileSize * maxScreenCol;// 786 pixels
-    public final int screenHeight = tileSize * maxScreenRow;// 576 pixels
-    
-    // WORLD SETTING   
+    public final int screenWidth = tileSize * maxScreenCol;  // 786 pixels
+    public final int screenHeight = tileSize * maxScreenRow; // 576 pixels
+
+    // ===== WORLD SETTING =====
     public final int maxWorldCol = 32 * 3;
     public final int maxWorldRow = 32 * 3;
     public final int chunkSize = 32;
-    
-    //SYSTEM
+
+    // ===== SYSTEM =====
     public TileManager tileM = new TileManager(this);
     public ChunkManager chunkM = new ChunkManager(chunkSize, this);
     private final InputManager input;
-    
-    // OTHERS
-    public CollisionChecker cChecker;// xu ly tach 1 class khac 
-    public UtilityTool uTool = new UtilityTool();// vut 
-        
-    //ENTITY MANAGER
-    public EntityManager em;
-   
-    //UI
-    public final UI ui; // will be create after manager 
 
-    //MAP 
-    public int numMaps = 3;       // numbers of map 
-    public int currentMap = 0;    // current map index
-    
-    // GAME STATE
+    // ===== OTHERS =====
+    public CollisionChecker cChecker;
+    public UtilityTool uTool = new UtilityTool();
+    public int frameCounter = 0;
+
+    // ===== ENTITY MANAGER =====
+    public EntityManager em;
+
+    // ===== UI SYSTEM =====
+    public UIManager uiManager;
+    public MessageUI messageUI;
+    public FadeUI fadeUI;
+    public MainMenuUI mainMenuUI;
+    public PauseMenuUI pauseMenuUI;
+    public HealthUI healthUI;
+
+    // ===== MAP =====
+    public int numMaps = 3;
+    public int currentMap = 0;
+
+    // ===== GAME STATE =====
     public final GameStateManager gsm = new GameStateManager();
-    //use GameState not GameStateManager for code 
-    
-    // THREAD
-    Thread gameThread; 
-    
-    public GamePanel(){     
-        // set the preferred size of the game window
-        this.setPreferredSize(new Dimension(screenWidth , screenHeight));
-        // set background color for the panel (black screen by default)
+
+    // ===== THREAD =====
+    Thread gameThread;
+
+    public GamePanel() {
+        // Window setup
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
-        // snable double buffering to reduce flickering and improve rendering performance
         this.setDoubleBuffered(true);
-        // add the key so the panel can receive keyboard inputs
+
+        // Input
         this.input = new InputManager(this, this);
-        // initialize all entity managers before UI 
-        // so that UI can safely access them if needed
+
+        // Core managers
         em = new EntityManager(this, input.getKeyController());
         cChecker = new CollisionChecker(this);
-        // initialize the UI  after managers are ready
-        ui = new UI(this); 
-        
+
+        // ===== UI INITIALIZATION =====
+        uiManager = new UIManager();
+
+        messageUI = new MessageUI(this);
+        mainMenuUI = new MainMenuUI(this);
+        pauseMenuUI = new PauseMenuUI(this);
+        fadeUI = new FadeUI(this);
+        healthUI = new HealthUI(this);
+
+        uiManager.add(messageUI);
+        uiManager.add(mainMenuUI);
+        uiManager.add(pauseMenuUI);
+        uiManager.add(fadeUI);
+        uiManager.add(healthUI);
     }
-    
-    public void setupGame(){
+
+    // Toggle the "About" screen in Main Menu
+    public void toggleMainMenuAbout() {
+        if (mainMenuUI != null) {
+            mainMenuUI.toggleAbout();
+        }
+    }
+
+    public void setupGame() {
         em.getPlayer().setDefaultValues();
         chunkM.pathMap = "map1";
         gsm.setState(GameState.START);
-        //System.out.println(em.getPlayer());
     }
-    
-    public void startGameThread(){
+
+    public void startGameThread() {
         gameThread = new Thread(new GameLoop(this));
         gameThread.start();
     }
-    
-    public void update(){
-        //System.out.println("in update");
-//        System.out.println(gameState == gameStart);
-        if(gsm.getState() == GameState.PLAY){
-            //System.out.println("start update chunk");
+
+    public void update() {
+        if (gsm.getState() == GameState.PLAY) {
             chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
-            //System.out.println("end update chunk");
             currentMap = uTool.mapNameToIndex(chunkM.pathMap);
             em.update(currentMap);
+        } else if (gsm.getState() == GameState.PAUSE) {
+            // nothing happen
         }
-        if(gsm.getState() == GameState.PAUSE){
-            //nothing happen 
-        }
-        //System.out.println("out update");
+
+        uiManager.update();
+
     }
-    public void paintComponent(Graphics g){
-        // this is a standare method to darw on jPanel
-        // a built-in java
-        super.paintComponent(g); 
-        Graphics2D g2 = (Graphics2D)g; //  extends the Graphics class for more tool
-        
-        //DEBUG
-//        long drawStart = 0;
-//        drawStart = System.nanoTime();
-        
-        if(gsm.getState() == GameState.START){
-            ui.drawUI(g2);
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+        switch (gsm.getState()) {
+            case START:
+                // Only draw main menu
+                mainMenuUI.draw(g2);
+                break;
+
+            case PLAY:
+                // Draw world and entities
+                tileM.draw(g2, chunkM);
+                em.draw(g2, currentMap);
+
+                // Gameplay UI
+                healthUI.draw(g2);
+                messageUI.draw(g2);
+                fadeUI.draw(g2);
+                break;
+
+            case PAUSE:
+                // Draw background world
+                tileM.draw(g2, chunkM);
+                em.draw(g2, currentMap);
+
+                // Dark overlay
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.fillRect(0, 0, screenWidth, screenHeight);
+
+                // Pause menu
+                pauseMenuUI.draw(g2);
+                break;
         }
-        
-        else if(gsm.getState() == GameState.START || gsm.getState() == GameState.PLAY){
-            // DRAW VISIBLE TILES 
-            tileM.draw(g2, chunkM);       
-            // OBJECT + MONSTER + NPC + PLAYER
-            em.draw(g2, currentMap);
-            // UI 
-            ui.drawUI(g2);
+        // Frame counter
+        frameCounter++;
+        if (frameCounter >= 1_000_000) {
+            frameCounter = 0;
         }
-//        long drawEnd = System.nanoTime();
-//        long passed = drawEnd - drawStart;
-//        System.out.println(passed);
-        
         g2.dispose();
     }
 }

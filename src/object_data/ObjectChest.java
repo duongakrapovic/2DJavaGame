@@ -1,42 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package object_data;
 
 import java.awt.Rectangle;
-
-import entity.Entity;
 import main.GamePanel;
 
-/**
- * ObjectChest.java
- * Represents a chest object in the game.
- * Can be opened or interacted with by the player (behavior handled elsewhere).
- */
-public class ObjectChest extends Entity{
-    
-    /**
-     * Constructor: initializes the chest object with size, image, and collision settings.
-     * @param gp Reference to the main GamePanel
-     * @param mapIndex Index of the map where this object is placed
-     */
-    public ObjectChest( GamePanel gp,int mapIndex){
+public class ObjectChest extends WorldObject {
+
+    public boolean opened = false;
+
+    public ObjectChest(GamePanel gp, int mapIndex) {
         super(gp);
-        this.gp = gp;
         this.mapIndex = mapIndex;
-        // Object name
-        name = "chest";
-        // Set size equal to tile size
-        width = gp.tileSize;
+
+        name   = "chest";
+        width  = gp.tileSize;
         height = gp.tileSize;
-        // Load static image for the chest
-        staticImage = setup("/object/chest" , width, height);
-        // No collision (player can interact without blocking)
-        collision = false;
-        // Define solid area for collision detection if needed
-        solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
+
+        staticImage = setup("/object/chest", width, height);
+        collision = true;
+
+        solidArea = new Rectangle(2, 4, width - 4, height - 8);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+    }
+
+    public void open() {
+        if (opened) return;
+        opened = true;
+        // Nếu bạn có sprite rương mở:
+        // staticImage = setup("/object/chest_open", width, height);
+        // collision = false; // tuỳ game design
     }
 }

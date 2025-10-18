@@ -24,6 +24,15 @@ public class PlayerSpriteManager {
         player.left1 = player.setup("/player/boy_left_1", gp.tileSize, gp.tileSize);
         player.left2 = player.setup("/player/boy_left_2", gp.tileSize, gp.tileSize);
         player.right1 = player.setup("/player/boy_right_1", gp.tileSize, gp.tileSize);
-        player.right2 = player.setup("/player/boy_right_2", gp.tileSize, gp.tileSize);  
+        player.right2 = player.setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
+
+        player.atkUp1    = player.setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+        player.atkUp2    = player.setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+        player.atkDown1  = player.setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+        player.atkDown2  = player.setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+        player.atkLeft1  = player.setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize );
+        player.atkLeft2  = player.setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize );
+        player.atkRight1 = player.setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize );
+        player.atkRight2 =player.setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize );
     } 
 }

@@ -1,76 +1,170 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-// this stores variables that will be use in player , monster and npc class.
 package entity;
 
+import combat.CombatComponent;
+import combat.CombatContext;
+import combat.CombatSystem;
+import combat.DamageProcessor;
 import main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
- 
-public class Entity {
-    
-    // default setting 
+import ai.movement.MovementController;
+
+/** Base class for all world entities (player, monsters, NPCs). */
+public class Entity implements CombatContext {
+
+    // --- world/screen ---
     public int worldX, worldY;
     public int width, height;
     public final int screenX;
     public final int screenY;
 
-    // set for animaion
+    // --- animation ---
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public BufferedImage staticImage;// use for enity without animation
+    public BufferedImage atkUp1, atkUp2, atkDown1, atkDown2, atkLeft1, atkLeft2, atkRight1, atkRight2;
+    public BufferedImage staticImage;
     public String direction = "down";
     public int spriteCounter = 0;
     public int spriteNum = 1;
     public int actionLockCounter = 0;
-    
-    // set collision auto false
+
+    // --- collision ---
     public Rectangle solidArea;
     public boolean collisionXOn = false;
     public boolean collisionYOn = false;
-    public boolean collisionOn = false;
-    public boolean collision  = false;
-    
-    // set for colision area of entity
+    public boolean collisionOn  = false;
+    public boolean collision    = false;
     public int solidAreaDefaultX, solidAreaDefaultY;
-    
-    //enity state
+
+    // --- state / stats ---
     public String name;
     public int defaultSpeed, actualSpeed, buffSpeed;
     public boolean animationON = false;
-    
-    private int HP = 0;
-    public int getHP() {return HP;}
-    public void setHP(int HP) {this.HP = HP;}
-    // system
-    protected GamePanel gp;
+
+    private int hp = 1, maxHp = 1, atk = 1, def = 0;
+
+    // --- i-frames ---
+    private boolean invulnerable = false;
+    private int invulnFrames = 20; // ~0.33s @60fps
+    private int invulnCounter = 0;
+
+    // --- knockback ---
+    public int velX = 0, velY = 0;
+    private int knockbackCounter = 0;
+    private int knockbackFrames  = 10; // ~0.16s @60fps
+
+    // --- attack box (shared with CombatComponent) ---
+    public Rectangle attackBox = new Rectangle(0, 0, 0, 0);
+
+    // --- systems/manager ---
+    protected final GamePanel gp;
     protected final EntityMovement emo;
     protected final EntitySpriteManager esm;
     protected final EntityDraw ed;
     public int mapIndex = 0;
-    // constructor
+
+    // --- Combat ECS ---
+    public final CombatComponent combat;
+
+    // --- Movement Controller (AI / input strategy) ---
+    protected MovementController controller;
+
     public Entity(GamePanel gp) {
         this.gp = gp;
-        screenX = gp.screenWidth/2 - (gp.tileSize/2);
-        screenY = gp.screenHeight/2 - (gp.tileSize/2);
-        
-        emo = new EntityMovement(gp);
-        esm = new EntitySpriteManager();
-        ed = new EntityDraw(gp);
-        
+        this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+        this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+
+        this.emo = new EntityMovement(gp);
+        this.esm = new EntitySpriteManager();
+        this.ed  = new EntityDraw(gp);
+
+        this.combat = new CombatComponent();
+        this.attackBox = combat.getAttackBox(); // dùng chung rect để code vẽ cũ không phải đổi
     }
-    // 
-    public void update(){
-        emo.setAction(this);// change the direction first then we have delta move 
-        emo.move(this);// move the entity follow the direction anf check collision
-        esm.updateSprite(this);// change animation
+
+    // -------- controller ----------
+    public void setController(MovementController c){ this.controller = c; }
+    public MovementController getController(){ return controller; }
+
+    // -------- stats ----------
+    public void setStats(int maxHp, int atk, int def) {
+        this.maxHp = Math.max(1, maxHp);
+        this.hp    = this.maxHp;
+        this.atk   = Math.max(0, atk);
+        this.def   = Math.max(0, def);
     }
-    public void draw(Graphics2D g2){
-        ed.draw(g2, this);
+    public int  getHP()     { return hp; }
+    public int  getMaxHP()  { return maxHp; }
+    public int  getATK()    { return atk; }
+    public int  getDEF()    { return def; }
+
+    public void reduceHP(int amount) { hp = Math.max(0, hp - Math.max(0, amount)); }
+    public void setInvulnFrames(int frames) { invulnFrames = Math.max(0, frames); }
+    public int  getInvulnFrames() { return invulnFrames; }
+
+    @Override public boolean isDead() { return hp <= 0; }
+
+    public boolean isInvulnerable()           { return invulnerable; }
+    public void    setInvulnerable(boolean v) { invulnerable = v; }
+    public int     getInvulnCounter()         { return invulnCounter; }
+    public void    setInvulnCounter(int v)    { invulnCounter = v; }
+
+    public void applyKnockback(int kbX, int kbY, int durationFrames) {
+        velX = kbX; velY = kbY; knockbackCounter = durationFrames;
     }
-    public BufferedImage setup(String path, int w, int h){
-        return esm.setup(path, w, h);
-    }   
+    public int  getKnockbackCounter()      { return knockbackCounter; }
+    public void setKnockbackCounter(int v) { knockbackCounter = v; }
+    public int  getKnockbackFrames()       { return knockbackFrames; }
+    public boolean isKnockbackActive()     { return knockbackCounter > 0; }
+
+    /** Mặc định: di chuyển theo direction * actualSpeed.
+     *  (Giữ để Player hoặc entity đơn giản vẫn chạy nếu không có controller).
+     */
+    protected int[] computeDelta() {
+        int dx = 0, dy = 0;
+        switch (direction) {
+            case "up":    dy = -actualSpeed; break;
+            case "down":  dy =  actualSpeed; break;
+            case "left":  dx = -actualSpeed; break;
+            case "right": dx =  actualSpeed; break;
+        }
+        return new int[]{dx, dy};
+    }
+
+    public void update() {
+        if (!isKnockbackActive()) {
+            // 1) AI/input quyết định hướng & tốc độ
+            if (controller != null) {
+                controller.decide(this);     // -> có thể chỉnh direction + actualSpeed
+                emo.moveByDirection(this);   // di chuyển dựa vào direction/speed
+            } else {
+                int[] d = computeDelta();    // fallback: không có controller thì dùng dx,dy mặc định
+                emo.moveWithDelta(this, d[0], d[1]);
+            }
+        }
+
+        // 2) Combat phase + i-frame + knockback
+        CombatSystem.tick(this);
+
+        // 3) sprite
+        esm.updateSprite(this);
+    }
+
+    public void draw(Graphics2D g2) { ed.draw(g2, this); }
+    public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
+
+    public void takeDamage(int rawDamage, int knockbackX, int knockbackY) {
+        DamageProcessor.applyDamage(this, rawDamage, knockbackX, knockbackY);
+    }
+
+    public void onDamaged(int damage) {}
+
+    @Override public int getWorldX() { return worldX; }
+    @Override public int getWorldY() { return worldY; }
+    @Override public Rectangle getSolidArea() {
+        return (solidArea != null)
+                ? solidArea
+                : new Rectangle(0, 0, Math.max(1, width), Math.max(1, height));
+    }
+    @Override public String getDirection() { return direction; }
 }

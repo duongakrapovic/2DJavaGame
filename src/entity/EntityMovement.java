@@ -1,58 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entity;
 
-import java.util.Random;
 import main.GamePanel;
+import object_data.WorldObject;
 
+import java.util.List;
+
+/** Di chuyển có va chạm; hỗ trợ cả theo direction lẫn (dx,dy). */
 public class EntityMovement {
     private final GamePanel gp;
-    public EntityMovement(GamePanel gp){
-        this.gp = gp;
-    }
-    public void move(Entity e){
-        int deltaMoveX = 0;
-        int deltaMoveY = 0;
+    public EntityMovement(GamePanel gp){ this.gp = gp; }
+
+    /** Di chuyển theo direction * actualSpeed (dành cho controller decide). */
+    public void moveByDirection(Entity e){
+        int dx = 0, dy = 0;
         switch (e.direction) {
-            case "up":    deltaMoveY = -e.actualSpeed; break;
-            case "down":  deltaMoveY =  e.actualSpeed; break;
-            case "left":  deltaMoveX = -e.actualSpeed; break;
-            case "right": deltaMoveX =  e.actualSpeed; break;
+            case "up":    dy = -e.actualSpeed; break;
+            case "down":  dy =  e.actualSpeed; break;
+            case "left":  dx = -e.actualSpeed; break;
+            case "right": dx =  e.actualSpeed; break;
         }
-        
-        /*no need to check x-axis and y-axis separately
-        because monster cannot move diagonally
-        */
+        moveWithDelta(e, dx, dy);
+    }
+
+    /** Di chuyển theo (dx,dy) đã tính sẵn (fallback/AI kiểu khác). */
+    public void moveWithDelta(Entity e, int dx, int dy){
         e.collisionOn = false;
-        int nextX = e.worldX + deltaMoveX; // posible move X
-        int nextY = e.worldY + deltaMoveY; // posible move Y
-        
+
+        int nextX = e.worldX + dx;
+        int nextY = e.worldY + dy;
+
+        // 1) tile collision
         gp.cChecker.checkTile(e, nextX, nextY);
-        gp.cChecker.checkEntity(e, gp.em.getObjects(gp.currentMap), nextX, nextY);
+
+        // 2) world-object collision
+        List<WorldObject> objs = gp.em.getWorldObjects(gp.currentMap);
+        int objIndex = gp.cChecker.checkWorldObject(e, objs, dx, dy);
+        if (objIndex != 999) {
+            var obj = objs.get(objIndex);
+            if (obj != null && obj.collision) e.collisionOn = true;
+        }
+
+        // 3) entity -> player
         gp.cChecker.checkPlayer(e, nextX, nextY);
-        
+
         if (!e.collisionOn) {
             e.worldX = nextX;
             e.worldY = nextY;
-        }
-    }
-    public void setAction(Entity e){
-        e.actionLockCounter++ ;
-        if(e.actionLockCounter >= 120){
-            Random rand = new Random() ;
-            int i = rand.nextInt(100) ;
-            if(i <= 25){
-                e.direction = "up" ;
-            } else if (i <= 50) {
-                e.direction = "down" ;
-            } else if (i <= 75) {
-                e.direction = "right" ;
-            }else if (i <= 100) {
-                e.direction = "left" ;
-            }
-            e.actionLockCounter = 0;
         }
     }
 }
