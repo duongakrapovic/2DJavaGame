@@ -54,7 +54,7 @@ public class Player extends Entity {
         // trung tâm chunk
         worldX = gp.tileSize * gp.chunkSize / 2;
         worldY = gp.tileSize * gp.chunkSize / 2;
-        defaultSpeed = 15;
+        defaultSpeed = 5;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "down";
