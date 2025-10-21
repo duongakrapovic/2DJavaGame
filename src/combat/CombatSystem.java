@@ -78,22 +78,33 @@ public final class CombatSystem {
 
     // attack box counting
     public static void updateAttackBoxToOwnerFacing(CombatComponent cc, CombatContext owner) {
+        // LẤY THÂN Ở WORLD-SPACE (không lệ thuộc Entity.width/height)
         Rectangle body = owner.getSolidArea();
-        int boxX = owner.getWorldX() + body.x;
-        int boxY = owner.getWorldY() + body.y;
+        int bx = owner.getWorldX() + body.x;
+        int by = owner.getWorldY() + body.y;
+        int bw = body.width;
+        int bh = body.height;
 
-        String dir = owner.getDirection();
+        int ax = bx;
+        int ay = by;
+
+        String dir = owner.getDirection(); // phải là "up|down|left|right" chữ thường
         if ("up".equals(dir)) {
-            boxY -= cc.getAttackHeight();
+            ax = bx + (bw - cc.getAttackWidth()) / 2;
+            ay = by - cc.getAttackHeight();
         } else if ("down".equals(dir)) {
-            boxY += body.height;
+            ax = bx + (bw - cc.getAttackWidth()) / 2;
+            ay = by + bh;
         } else if ("left".equals(dir)) {
-            boxX -= cc.getAttackWidth();
-        } else { // right (mặc định)
-            boxX += body.width;
+            ax = bx - cc.getAttackWidth();
+            ay = by + (bh - cc.getAttackHeight()) / 2;
+        } else { // right
+            ax = bx + bw;
+            ay = by + (bh - cc.getAttackHeight()) / 2;
         }
-        cc.getAttackBox().setBounds(boxX, boxY, cc.getAttackWidth(), cc.getAttackHeight());
+        cc.getAttackBox().setBounds(ax, ay, cc.getAttackWidth(), cc.getAttackHeight());
     }
+
     // mark hit
     public static boolean wasHitThisSwing(CombatComponent cc, Object target) {
         return cc.wasHitThisSwing(target);
@@ -149,7 +160,7 @@ public final class CombatSystem {
         return new int[] { force, 0 }; // right
     }
 
-    // touch to hit for Monsetr
+    // touch to hit for Monster
     public static void resolvePlayerHits(Player player, List<Entity> monsters) {
         if (player == null) return;
         if (!isAttackActive(player.combat)) return;
@@ -175,41 +186,37 @@ public final class CombatSystem {
             }
         }
     }
+    public static void resolveMonsterHitAgainstPlayer(Monster m, Player player) {
+        if (m == null || m.isDead() || player == null || player.isDead()) return;
+        if (!isAttackActive(m.combat)) return;
 
-    /** Thân Player chạm thân quái → Player nhận sát thương/knockback. */
-    public static void resolveMonsterContacts(Player player, List<Entity> monsters) {
-        if (player == null || player.isDead()) return;
+        Rectangle attack = m.combat.getAttackBox();
+        if (attack == null || attack.width <= 0 || attack.height <= 0) return;
 
         Rectangle playerBody = CollisionUtil.getEntityBodyWorldRect(player);
+        if (!attack.intersects(playerBody)) return;
 
-        // Nới 1px để “chạm mép” cũng tính
-        Rectangle playerContact = new Rectangle(playerBody);
-        playerContact.grow(1, 1);
+        // Tránh dính nhiều lần trong cùng 1 swing
+        if (wasHitThisSwing(m.combat, player)) return;
 
-        for (Entity e : monsters) {
-            if (!(e instanceof Monster)) continue;
-            Monster m = (Monster) e;
-            if (m.isDead()) continue;
+        // Damage: dùng ATK của quái (đơn giản, không cần đụng field protected)
+        int rawDamage = Math.max(1, m.getATK());
 
-            Rectangle monsterBody = CollisionUtil.getEntityBodyWorldRect(m);
-            if (playerContact.intersects(monsterBody)) {
-                if (!player.isInvulnerable()) {
-                    int raw = Math.max(1, m.getATK());
-
-                    // Knockback từ quái -> player (dựa trên tâm)
-                    int pcx = playerBody.x + playerBody.width  / 2;
-                    int pcy = playerBody.y + playerBody.height / 2;
-                    int mcx = monsterBody.x + monsterBody.width  / 2;
-                    int mcy = monsterBody.y + monsterBody.height / 2;
-
-                    int kx = Integer.compare(pcx, mcx) * 6;
-                    int ky = Integer.compare(pcy, mcy) * 6;
-
-                    player.takeDamage(raw, kx, ky);
-                    System.out.println("[CONTACT DMG] " + m.name + " -> Player HP="
-                            + player.getHP() + "/" + player.getMaxHP());
-                }
-            }
+        // Knockback: dựa theo tương quan vị trí
+        int dx = player.getWorldX() - m.getWorldX();
+        int dy = player.getWorldY() - m.getWorldY();
+        int kb = 6; // lực đẩy mặc định; đổi nếu muốn
+        int kx = 0, ky = 0;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            kx = (dx >= 0) ? kb : -kb;
+        } else {
+            ky = (dy >= 0) ? kb : -kb;
         }
+
+        // Gây damage
+        DamageProcessor.applyDamage(player, rawDamage, kx, ky);
+
+        // Đánh dấu đã trúng ở swing hiện tại
+        markHitLanded(m.combat, player);
     }
 }
