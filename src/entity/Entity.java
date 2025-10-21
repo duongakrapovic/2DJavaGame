@@ -117,6 +117,12 @@ public class Entity implements CombatContext {
     public int  getKnockbackFrames()       { return knockbackFrames; }
     public boolean isKnockbackActive()     { return knockbackCounter > 0; }
 
+    public void translate(int dx, int dy) { this.worldX += dx; this.worldY += dy; }
+    public void setVelocity(int vx, int vy) { this.velX = vx; this.velY = vy; }
+    public void clearVelocity() { this.velX = 0; this.velY = 0; }
+    public int getVelX() { return this.velX; }
+    public int getVelY() { return this.velY; }
+
     /** Mặc định: di chuyển theo direction * actualSpeed.
      *  (Giữ để Player hoặc entity đơn giản vẫn chạy nếu không có controller).
      */
