@@ -69,4 +69,15 @@ public class CombatComponent {
 
     int      getCooldownCounterFrames()      { return cooldownCounterFrames; }
     void     setCooldownCounterFrames(int v) { cooldownCounterFrames = v; }
+    public static void setCooldown(CombatComponent cc, int frames) {
+        cc.setCooldownCounterFrames(Math.max(0, frames));
+    }
+    public static int getCooldown(CombatComponent cc) {
+        return cc.getCooldownCounterFrames();
+    }
+
+    // (nếu bạn chưa thêm 2 hàm này thì thêm luôn, để lấy kích thước từ ngoài package)
+    public static int attackWidth(CombatComponent cc)  { return cc.getAttackWidth(); }
+    public static int attackHeight(CombatComponent cc) { return cc.getAttackHeight(); }
+
 }

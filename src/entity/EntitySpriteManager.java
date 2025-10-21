@@ -10,9 +10,9 @@ import main.UtilityTool;
 
 public class EntitySpriteManager {
     private final UtilityTool uTool = new UtilityTool();
-    
+
     public EntitySpriteManager(){
-       
+
     }
     public void updateSprite(Entity e){
         e.spriteCounter++;

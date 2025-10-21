@@ -7,7 +7,6 @@ import player_manager.Player;
 import input_manager.InputController;
 import object_data.WorldObject;           // << thêm
 import main.GamePanel;
-import object_data.WorldObject;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -39,21 +38,30 @@ public class EntityManager {
 
 
     public void update(int currentMap) {
-        // tick entities
+        // 1) Update mọi entity
         player.update();
-        // WorldObject do ObjectManager quản lý
-        oM.update(); // dùng currentMap bên trong ObjectManager
+        oM.update();
 
         for (Entity m : mM.getMonsters(currentMap)) m.update();
         for (Entity n : npcM.getNPCs(currentMap))  n.update();
 
-        // combat/collision
-        CombatSystem.resolvePlayerHits(player, mM.getMonsters(currentMap));
-        CombatSystem.resolveMonsterContacts(player, mM.getMonsters(currentMap));
+        // 2) Combat resolve (mọi “trúng đòn” làm ở đây)
+        List<Entity> monsters = mM.getMonsters(currentMap);
 
-        // cleanup
+        // Player đánh Monsters
+        CombatSystem.resolvePlayerHits(player, monsters);
+
+        // Monsters đánh Player
+        for (Entity e : monsters) {
+            if (e instanceof Monster m) {
+                CombatSystem.resolveMonsterHitAgainstPlayer(m, player);
+            }
+        }
+
+        // 3) Cleanup
         removeDeadMonsters(currentMap);
     }
+
 
     public void draw(Graphics2D g2, int currentMap) {
         // 1) Vẽ WorldObject theo camera player
