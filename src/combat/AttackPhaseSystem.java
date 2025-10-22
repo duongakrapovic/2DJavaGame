@@ -65,7 +65,7 @@ public final class AttackPhaseSystem {
         }
     }
 
-    /** Căn attack box theo hướng owner đang facing (up/down/left/right). */
+    // attack box direction
     public static void alignAttackBox(CombatComponent cc, CombatContext owner) {
         Rectangle body = owner.getSolidArea();
         int bx = owner.getWorldX() + body.x;
