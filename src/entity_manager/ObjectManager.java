@@ -22,7 +22,6 @@ public class ObjectManager {
         spawnObjects();
     }
 
-    // ==== Khởi tạo mẫu ====
     private void spawnObjects() {
         // Map 0
         ObjectKey key = new ObjectKey(gp, 0);
@@ -47,7 +46,6 @@ public class ObjectManager {
         addObject(portal1);
     }
 
-    // ==== CRUD ====
     public void addObject(WorldObject obj) {
         objectsByMap.computeIfAbsent(obj.mapIndex, k -> new ArrayList<>()).add(obj);
     }
@@ -70,10 +68,7 @@ public class ObjectManager {
         for (WorldObject o : getObjects(mapId)) o.update();
     }
 
-    /**
-     * Vẽ object theo camera của player: world -> screen
-     * Gọi từ EntityManager.draw(g2) với player hiện tại.
-     */
+
     public void draw(Graphics2D g2, Entity player) {
         draw(g2, gp.currentMap, player);
     }
@@ -87,7 +82,7 @@ public class ObjectManager {
         final int botWorld   = player.worldY + (gp.screenHeight - player.screenY) + gp.tileSize;
 
         for (WorldObject o : getObjects(mapId)) {
-            // culling thô
+            // culling
             int ow = (o.width  > 0 ? o.width  : gp.tileSize);
             int oh = (o.height > 0 ? o.height : gp.tileSize);
             int ox2 = o.worldX + ow;
@@ -101,18 +96,16 @@ public class ObjectManager {
             int sx = o.worldX - player.worldX + player.screenX;
             int sy = o.worldY - player.worldY + player.screenY;
 
-            // hình vẽ (ưu tiên getRenderImage nếu object có animation)
             BufferedImage img = null;
             try {
-                img = o.getRenderImage(); // nếu WorldObject không có hàm này, dùng staticImage
+                img = o.getRenderImage();
             } catch (NoSuchMethodError | Exception ignored) {
-                // bỏ qua, fallback xuống staticImage
             }
             if (img == null) img = o.staticImage;
 
             if (img != null) g2.drawImage(img, sx, sy, null);
 
-            // debug hitbox (tuỳ bật/tắt)
+            // debug hitbox
             /*
             g2.setColor(java.awt.Color.YELLOW);
             g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y, o.solidArea.width, o.solidArea.height);

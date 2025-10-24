@@ -56,13 +56,13 @@ public class Interact {
                                         gp.currentMap = 0;                         // <<< QUAN TRỌNG
                                     }
 
-                                    // (khuyến nghị) đặt player tới portal của map mới
+                                    // teleport to other map's portal
                                     var destList = gp.em.getWorldObjects(gp.currentMap);
                                     WorldObject dest = null;
                                     for (var wo : destList) { if (wo != null && "portal".equals(wo.name)) { dest = wo; break; } }
                                     if (dest != null) {
                                         gp.em.getPlayer().worldX = dest.worldX;
-                                        gp.em.getPlayer().worldY = dest.worldY + gp.tileSize; // đứng ngay dưới cổng
+                                        gp.em.getPlayer().worldY = dest.worldY + gp.tileSize;
                                         gp.em.getPlayer().mapIndex = gp.currentMap;
                                     }
 
@@ -82,10 +82,10 @@ public class Interact {
     }
 
     public void InteractMonster(int index) {
-        // tuỳ bạn bật lại sau
+        // optional
     }
 
     public void InteractNPC(int index) {
-        // tuỳ bạn bật lại sau
+        // optional
     }
 }

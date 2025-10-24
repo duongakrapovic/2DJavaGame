@@ -11,9 +11,8 @@ public class ObjectPortal extends WorldObject {
     // 2 frame animation
     private BufferedImage f1, f2;
     private int animCounter = 0;
-    private int frameDuration = 10; // số frame mỗi ảnh
+    private int frameDuration = 10;
 
-    // Thông tin dịch chuyển (bạn đang dùng ở constructor)
     public int targetMap;
     public int targetWorldX;
     public int targetWorldY;
@@ -26,7 +25,6 @@ public class ObjectPortal extends WorldObject {
         width  = gp.tileSize * 3/2;
         height = gp.tileSize * 3/2;
 
-        // nạp 2 ảnh
         f1 = setup("/object/portal1", width, height);
         f2 = setup("/object/portal2", width, height);
         staticImage = (f1 != null ? f1 : f2); // fallback
@@ -37,7 +35,6 @@ public class ObjectPortal extends WorldObject {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        // mặc định dịch chuyển (tùy bạn đổi)
         targetMap = mapIndex;
         targetWorldX = 10 * gp.tileSize;
         targetWorldY = 10 * gp.tileSize;
@@ -50,7 +47,6 @@ public class ObjectPortal extends WorldObject {
 
     @Override
     public BufferedImage getRenderImage() {
-        // chọn frame theo animCounter
         int idx = (animCounter / frameDuration) % 2;
         if (idx == 0) return (f1 != null ? f1 : f2);
         return (f2 != null ? f2 : f1);

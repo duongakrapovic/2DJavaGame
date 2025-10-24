@@ -21,7 +21,7 @@ public class EntityManager {
     private final ObjectManager oM;
 
     public EntityManager(GamePanel gp, InputController input) {
-        this.gp = gp;                    // << lưu lại gp để dùng nếu cần
+        this.gp = gp;
         this.player = new Player(gp, input);
         this.mM = new MonsterManager(gp);
         this.npcM = new NPCManager(gp);
@@ -31,27 +31,20 @@ public class EntityManager {
     public Player getPlayer() { return player; }
     public List<Entity> getMonsters(int map) { return mM.getMonsters(map); }
     public List<Entity> getNPCs(int map) { return npcM.getNPCs(map); }
-    public List<WorldObject> getObjects(int map) { return oM.getObjects(map); } // << đổi kiểu
     public List<WorldObject> getWorldObjects(int map) {
         return oM.getObjects(map);
     }
 
-
     public void update(int currentMap) {
-        // 1) Update mọi entity
         player.update();
         oM.update();
 
         for (Entity m : mM.getMonsters(currentMap)) m.update();
         for (Entity n : npcM.getNPCs(currentMap))  n.update();
-
-        // 2) Combat resolve (mọi “trúng đòn” làm ở đây)
         List<Entity> monsters = mM.getMonsters(currentMap);
 
-        // Player đánh Monsters
+        // cause damage
         CombatSystem.resolvePlayerHits(player, monsters);
-
-        // Monsters đánh Player
         for (Entity e : monsters) {
             if (e instanceof Monster m) {
                 CombatSystem.resolveMonsterHitAgainstPlayer(m, player);
@@ -62,12 +55,11 @@ public class EntityManager {
         removeDeadMonsters(currentMap);
     }
 
-
     public void draw(Graphics2D g2, int currentMap) {
-        // 1) Vẽ WorldObject theo camera player
+        // World Object
         oM.draw(g2, player);
 
-        // 2) Gom và vẽ Entity (player, npc, monster)
+        // Entity
         List<Entity> all = new ArrayList<>();
         all.addAll(mM.getMonsters(currentMap));
         all.addAll(npcM.getNPCs(currentMap));

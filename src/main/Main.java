@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         JFrame window = new JFrame(); //  make new window 
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// click "X" then program end
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// click "X" then program endư
         window.setResizable(false);// window size is constant
         window.setTitle("2D indie");// name for the window tab
 

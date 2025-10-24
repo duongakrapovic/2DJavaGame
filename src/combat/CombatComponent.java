@@ -34,8 +34,9 @@ public class CombatComponent {
 
     // set size
     public void setAttackBoxSize(int width, int height) {
-        this.attackWidth = width;
-        this.attackHeight = height;
+        this.attackWidth  = Math.max(1, width);
+        this.attackHeight = Math.max(1, height);
+        this.attackBox.setSize(this.attackWidth, this.attackHeight);
     }
 
     // hit-once-per-swing
