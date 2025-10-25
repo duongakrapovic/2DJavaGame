@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 
 import entity_manager.EntityManager;
 import tile.ChunkManager;
@@ -49,8 +50,12 @@ public class GamePanel extends JPanel {
     public MessageUI messageUI;
     public FadeUI fadeUI;
     public MainMenuUI mainMenuUI;
-    public PauseMenuUI pauseMenuUI;
     public HealthUI healthUI;
+    public MonsterHealthUI monsterHealthUI;
+
+    // ===== PAUSE SYSTEM =====
+    private boolean paused = false;
+    private PauseOverlay pauseOverlay; // Dùng bản mình viết lại ở ui/
 
     // ===== MAP =====
     public int numMaps = 3;
@@ -80,19 +85,21 @@ public class GamePanel extends JPanel {
 
         messageUI = new MessageUI(this);
         mainMenuUI = new MainMenuUI(this);
-        pauseMenuUI = new PauseMenuUI(this);
         fadeUI = new FadeUI(this);
         healthUI = new HealthUI(this);
+        monsterHealthUI = new MonsterHealthUI(this);
 
         uiManager.add(messageUI);
         uiManager.add(mainMenuUI);
-        uiManager.add(pauseMenuUI);
         uiManager.add(fadeUI);
         uiManager.add(healthUI);
+
+        // ===== PAUSE OVERLAY =====
+        pauseOverlay = new PauseOverlay(null); // Không có Playing, nhưng vẫn hoạt động
     }
 
-    // Toggle the "About" screen in Main Menu
-    public void toggleMainMenuAbout() {
+    // Toggle Credits in Main Menu
+    public void toggleMainMenuCredits() {
         if (mainMenuUI != null) {
             mainMenuUI.toggleAbout();
         }
@@ -109,19 +116,42 @@ public class GamePanel extends JPanel {
         gameThread.start();
     }
 
+    // ===== UPDATE LOOP =====
     public void update() {
+        if (paused) {
+            pauseOverlay.update();
+            return;
+        }
+
         if (gsm.getState() == GameState.PLAY) {
             chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
             currentMap = uTool.mapNameToIndex(chunkM.pathMap);
             em.update(currentMap);
-        } else if (gsm.getState() == GameState.PAUSE) {
-            // nothing happen
         }
 
         uiManager.update();
-
     }
 
+    // ===== KEYBOARD CONTROL =====
+    public void handleKeyPressed(int code) {
+        if (!paused) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                paused = true;
+                return;
+            }
+        } else {
+            switch (code) {
+                case KeyEvent.VK_ESCAPE -> paused = false;
+                case KeyEvent.VK_LEFT -> pauseOverlay.moveLeft();
+                case KeyEvent.VK_RIGHT -> pauseOverlay.moveRight();
+                case KeyEvent.VK_ENTER -> pauseOverlay.select();
+                case KeyEvent.VK_A -> pauseOverlay.decreaseVolume();
+                case KeyEvent.VK_D -> pauseOverlay.increaseVolume();
+            }
+        }
+    }
+
+    // ===== DRAW LOOP =====
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -129,39 +159,32 @@ public class GamePanel extends JPanel {
 
         switch (gsm.getState()) {
             case START:
-                // Only draw main menu
                 mainMenuUI.draw(g2);
                 break;
 
             case PLAY:
-                // Draw world and entities
                 tileM.draw(g2, chunkM);
                 em.draw(g2, currentMap);
-
-                // Gameplay UI
+                monsterHealthUI.draw(g2);
                 healthUI.draw(g2);
                 messageUI.draw(g2);
                 fadeUI.draw(g2);
-                break;
 
-            case PAUSE:
-                // Draw background world
-                tileM.draw(g2, chunkM);
-                em.draw(g2, currentMap);
-
-                // Dark overlay
-                g2.setColor(new Color(0, 0, 0, 150));
-                g2.fillRect(0, 0, screenWidth, screenHeight);
-
-                // Pause menu
-                pauseMenuUI.draw(g2);
+                if (paused) {
+                    g2.setColor(new Color(0, 0, 0, 150));
+                    g2.fillRect(0, 0, screenWidth, screenHeight);
+                    pauseOverlay.draw(g2);
+                }
                 break;
         }
-        // Frame counter
+
         frameCounter++;
-        if (frameCounter >= 1_000_000) {
-            frameCounter = 0;
-        }
+        if (frameCounter >= 1_000_000) frameCounter = 0;
         g2.dispose();
     }
+
+    // ===== ACCESSORS =====
+    public boolean isPaused() { return paused; }
+    public void setPaused(boolean value) { this.paused = value; }
+    public PauseOverlay getPauseOverlay() { return pauseOverlay; }
 }

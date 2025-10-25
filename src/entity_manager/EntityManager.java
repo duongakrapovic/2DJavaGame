@@ -35,7 +35,7 @@ public class EntityManager {
     public List<WorldObject> getWorldObjects(int map) {
         return oM.getObjects(map);
     }
-
+    public List<Entity> getMonsters() { return mM.getMonsters(gp.currentMap); }
 
     public void update(int currentMap) {
         // 1) Update mọi entity
