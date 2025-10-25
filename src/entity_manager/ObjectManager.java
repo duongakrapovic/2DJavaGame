@@ -35,14 +35,14 @@ public class ObjectManager {
         addObject(door);
 
         ObjectPortal portal = new ObjectPortal(gp, 0);
-        portal.worldX = 25 * gp.tileSize;
-        portal.worldY = 23 * gp.tileSize;
+        portal.worldX = 47 * gp.tileSize + 12;
+        portal.worldY = 47 * gp.tileSize + 12;
         addObject(portal);
 
         // Map 1
         ObjectPortal portal1 = new ObjectPortal(gp, 1);
-        portal1.worldX = 25 * gp.tileSize;
-        portal1.worldY = 23 * gp.tileSize;
+        portal1.worldX = 47 * gp.tileSize;
+        portal1.worldY = 47 * gp.tileSize;
         addObject(portal1);
     }
 

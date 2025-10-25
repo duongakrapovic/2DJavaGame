@@ -51,10 +51,10 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues() {
-        // trung tâm chunk
-        worldX = gp.tileSize * gp.chunkSize / 2;
-        worldY = gp.tileSize * gp.chunkSize / 2;
-        defaultSpeed = 5;
+        
+        worldX = gp.tileSize * (gp.chunkSize / 2 + 7);
+        worldY = gp.tileSize * (gp.chunkSize / 2 + 2);
+        defaultSpeed = 15;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "down";

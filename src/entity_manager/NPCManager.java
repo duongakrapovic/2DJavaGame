@@ -18,7 +18,7 @@ public class NPCManager {
     }
 
     private void spawnNPCs() {
-        // Map 0
+        // Map 1
         NPC_Oldman oldman1 = new NPC_Oldman(gp, 0);
         oldman1.worldX = 23 * gp.tileSize;
         oldman1.worldY = 30 * gp.tileSize;
@@ -29,7 +29,7 @@ public class NPCManager {
         frog1.worldY = 30 * gp.tileSize;
         addNPC(frog1);
 
-        // Map 1
+        // Map 2
         NPC_Oldman oldman2 = new NPC_Oldman(gp, 1);
         oldman2.worldX = 20 * gp.tileSize;
         oldman2.worldY = 25 * gp.tileSize;
@@ -37,7 +37,7 @@ public class NPCManager {
 
         NPC_Frog frog2 = new NPC_Frog(gp, 1);
         frog2.worldX = 28 * gp.tileSize;
-        frog2.worldY = 27 * gp.tileSize;
+        frog2.worldY = 28 * gp.tileSize;
         addNPC(frog2);
     }
 
