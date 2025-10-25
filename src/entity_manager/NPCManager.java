@@ -49,11 +49,6 @@ public class NPCManager {
         return npcsByMap.getOrDefault(mapId, Collections.emptyList());
     }
 
-    public void removeNPC(Entity npc) {
-        List<Entity> list = npcsByMap.get(npc.mapIndex);
-        if(list != null) list.remove(npc);
-    }
-
     public void update() {
         for(Entity npc : getNPCs(gp.currentMap)) {
             npc.update();

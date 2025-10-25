@@ -101,7 +101,7 @@ public class CollisionChecker {
             }
         }
 
-        // reset lại entity
+        // reset entity
         entity.solidArea.x = entity.solidAreaDefaultX;
         entity.solidArea.y = entity.solidAreaDefaultY; 
         return index;
@@ -126,7 +126,7 @@ public class CollisionChecker {
         gp.em.getPlayer().solidArea.x = gp.em.getPlayer().solidAreaDefaultX; 
         gp.em.getPlayer().solidArea.y = gp.em.getPlayer().solidAreaDefaultY;
     }
-    // trả về index object chạm, hoặc 999 nếu không chạm
+    // return object touched
     public int checkWorldObject(Entity mover, List<WorldObject> objects, int nextDX, int nextDY) {
         if (mover == null || objects == null || objects.isEmpty()) return 999;
 
@@ -160,7 +160,6 @@ public class CollisionChecker {
             );
 
             if (moverNextBody.intersects(objBody)) {
-                // nếu object có collision=true thì chặn di chuyển
                 if (obj.collision) mover.collisionOn = true;
                 return i;
             }

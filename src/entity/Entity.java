@@ -68,6 +68,7 @@ public class Entity implements CombatContext {
 
     // --- Movement Controller (AI / input strategy) ---
     protected MovementController controller;
+    public boolean hasAttackAnim = false; // default: false (Slime, v.v.)
 
     public Entity(GamePanel gp) {
         this.gp = gp;
@@ -122,10 +123,14 @@ public class Entity implements CombatContext {
     public void clearVelocity() { this.velX = 0; this.velY = 0; }
     public int getVelX() { return this.velX; }
     public int getVelY() { return this.velY; }
-
-    /** Mặc định: di chuyển theo direction * actualSpeed.
-     *  (Giữ để Player hoặc entity đơn giản vẫn chạy nếu không có controller).
-     */
+    @Override public int getWorldX() { return worldX; }
+    @Override public int getWorldY() { return worldY; }
+    @Override public Rectangle getSolidArea() {
+        return (solidArea != null)
+                ? solidArea
+                : new Rectangle(0, 0, Math.max(1, width), Math.max(1, height));
+    }
+    @Override public String getDirection() { return direction; }
     protected int[] computeDelta() {
         int dx = 0, dy = 0;
         switch (direction) {
@@ -141,10 +146,10 @@ public class Entity implements CombatContext {
         if (!isKnockbackActive()) {
             // 1) AI/input quyết định hướng & tốc độ
             if (controller != null) {
-                controller.decide(this);     // -> có thể chỉnh direction + actualSpeed
-                emo.moveByDirection(this);   // di chuyển dựa vào direction/speed
+                controller.decide(this);
+                emo.moveByDirection(this);
             } else {
-                int[] d = computeDelta();    // fallback: không có controller thì dùng dx,dy mặc định
+                int[] d = computeDelta();    // fallback: if entity has no controller
                 emo.moveWithDelta(this, d[0], d[1]);
             }
         }
@@ -159,18 +164,6 @@ public class Entity implements CombatContext {
     public void draw(Graphics2D g2) { ed.draw(g2, this); }
     public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
 
-    public void takeDamage(int rawDamage, int knockbackX, int knockbackY) {
-        DamageProcessor.applyDamage(this, rawDamage, knockbackX, knockbackY);
-    }
-
     public void onDamaged(int damage) {}
 
-    @Override public int getWorldX() { return worldX; }
-    @Override public int getWorldY() { return worldY; }
-    @Override public Rectangle getSolidArea() {
-        return (solidArea != null)
-                ? solidArea
-                : new Rectangle(0, 0, Math.max(1, width), Math.max(1, height));
-    }
-    @Override public String getDirection() { return direction; }
 }

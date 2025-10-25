@@ -10,7 +10,8 @@ import java.awt.image.BufferedImage;
 
 public class EntityDraw {
     private final GamePanel gp;
-    public EntityDraw(GamePanel gp){
+
+    public EntityDraw(GamePanel gp) {
         this.gp = gp;
     }
 
@@ -41,17 +42,33 @@ public class EntityDraw {
         if (e.animationON) {
             if (attacking) {
                 switch (e.direction) {
-                    case "up":    image = (e.spriteNum == 1 ? nz(e.atkUp1,    e.up1)   : nz(e.atkUp2,    e.up2));    break;
-                    case "down":  image = (e.spriteNum == 1 ? nz(e.atkDown1,  e.down1) : nz(e.atkDown2,  e.down2));  break;
-                    case "left":  image = (e.spriteNum == 1 ? nz(e.atkLeft1,  e.left1) : nz(e.atkLeft2,  e.left2));  break;
-                    default:      image = (e.spriteNum == 1 ? nz(e.atkRight1, e.right1): nz(e.atkRight2, e.right2)); break;
+                    case "up":
+                        image = (e.spriteNum == 1 ? nz(e.atkUp1, e.up1) : nz(e.atkUp2, e.up2));
+                        break;
+                    case "down":
+                        image = (e.spriteNum == 1 ? nz(e.atkDown1, e.down1) : nz(e.atkDown2, e.down2));
+                        break;
+                    case "left":
+                        image = (e.spriteNum == 1 ? nz(e.atkLeft1, e.left1) : nz(e.atkLeft2, e.left2));
+                        break;
+                    default:
+                        image = (e.spriteNum == 1 ? nz(e.atkRight1, e.right1) : nz(e.atkRight2, e.right2));
+                        break;
                 }
             } else {
                 switch (e.direction) {
-                    case "up":    image = (e.spriteNum == 1 ? e.up1    : e.up2);    break;
-                    case "down":  image = (e.spriteNum == 1 ? e.down1  : e.down2);  break;
-                    case "left":  image = (e.spriteNum == 1 ? e.left1  : e.left2);  break;
-                    default:      image = (e.spriteNum == 1 ? e.right1 : e.right2); break;
+                    case "up":
+                        image = (e.spriteNum == 1 ? e.up1 : e.up2);
+                        break;
+                    case "down":
+                        image = (e.spriteNum == 1 ? e.down1 : e.down2);
+                        break;
+                    case "left":
+                        image = (e.spriteNum == 1 ? e.left1 : e.left2);
+                        break;
+                    default:
+                        image = (e.spriteNum == 1 ? e.right1 : e.right2);
+                        break;
                 }
             }
         } else {
@@ -60,8 +77,31 @@ public class EntityDraw {
         if (image == null) image = nz(e.down1, e.staticImage);
 
         if (!skipSprite) {
-            g2.drawImage(image, screenX, screenY, e.width, e.height, null);
+            int tempX = screenX;
+            int tempY = screenY;
+
+            // offset 1.5 tile cho hướng UP (int, không bị chia nguyên)
+            final int offUp15 = (2 * gp.tileSize) / 3;  // = 1.5 * tileSize
+            final int offLeft = gp.tileSize;            // 1 tile trái
+
+            // Chỉ offset khi có attackAnim và đang tấn công
+            if (attacking && e.hasAttackAnim) {
+                if ("up".equals(e.direction))   tempY -= offUp15;
+                if ("left".equals(e.direction)) tempX -= offLeft;
+            }
+
+            // Nếu có attackAnim: vẽ theo kích thước thật của frame khi attack
+            final boolean useImageSize = attacking && e.hasAttackAnim;
+            int drawW = useImageSize ? image.getWidth()  : e.width;
+            int drawH = useImageSize ? image.getHeight() : e.height;
+
+            // NEO CHÂN + CĂN GIỮA để không bị "trượt"
+            int drawX = tempX ;
+            int drawY = tempY ;
+
+            g2.drawImage(image, drawX, drawY, drawW, drawH, null);
         }
+
 
         if (e.solidArea != null) {
             g2.setColor(Color.RED);

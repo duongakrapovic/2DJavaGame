@@ -25,7 +25,7 @@ public class WorldObject {
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collision = false;
 
-    // Thông tin map (nếu bạn đang dùng)
+    // Map
     public int mapIndex = 0;
 
     protected final GamePanel gp;
@@ -36,17 +36,13 @@ public class WorldObject {
         this.screenY = gp.screenHeight/2 - (gp.tileSize/2);
     }
 
-    /** Mặc định object không có logic mỗi frame; override nếu cần. */
     public void update() {}
-
-    /** Vẽ hình tĩnh nếu có. Nếu object cần vẽ theo world->screen, chỉnh lại ở ObjectManager. */
     public void draw(Graphics2D g2) {
         if (staticImage != null) {
             g2.drawImage(staticImage, screenX, screenY, null);
         }
     }
 
-    /** Loader đơn giản: đọc `/path.png` rồi scale về (w x h). */
     protected BufferedImage setup(String path, int w, int h) {
         try (InputStream is = getClass().getResourceAsStream(path + ".png")) {
             if (is == null) return null;
@@ -62,7 +58,7 @@ public class WorldObject {
             return null;
         }
     }
-    // WorldObject.java
+
     public BufferedImage getRenderImage() {
         return staticImage;
     }

@@ -46,8 +46,8 @@ public class Player extends Entity {
 
         // ---- Combat config
         combat.setAttackBoxSize(36, 36);           // kích thước hitbox
-        combat.setTimingFrames(4, 6, 8, 10);       // windup, active, recover, cooldown
-        setStats(10, 3, 1);                        // maxHp, atk, def
+        combat.setTimingFrames(6, 8, 12, 18);       // windup, active, recover, cooldown
+        setStats(100, 3, 1);                        // maxHp, atk, def
     }
 
     public void setDefaultValues() {

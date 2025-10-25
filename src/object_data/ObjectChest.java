@@ -26,8 +26,6 @@ public class ObjectChest extends WorldObject {
     public void open() {
         if (opened) return;
         opened = true;
-        // Nếu bạn có sprite rương mở:
         // staticImage = setup("/object/chest_open", width, height);
-        // collision = false; // tuỳ game design
     }
 }
