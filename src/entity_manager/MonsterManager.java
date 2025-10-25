@@ -1,9 +1,9 @@
 package entity_manager;
 
 import entity.Entity;
-import monster_data.SlimeMonster;
 import main.GamePanel;
-import monster_data.OrcMonster;
+import monster_data.*;
+
 import java.util.*;
 
 public class MonsterManager {
@@ -12,36 +12,49 @@ public class MonsterManager {
 
     public MonsterManager(GamePanel gp) {
         this.gp = gp;
-        spawnMonsters();
+        spawnAll();
     }
 
-    private void spawnMonsters() {
-        // Map 0
-
-        SlimeMonster slime1 = new SlimeMonster(gp, 0);
-        slime1.worldX = 20 * gp.tileSize;
-        slime1.worldY = 23 * gp.tileSize;
-        addMonster(slime1);
-
-        OrcMonster orc1 = new OrcMonster(gp, 0);
-        orc1.worldX = 22 * gp.tileSize;
-        orc1.worldY = 25 * gp.tileSize;
-        addMonster(orc1);
-
-        // Map 1
-        SlimeMonster slime2 = new SlimeMonster(gp, 1);
-        slime2.worldX = 25 * gp.tileSize;
-        slime2.worldY = 28 * gp.tileSize;
-        addMonster(slime2);
-
-        OrcMonster orc2 = new OrcMonster(gp, 1);
-        orc2.worldX = 28 * gp.tileSize;
-        orc2.worldY = 30 * gp.tileSize;
-        addMonster(orc2);
+    /** Gọi 1 lần khi khởi động */
+    private void spawnAll() {
+        spawnMap0();
+        spawnMap1();
+        spawnMap2();
+        spawnMap3();
     }
 
-    public void addMonster(Entity monster) {
-        monstersByMap.computeIfAbsent(monster.mapIndex, k -> new ArrayList<>()).add(monster);
+    // === HOME ===
+    private void spawnMap0() {
+        // Map 0 là nhà → không có quái
+    }
+
+    // === FLOOR 1 ===
+    private void spawnMap1() {
+        int t = gp.tileSize;
+        addMonster(new RedSlimeMonster(gp, 1), 10*t, 12*t);
+        addMonster(new RedSlimeMonster(gp, 1), 15*t, 9*t);
+        addMonster(new BatMonster(gp, 1),       20*t, 8*t);
+    }
+
+    // === FLOOR 2 ===
+    private void spawnMap2() {
+        int t = gp.tileSize;
+        addMonster(new OrcMonster(gp, 2), 18*t, 10*t);
+        addMonster(new BatMonster(gp, 2), 8*t,  6*t);
+        addMonster(new BatMonster(gp, 2), 14*t, 14*t);
+    }
+
+    // === FLOOR 3 (BOSS) ===
+    private void spawnMap3() {
+        int t = gp.tileSize;
+        addMonster(new RedSlimeMonster(gp, 3), 16*t, 8*t); // boss duy nhất tầng 3
+    }
+
+    // === HÀM HỖ TRỢ CHUNG ===
+    private void addMonster(Entity m, int wx, int wy) {
+        m.worldX = wx;
+        m.worldY = wy;
+        monstersByMap.computeIfAbsent(m.mapIndex, k -> new ArrayList<>()).add(m);
     }
 
     public List<Entity> getMonsters(int mapId) {
@@ -49,13 +62,13 @@ public class MonsterManager {
     }
 
     public void update() {
-        for(Entity m : getMonsters(gp.currentMap)) {
+        for (Entity m : getMonsters(gp.currentMap)) {
             m.update();
         }
     }
 
     public void draw(java.awt.Graphics2D g2) {
-        for(Entity m : getMonsters(gp.currentMap)) {
+        for (Entity m : getMonsters(gp.currentMap)) {
             m.draw(g2);
         }
     }
