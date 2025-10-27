@@ -1,10 +1,6 @@
 package entity_manager;
 
-import object_data.WorldObject;
-import object_data.ObjectKey;
-import object_data.ObjectDoor;
-import object_data.ObjectPortal;
-import object_data.Shop;
+import object_data.*;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
 
