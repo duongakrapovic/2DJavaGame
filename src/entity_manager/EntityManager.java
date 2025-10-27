@@ -40,7 +40,7 @@ public class EntityManager {
         oM.update();
 
         for (Entity m : mM.getMonsters(currentMap)) m.update();
-        for (Entity n : npcM.getNPCs(currentMap))  n.update();
+        for (Entity n : npcM.getNPCs(currentMap))  n.update();  
         List<Entity> monsters = mM.getMonsters(currentMap);
 
         // cause damage
@@ -57,7 +57,7 @@ public class EntityManager {
 
     public void draw(Graphics2D g2, int currentMap) {
         // World Object
-        oM.draw(g2, player);
+        oM.draw(g2, currentMap, player);
 
         // Entity
         List<Entity> all = new ArrayList<>();

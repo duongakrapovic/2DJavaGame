@@ -4,6 +4,7 @@ import object_data.WorldObject;
 import object_data.ObjectKey;
 import object_data.ObjectDoor;
 import object_data.ObjectPortal;
+import object_data.Shop;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
 
@@ -28,12 +29,17 @@ public class ObjectManager {
         key.worldX = 20 * gp.tileSize;
         key.worldY = 20 * gp.tileSize;
         addObject(key);
-
+        
+        Shop shop = new Shop(gp, 0);
+        shop.worldX = 46 * gp.tileSize ;
+        shop.worldY = 15 * gp.tileSize;
+        addObject(shop);
+        
         ObjectDoor door = new ObjectDoor(gp, 0);
-        door.worldX = 22 * gp.tileSize;
-        door.worldY = 26 * gp.tileSize;
+        door.worldX = 48 * gp.tileSize - 23;
+        door.worldY = 18 * gp.tileSize;
         addObject(door);
-
+             
         ObjectPortal portal = new ObjectPortal(gp, 0);
         portal.worldX = 47 * gp.tileSize + 12;
         portal.worldY = 47 * gp.tileSize + 12;
@@ -44,6 +50,24 @@ public class ObjectManager {
         portal1.worldX = 47 * gp.tileSize;
         portal1.worldY = 47 * gp.tileSize;
         addObject(portal1);
+        
+//        Shop shop1 = new Shop(gp, 1);
+//        shop1.worldX = 46 * gp.tileSize ;
+//        shop1.worldY = 15 * gp.tileSize;
+//        addObject(shop1);
+//        
+//        ObjectDoor door1 = new ObjectDoor(gp, 1);
+//        door1.worldX = 48 * gp.tileSize - 23;
+//        door1.worldY = 18 * gp.tileSize;
+//        addObject(door1);
+        
+        // map 2 
+        
+        // map shop = map 3 
+        ObjectDoor door3 = new ObjectDoor(gp, 3);
+        door3.worldX = 15 * gp.tileSize + 22 ;
+        door3.worldY = 23 * gp.tileSize;
+        addObject(door3);
     }
 
     public void addObject(WorldObject obj) {

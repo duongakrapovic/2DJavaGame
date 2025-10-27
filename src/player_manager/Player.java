@@ -52,8 +52,8 @@ public class Player extends Entity {
 
     public void setDefaultValues() {
         
-        worldX = gp.tileSize * (gp.chunkSize / 2 + 7);
-        worldY = gp.tileSize * (gp.chunkSize / 2 + 2);
+        worldX = gp.tileSize * (gp.chunkSize / 2 + 7) - 8;
+        worldY = gp.tileSize * (gp.chunkSize / 2 + 1) - 8;
         defaultSpeed = 15;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;

@@ -14,8 +14,8 @@ public class Shop extends WorldObject {
         this.mapIndex = mapIndex;
 
         name   = "shop";
-        width  = gp.tileSize * 3;
-        height = gp.tileSize * 3;
+        width  = gp.tileSize * 4;
+        height = gp.tileSize * 4;
 
         staticImage = setup("/object/shop", width, height);
         collision = false;
