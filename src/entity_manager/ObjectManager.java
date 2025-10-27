@@ -1,9 +1,6 @@
 package entity_manager;
 
-import object_data.WorldObject;
-import object_data.ObjectKey;
-import object_data.ObjectDoor;
-import object_data.ObjectPortal;
+import object_data.*;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
 
@@ -44,6 +41,11 @@ public class ObjectManager {
         portal1.worldX = 47 * gp.tileSize;
         portal1.worldY = 47 * gp.tileSize;
         addObject(portal1);
+
+        Shop shop = new Shop(gp, 0);
+        shop.worldX = 32 * gp.tileSize ;
+        shop.worldY = 32* gp.tileSize;
+        addObject(shop);
     }
 
     public void addObject(WorldObject obj) {

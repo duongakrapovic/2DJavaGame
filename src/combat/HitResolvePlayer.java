@@ -11,14 +11,14 @@ public final class HitResolvePlayer {
     private HitResolvePlayer() {}
 
     public static void resolve(Player player, List<Entity> monsters) {
-        if (player == null) return;
-        if (!player.combat.isAttackActive()) return;
+        if (player == null || player.isDead()) return;
+        if (!CombatSystem.isAttackActive(player.combat)) return;      // dùng API trung gian
 
         Rectangle attack = player.combat.getAttackBox();
         if (attack == null || attack.width <= 0 || attack.height <= 0) return;
 
         int rawDamage = Math.max(1, player.getATK());
-        int[] knockback = KnockbackService.forPlayerAttack(player);
+        int[] knockback = CombatSystem.computePlayerAttackKnockback(player);
 
         for (Entity e : monsters) {
             if (!(e instanceof Monster)) continue;
@@ -28,9 +28,9 @@ public final class HitResolvePlayer {
             Rectangle monsterBody = CollisionUtil.getEntityBodyWorldRect(m);
             if (!attack.intersects(monsterBody)) continue;
 
-            if (!player.combat.wasHitThisSwing(m)) {
+            if (!CombatSystem.wasHitThisSwing(player.combat, m)) {
                 DamageProcessor.applyDamage(m, rawDamage, knockback[0], knockback[1]);
-                player.combat.markHit(m);
+                CombatSystem.markHitLanded(player.combat, m);
             }
         }
     }

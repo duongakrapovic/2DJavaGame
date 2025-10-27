@@ -48,7 +48,7 @@ public final class CombatSystem {
     public static int[] computePlayerAttackKnockback(Player p) {
         return KnockbackService.forPlayerAttack(p);
     }
-
+    public static int[] computeMonsterAttackKnockback(Monster m, Player p) {return KnockbackService.forMonsterAttack(m, p);}
     // Resolve hits
     public static void resolvePlayerHits(Player player, List<entity.Entity> monsters) {
         HitResolvePlayer.resolve(player, monsters);

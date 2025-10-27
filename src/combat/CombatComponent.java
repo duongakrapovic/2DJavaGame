@@ -81,7 +81,7 @@ public class CombatComponent {
     int  getCooldownCounterFrames()      { return cooldownCounterFrames; }
     void setCooldownCounterFrames(int v) { cooldownCounterFrames = v; }
 
-    // ===== tiện ích tĩnh =====
+    @SuppressWarnings("Unused")
     public static void setCooldown(CombatComponent cc, int frames) {
         cc.setCooldownCounterFrames(Math.max(0, frames));
     }
