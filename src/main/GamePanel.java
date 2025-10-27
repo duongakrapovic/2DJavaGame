@@ -100,7 +100,7 @@ public class GamePanel extends JPanel {
 
     public void setupGame() {
         em.getPlayer().setDefaultValues();
-        chunkM.pathMap = "map1";
+        chunkM.pathMap = "map0";
         gsm.setState(GameState.START);
     }
 

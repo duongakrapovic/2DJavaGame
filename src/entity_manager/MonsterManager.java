@@ -15,7 +15,6 @@ public class MonsterManager {
         spawnAll();
     }
 
-    /** Gọi 1 lần khi khởi động */
     private void spawnAll() {
         spawnMap0();
         spawnMap1();
@@ -23,12 +22,10 @@ public class MonsterManager {
         spawnMap3();
     }
 
-    // === HOME ===
     private void spawnMap0() {
-        // Map 0 là nhà → không có quái
+        // no monsters
     }
 
-    // === FLOOR 1 ===
     private void spawnMap1() {
         int t = gp.tileSize;
         addMonster(new RedSlimeMonster(gp, 1), 10*t, 12*t);
@@ -37,21 +34,15 @@ public class MonsterManager {
         addMonster(new SkeletonLord(gp, 1),   30*t, 12*t);
     }
 
-    // === FLOOR 2 ===
     private void spawnMap2() {
         int t = gp.tileSize;
-        addMonster(new OrcMonster(gp, 2), 18*t, 10*t);
-        addMonster(new BatMonster(gp, 2), 8*t,  6*t);
-        addMonster(new BatMonster(gp, 2), 14*t, 14*t);
+        addMonster(new OrcMonster(gp, 2), 18 * t, 10 * t);
     }
 
-    // === FLOOR 3 (BOSS) ===
-    private void spawnMap3() {
-        int t = gp.tileSize;
-        addMonster(new RedSlimeMonster(gp, 3), 16*t, 8*t); // boss duy nhất tầng 3
+    private void spawnMap3(){
+        
     }
-
-    // === HÀM HỖ TRỢ CHUNG ===
+    
     private void addMonster(Entity m, int wx, int wy) {
         m.worldX = wx;
         m.worldY = wy;
@@ -62,14 +53,14 @@ public class MonsterManager {
         return monstersByMap.getOrDefault(mapId, Collections.emptyList());
     }
 
-    public void update() {
-        for (Entity m : getMonsters(gp.currentMap)) {
+    public void update(int mapId) {
+        for (Entity m : getMonsters(mapId)) {
             m.update();
         }
     }
 
-    public void draw(java.awt.Graphics2D g2) {
-        for (Entity m : getMonsters(gp.currentMap)) {
+    public void draw(java.awt.Graphics2D g2, int mapId) {
+        for (Entity m : getMonsters(mapId)) {
             m.draw(g2);
         }
     }

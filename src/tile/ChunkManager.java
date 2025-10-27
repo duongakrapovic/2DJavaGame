@@ -22,7 +22,7 @@ public class ChunkManager {
     // Single-thread executor for background chunk loading
     private ExecutorService loader = Executors.newSingleThreadExecutor(); // private thread for load chunk
     // Current map path
-    public String pathMap = "map1"; 
+    public String pathMap = "map0"; 
 
     public ChunkManager(int chunkSize , GamePanel gp){
         this.chunkSize = chunkSize;
