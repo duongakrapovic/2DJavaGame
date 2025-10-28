@@ -43,7 +43,22 @@ public class Interact {
                             gp.messageUI.showMessage("Ya got a key!");
                         }
                         break;
-
+                    case "manaposion":
+                        gp.messageUI.showTouchMessage("press 'F' to heal mana", obj, gp);
+                        if (input.isPicked()) {
+                            SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
+                            objects.remove(index); // xoá object ra khỏi map
+                            gp.messageUI.showMessage("full fuel!");
+                        }
+                        break;
+                    case "healthposion":
+                        gp.messageUI.showTouchMessage("press 'F' to heal health", obj, gp);
+                        if (input.isPicked()) {
+                            SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
+                            objects.remove(index); // xoá object ra khỏi map
+                            gp.messageUI.showMessage("That close!");
+                        }
+                        break;    
                     case "portal":
                         gp.messageUI.showTouchMessage("press 'F' to tele", obj, gp);
                         if (input.isPicked()) {
@@ -74,7 +89,7 @@ public class Interact {
                         }
                         break;
                     case "door":
-                        gp.messageUI.showTouchMessage("press 'F' to tele", obj, gp);
+                        gp.messageUI.showTouchMessage("press 'F' to shopping", obj, gp);
                         if (input.isPicked()) {
                             gp.fadeUI.startFade(() -> {
                                 if ("map0".equals(gp.chunkM.pathMap)) {
@@ -98,7 +113,7 @@ public class Interact {
                                 gp.chunkM.clearChunks();
                                 gp.chunkM.updateChunks(gp.em.getPlayer().worldX, gp.em.getPlayer().worldY);
 
-                                gp.messageUI.showMessage("Teleported!");
+                                gp.messageUI.showMessage("shop!");
                             });
                         }
                         break;

@@ -7,9 +7,9 @@ package object_data;
 import java.awt.Rectangle;
 import main.GamePanel;
 
-public class HeathPosion extends WorldObject {
+public class HealthPosion extends WorldObject {
 
-    public HeathPosion(GamePanel gp, int mapIndex) {
+    public HealthPosion(GamePanel gp, int mapIndex) {
         super(gp);
         this.mapIndex = mapIndex;
 
@@ -20,7 +20,8 @@ public class HeathPosion extends WorldObject {
         staticImage = setup("/object/healthposion", width, height);
         collision = false;
 
-        solidArea = new Rectangle(2, 2, width - 4, height - 4);
+        int t = gp.tileSize / 2;
+        solidArea = new Rectangle(-t / 2, -t /2, width + t, height + t);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
     }

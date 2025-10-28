@@ -14,9 +14,7 @@
         <group>
             <file>file:/D:/coding/2DJavaGame/src/interact_manager/Interact.java</file>
             <file>file:/D:/coding/2DJavaGame/src/entity_manager/ObjectManager.java</file>
-            <file>file:/D:/coding/2DJavaGame/src/entity_manager/MonsterManager.java</file>
-            <file>file:/D:/coding/2DJavaGame/src/entity_manager/NPCManager.java</file>
-            <file>file:/D:/coding/2DJavaGame/src/main/UtilityTool.java</file>
+            <file>file:/D:/coding/2DJavaGame/src/ui/MessageUI.java</file>
         </group>
     </open-files>
 </project-private>
