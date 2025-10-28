@@ -64,11 +64,6 @@ public class ObjectManager {
         return objectsByMap.getOrDefault(mapId, Collections.emptyList());
     }
 
-//    public void removeObject(WorldObject obj) {
-//        List<WorldObject> list = objectsByMap.get(obj.mapIndex);
-//        if (list != null) list.remove(obj);
-//    }
-
     // ==== Tick ====
     public void update() {
         update(gp.currentMap);

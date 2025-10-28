@@ -50,7 +50,7 @@ public class GameCommandHandler implements KeyListener {
                         // Quit game
                         System.exit(0);
                     }
-                    if (gp.mainMenuUI.commandNum == 2) {
+                    if (gp.mainMenuUI.commandNum == 3) {
                         // credit
                     }
                 }
