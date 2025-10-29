@@ -13,14 +13,16 @@ public class ManaPosion extends WorldObject {
         super(gp);
         this.mapIndex = mapIndex;
 
-        name   = "boots";
-        width  = gp.tileSize * 3 / 5;
-        height = gp.tileSize * 3 / 5;
+        name   = "manaposion";
+        width  = gp.tileSize;
+        height = gp.tileSize;
 
-        staticImage = setup("/object/boots", width, height);
+        staticImage = setup("/object/manaposion", width, height);
         collision = false;
-
-        solidArea = new Rectangle(2, 2, width - 4, height - 4);
+        
+        
+        int t = gp.tileSize / 2;
+        solidArea = new Rectangle(-t / 2, -t /2, width + t, height + t);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
     }

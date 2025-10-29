@@ -26,12 +26,12 @@ public class GameCommandHandler implements KeyListener {
                 if (code == KeyEvent.VK_UP) {
                     gp.mainMenuUI.commandNum--;
                     if (gp.mainMenuUI.commandNum < 0) {
-                        gp.mainMenuUI.commandNum = 2; // wrap around
+                        gp.mainMenuUI.commandNum = 3; // wrap around
                     }
                 }
                 if (code == KeyEvent.VK_DOWN) {
                     gp.mainMenuUI.commandNum++;
-                    if (gp.mainMenuUI.commandNum > 2) {
+                    if (gp.mainMenuUI.commandNum > 3) {
                         gp.mainMenuUI.commandNum = 0; // wrap around
                     }
                 }
@@ -49,6 +49,9 @@ public class GameCommandHandler implements KeyListener {
                     if (gp.mainMenuUI.commandNum == 2) {
                         // Quit game
                         System.exit(0);
+                    }
+                    if (gp.mainMenuUI.commandNum == 3) {
+                        // credit
                     }
                 }
             }
