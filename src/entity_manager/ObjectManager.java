@@ -47,10 +47,10 @@ public class ObjectManager {
         portal1.worldY = 47 * gp.tileSize;
         addObject(portal1);
         
-//        Shop shop1 = new Shop(gp, 1);
-//        shop1.worldX = 46 * gp.tileSize ;
-//        shop1.worldY = 15 * gp.tileSize;
-//        addObject(shop1);
+        Shop shop1 = new Shop(gp, 0);
+        shop1.worldX = 46 * gp.tileSize ;
+        shop1.worldY = 15 * gp.tileSize;
+        addObject(shop1);
 //        
 //        ObjectDoor door1 = new ObjectDoor(gp, 1);
 //        door1.worldX = 48 * gp.tileSize - 23;
