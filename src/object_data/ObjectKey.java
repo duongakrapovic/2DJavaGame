@@ -16,7 +16,6 @@ public class ObjectKey extends WorldObject {
         staticImage = setup("/object/key", width, height);
         collision = false;
 
-        // Nở vùng pick-up cho dễ nhặt
         solidArea = new Rectangle(-gp.tileSize/4, -gp.tileSize/4,
                 width + gp.tileSize/2, height + gp.tileSize/2);
         solidAreaDefaultX = solidArea.x;

@@ -52,6 +52,7 @@ public class GamePanel extends JPanel {
     public MainMenuUI mainMenuUI;
     public HealthUI healthUI;
     public MonsterHealthUI monsterHealthUI;
+    public static final float SCALE = 3f;
 
     // ===== PAUSE SYSTEM =====
     private boolean paused = false;
@@ -95,7 +96,7 @@ public class GamePanel extends JPanel {
         uiManager.add(healthUI);
 
         // ===== PAUSE OVERLAY =====
-        pauseOverlay = new PauseOverlay(null); // Không có Playing, nhưng vẫn hoạt động
+        pauseOverlay = new PauseOverlay(this); // Truyền GamePanel hiện tại vào để tránh null
     }
 
     // Toggle Credits in Main Menu
@@ -145,8 +146,6 @@ public class GamePanel extends JPanel {
                 case KeyEvent.VK_LEFT -> pauseOverlay.moveLeft();
                 case KeyEvent.VK_RIGHT -> pauseOverlay.moveRight();
                 case KeyEvent.VK_ENTER -> pauseOverlay.select();
-                case KeyEvent.VK_A -> pauseOverlay.decreaseVolume();
-                case KeyEvent.VK_D -> pauseOverlay.increaseVolume();
             }
         }
     }

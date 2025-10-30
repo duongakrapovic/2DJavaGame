@@ -14,6 +14,7 @@ public class SlimeMonster extends Monster {
 
         name = "Green Slime";
         width = gp.tileSize; height = gp.tileSize;
+        this.hasAttackAnim = false;
         getImage();
 
         collision = true; animationON = true;
@@ -26,15 +27,14 @@ public class SlimeMonster extends Monster {
         // Stats sinh tồn
         setStats(10, 2, 0);
 
-        // ===== Combat cấu hình (đòn cắn/húc) =====
-        this.attackDamage = 2;          // tùy game feel
+        this.attackDamage = 2;
         this.attackKnockback = 6;
-        this.attackTriggerRadius = 28;  // gần hơn chút để natural
-        // Kích thước hitbox & timing (có thể khác default của Monster)
+        this.attackTriggerRadius = 28;
+        // attackbox and timming
         this.combat.setAttackBoxSize(28, 28);
         this.combat.setTimingFrames(6, 6, 10, 20);
 
-        // Di chuyển mặc định: đi lang thang
+        // easy movement
         setController(new WanderMovement(/*speed*/wanderSpeed, /*changeEveryFrames*/120));
     }
 
@@ -47,10 +47,5 @@ public class SlimeMonster extends Monster {
         right2 = setup("/monster/greenslime_down_2" , width , height);
         left1  = setup("/monster/greenslime_down_1" , width , height);
         left2  = setup("/monster/greenslime_down_2" , width , height);
-        atkUp1 = up1;    atkUp2 = up2;
-        atkDown1 = down1; atkDown2 = down2;
-        atkLeft1 = left1; atkLeft2 = left2;
-        atkRight1 = right1; atkRight2 = right2;
-
     }
 }

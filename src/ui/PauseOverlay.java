@@ -1,112 +1,169 @@
 package ui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
-
 import main.GamePanel;
 import main.GameState;
 import sound_manager.SoundManager;
+import utilz.LoadSave;
+import utilz.Constants;
 
-/** Overlay tạm dừng: vẽ nền + 3 nút URM, điều khiển bằng phím. */
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static utilz.Constants.UI.PauseButtons.SOUND_SIZE;
+import static utilz.Constants.UI.URMButtons.*;
+
+/**
+ * PauseOverlay.java
+ * Vẽ pause menu bằng ảnh sprite (pause_background.png, sound_button.png, urm_buttons.png)
+ * Điều khiển hoàn toàn bằng bàn phím.
+ */
+
 public class PauseOverlay {
+    // === Layout constants ===
+    private static final int PAD_L = 28;
+    private static final int PAD_R = 28;
+    private static final int PAD_TOP = 36;
+    private static final int PAD_BOTTOM = 28;
+
+    private static final int ROW_STEP = 48;
+    private static final int URM_GAP = 8;
+    private static final int BOTTOM_CLEAR = 6;
+
 
     private final GamePanel gp;
-
-    private BufferedImage backgroundImg;
+    private BufferedImage bgImg;
     private int bgX, bgY, bgW, bgH;
 
-    private final UrmButton[] buttons;
-    private int currentChoice = 2; // 0 = Menu, 1 = Replay, 2 = Resume
-
-    private final AudioOptions audioOptions;
+    private SoundButton musicB, sfxB;
+    private UrmButton menuB, replayB, resumeB;
+    private int focusIndex = 4; // 0=Music, 1=SFX, 2=Menu, 3=Replay, 4=Resume
 
     public PauseOverlay(GamePanel gp) {
         this.gp = gp;
         loadBackground();
-
-        // bố trí 3 nút theo nền (tự canh theo kích thước panel)
-        int btnSize = Math.max(48, gp.tileSize); // hiển thị theo tileSize cho đẹp
-        int spacing = btnSize + gp.tileSize / 3;
-        int baseX = gp.screenWidth / 2 - (btnSize * 3 + spacing * 2) / 2;
-        int y = bgY + bgH - (btnSize + gp.tileSize);
-
-        buttons = new UrmButton[] {
-                new UrmButton(baseX,               y, btnSize, btnSize, 2), // Menu
-                new UrmButton(baseX + spacing,     y, btnSize, btnSize, 1), // Replay
-                new UrmButton(baseX + spacing * 2, y, btnSize, btnSize, 0)  // Resume
-        };
-
-        audioOptions = new AudioOptions(gp);
+        initButtons();
     }
 
     private void loadBackground() {
-        try (InputStream is = getClass().getResourceAsStream("/ui/pause_menu.png")) {
-            backgroundImg = ImageIO.read(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // scale nền theo panel
-        bgW = Math.min(gp.screenWidth - gp.tileSize * 4, backgroundImg.getWidth() * 3);
-        bgH = Math.min(gp.screenHeight - gp.tileSize * 4, backgroundImg.getHeight() * 3);
-        bgX = (gp.screenWidth - bgW) / 2;
-        bgY = (gp.screenHeight - bgH) / 4;
+        bgImg = LoadSave.GetSpriteAtlas(LoadSave.PAUSE_BACKGROUND);
+        float scale = gp.tileSize / 48f;
+        bgW = Math.round(bgImg.getWidth() * scale);
+        bgH = Math.round(bgImg.getHeight() * scale);
+        bgX = gp.screenWidth / 2 - bgW / 2;
+        bgY = gp.screenHeight / 2 - bgH / 2;
     }
 
+    private void initButtons() {
+        int centerX = bgX + bgW / 2;
+
+        // === SOUND BUTTON: neo theo vị trí bảng MUSIC (chuẩn theo ảnh gốc) ===
+        // Ảnh gốc có kích thước: 258x389
+        final float REF_W = 258f;
+        final float REF_H = 389f;
+
+        // Tọa độ bảng MUSIC trên ảnh gốc
+        final float MUSIC_RIGHT_X = 208f;
+        final float MUSIC_CENTER_Y = 111f;
+
+        // Quy đổi sang hệ toạ độ khi đã scale
+        int soundX = bgX + Math.round((MUSIC_RIGHT_X / REF_W) * bgW) - 200; // +4 px khoảng cách nhỏ
+        int soundY = bgY + Math.round((MUSIC_CENTER_Y / REF_H) * bgH) - SOUND_SIZE / 2 + 220;
+
+        musicB = new SoundButton(soundX, soundY);
+
+        // === URM BUTTONS (giữ nguyên) ===
+        int groupW = URM_SIZE * 3 + Constants.UI.PauseButtons.URM_GAP * 2;
+        int baseY = bgY + (int)(bgH * (Constants.UI.PauseButtons.GROUP_Y - 0.215f));
+        int startX = centerX - groupW / 2 + (int)(bgW * -0.01f);
+
+        menuB   = new UrmButton(startX, baseY, 2);
+        replayB = new UrmButton(startX + URM_SIZE + Constants.UI.PauseButtons.URM_GAP, baseY, 1);
+        resumeB = new UrmButton(startX + (URM_SIZE + Constants.UI.PauseButtons.URM_GAP) * 2, baseY, 0);
+    }
+
+
+
+
+
+    // === Update & Draw ===
     public void update() {
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setMouseOver(i == currentChoice);
-            buttons[i].update();
+        musicB.update();
+    }
+
+    public void draw(Graphics2D g2) {
+        // Background
+        g2.drawImage(bgImg, bgX, bgY, bgW, bgH, null);
+        // Buttons
+        musicB.draw(g2);
+        menuB.draw(g2);
+        replayB.draw(g2);
+        resumeB.draw(g2);
+
+        // (Tuỳ chọn) tô sáng nút đang focus
+        highlightFocusedButton(g2);
+    }
+
+    /** Tô sáng nút đang focus (tùy chọn để dễ nhìn hơn) */
+    private void highlightFocusedButton(Graphics2D g2) {
+        Rectangle r = switch (focusIndex) {
+            case 0 -> musicB.getBounds();
+            case 1 -> menuB.getBounds();
+            case 2 -> replayB.getBounds();
+            case 3 -> resumeB.getBounds();
+            default -> null;
+        };
+        if (r != null) {
+            g2.setColor(new Color(255, 255, 255, 80));
+            g2.fillRoundRect(r.x - 4, r.y - 4, r.width + 8, r.height + 8, 10, 10);
         }
-        audioOptions.update();
     }
 
-    public void draw(Graphics g) {
-        g.drawImage(backgroundImg, bgX, bgY, bgW, bgH, null);
-        for (UrmButton b : buttons) b.draw(g);
-
-        g.setColor(Color.WHITE);
-        int textY = bgY + bgH + gp.tileSize / 2;
-        g.drawString("← / → : Chọn nút     ENTER : Chấp nhận     ESC : Tiếp tục", bgX, textY);
-        g.drawString("A / D : Giảm / tăng âm lượng", bgX, textY + gp.tileSize);
-
-        audioOptions.draw(g);
-    }
-
-    // ====== Điều khiển bằng phím ======
+    // === Keyboard control ===
     public void moveLeft() {
-        currentChoice = (currentChoice + buttons.length - 1) % buttons.length;
-        SoundManager.playSFX("hover");
+        focusIndex = (focusIndex - 1 + 5) % 5;
+        playClick();
     }
 
     public void moveRight() {
-        currentChoice = (currentChoice + 1) % buttons.length;
-        SoundManager.playSFX("hover");
+        focusIndex = (focusIndex + 1) % 5;
+        playClick();
     }
 
     public void select() {
-        SoundManager.playSFX("click");
-        switch (currentChoice) {
-            case 0 -> { // Menu
-                gp.gsm.setState(GameState.START);
-                gp.setPaused(false);
-                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
-            }
-            case 1 -> { // Replay
-                gp.setupGame();
-                gp.setPaused(false);
-                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
-            }
-            case 2 -> { // Resume
-                gp.setPaused(false);
-                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
-            }
+        switch (focusIndex) {
+            case 0 -> toggleMusic();
+            case 1 -> goMenu();
+            case 2 -> replay();
+            case 3 -> resume();
         }
+        playClick();
     }
 
-    public void increaseVolume() { audioOptions.increaseVolume(); }
-    public void decreaseVolume() { audioOptions.decreaseVolume(); }
+    // === Actions ===
+    private void toggleMusic() {
+        musicB.setMuted(!musicB.isMuted());
+        if (musicB.isMuted())
+            SoundManager.getInstance().stopMusic();
+        else
+            SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+    }
+
+
+    private void goMenu() {
+        gp.setPaused(false);
+        gp.gsm.setState(GameState.START);
+    }
+
+    private void replay() {
+        gp.setPaused(false);
+        gp.gsm.setState(GameState.PLAY);
+    }
+
+    private void resume() {
+        gp.setPaused(false);
+    }
+
+    private void playClick() {
+        SoundManager.playSFX("click");
+    }
 }
