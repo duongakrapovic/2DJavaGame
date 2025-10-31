@@ -1,6 +1,7 @@
 package ui;
 
 import main.GamePanel;
+import main.GameState;
 import monster_data.Monster;
 import java.awt.*;
 import entity.Entity;
@@ -17,7 +18,6 @@ public class MonsterHealthUI extends BaseUI {
 
     @Override
     public void draw(Graphics2D g2) {
-
         for (Entity e : gp.em.getMonsters()) {
             if (!(e instanceof Monster monster)) continue;
             if (monster.isDead()) continue;
@@ -50,5 +50,13 @@ public class MonsterHealthUI extends BaseUI {
             g2.setStroke(new BasicStroke(1));
             g2.drawRect(barX, barY, barWidth, barHeight);
         }
+    }
+    @Override
+    public boolean shouldRenderIn(GameState state) {
+        return state == GameState.PLAY;
+    }
+    @Override
+    public boolean shouldUpdate() {
+        return false;
     }
 }

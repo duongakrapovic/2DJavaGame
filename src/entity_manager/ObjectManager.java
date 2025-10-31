@@ -1,15 +1,12 @@
 package entity_manager;
 
-import object_data.WorldObject;
-import object_data.ObjectKey;
-import object_data.ObjectDoor;
-import object_data.ObjectPortal;
+import object_data.*;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.*;    
 
 public class ObjectManager {
 
@@ -23,30 +20,43 @@ public class ObjectManager {
     }
 
     private void spawnObjects() {
-        // Map 0
-        ObjectKey key = new ObjectKey(gp, 0);
-        key.worldX = 20 * gp.tileSize;
-        key.worldY = 20 * gp.tileSize;
-        addObject(key);
-
-        ObjectDoor door = new ObjectDoor(gp, 0);
-        door.worldX = 22 * gp.tileSize;
-        door.worldY = 26 * gp.tileSize;
-        addObject(door);
-
-        ObjectPortal portal = new ObjectPortal(gp, 0);
-        portal.worldX = 25 * gp.tileSize;
-        portal.worldY = 23 * gp.tileSize;
-        addObject(portal);
-
-        // Map 1
-        ObjectPortal portal1 = new ObjectPortal(gp, 1);
-        portal1.worldX = 25 * gp.tileSize;
-        portal1.worldY = 23 * gp.tileSize;
-        addObject(portal1);
+        spawnMap0();
+        spawnMap1();
+        spawnMap2();
+        spawnMap3();
     }
-
-    public void addObject(WorldObject obj) {
+    private void spawnMap0() {
+        int t = gp.tileSize;
+        addObject(new ObjectKey(gp, 0), 23 * t, 18 * t);
+        addObject(new Shop(gp, 0),46 * t, 15 * t);
+        addObject(new ObjectDoor(gp, 0),48 * t - 23, 18 * t);
+        addObject(new ObjectPortal(gp, 0),47 * t + 12, 47 * t + 12);
+        
+    }
+    private void spawnMap1() {
+        int t = gp.tileSize;
+        addObject(new ObjectPortal(gp, 1),47 * t + 12, 47 * t + 12);
+    }
+    private void spawnMap2() {
+        // no 
+    }
+    private void spawnMap3() {
+        int t = gp.tileSize;
+        addObject(new ObjectDoor(gp, 3), 15 * t + 22 , 23 * t);
+        
+        addObject(new ManaPosion(gp, 3), 14 * t, 12 * t - 5);
+        addObject(new ManaPosion(gp, 3), 15 * t, 12 * t - 5);
+        addObject(new ManaPosion(gp, 3), 16 * t, 12 * t - 5);
+        addObject(new ManaPosion(gp, 3), 17 * t, 12 * t - 5);
+        
+        addObject(new HealthPosion(gp, 3), 15 * t, 17 * t - 5);
+        addObject(new HealthPosion(gp, 3), 16 * t, 17 * t - 5);
+        addObject(new HealthPosion(gp, 3), 15 * t, 16 * t - 5);
+        addObject(new HealthPosion(gp, 3), 16 * t, 16 * t - 5);
+    }
+    public void addObject(WorldObject obj, int wx, int wy) {
+        obj.worldX = wx;
+        obj.worldY = wy;
         objectsByMap.computeIfAbsent(obj.mapIndex, k -> new ArrayList<>()).add(obj);
     }
 
@@ -54,18 +64,13 @@ public class ObjectManager {
         return objectsByMap.getOrDefault(mapId, Collections.emptyList());
     }
 
-    public void removeObject(WorldObject obj) {
-        List<WorldObject> list = objectsByMap.get(obj.mapIndex);
-        if (list != null) list.remove(obj);
-    }
-
     // ==== Tick ====
     public void update() {
         update(gp.currentMap);
     }
-
     public void update(int mapId) {
-        for (WorldObject o : getObjects(mapId)) o.update();
+        for (WorldObject o : getObjects(mapId))
+            o.update();
     }
 
 
@@ -106,10 +111,10 @@ public class ObjectManager {
             if (img != null) g2.drawImage(img, sx, sy, null);
 
             // debug hitbox
-            /*
-            g2.setColor(java.awt.Color.YELLOW);
+            
+            g2.setColor(java.awt.Color.RED);
             g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y, o.solidArea.width, o.solidArea.height);
-            */
+            
         }
     }
 }

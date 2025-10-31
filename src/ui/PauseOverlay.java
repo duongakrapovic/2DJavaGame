@@ -5,20 +5,13 @@ import main.GameState;
 import sound_manager.SoundManager;
 import utilz.LoadSave;
 import utilz.Constants;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
 import static utilz.Constants.UI.PauseButtons.SOUND_SIZE;
 import static utilz.Constants.UI.URMButtons.*;
 
-/**
- * PauseOverlay.java
- * Vẽ pause menu bằng ảnh sprite (pause_background.png, sound_button.png, urm_buttons.png)
- * Điều khiển hoàn toàn bằng bàn phím.
- */
 
-public class PauseOverlay {
+public class PauseOverlay extends BaseUI {
     // === Layout constants ===
     private static final int PAD_L = 28;
     private static final int PAD_R = 28;
@@ -29,8 +22,6 @@ public class PauseOverlay {
     private static final int URM_GAP = 8;
     private static final int BOTTOM_CLEAR = 6;
 
-
-    private final GamePanel gp;
     private BufferedImage bgImg;
     private int bgX, bgY, bgW, bgH;
 
@@ -38,8 +29,9 @@ public class PauseOverlay {
     private UrmButton menuB, replayB, resumeB;
     private int focusIndex = 4; // 0=Music, 1=SFX, 2=Menu, 3=Replay, 4=Resume
 
+    // === Constructor ===
     public PauseOverlay(GamePanel gp) {
-        this.gp = gp;
+        super(gp);
         loadBackground();
         initButtons();
     }
@@ -56,40 +48,33 @@ public class PauseOverlay {
     private void initButtons() {
         int centerX = bgX + bgW / 2;
 
-        // === SOUND BUTTON: neo theo vị trí bảng MUSIC (chuẩn theo ảnh gốc) ===
-        // Ảnh gốc có kích thước: 258x389
+        // === SOUND BUTTON ===
         final float REF_W = 258f;
         final float REF_H = 389f;
-
-        // Tọa độ bảng MUSIC trên ảnh gốc
         final float MUSIC_RIGHT_X = 208f;
         final float MUSIC_CENTER_Y = 111f;
 
-        // Quy đổi sang hệ toạ độ khi đã scale
-        int soundX = bgX + Math.round((MUSIC_RIGHT_X / REF_W) * bgW) - 200; // +4 px khoảng cách nhỏ
+        int soundX = bgX + Math.round((MUSIC_RIGHT_X / REF_W) * bgW) - 200;
         int soundY = bgY + Math.round((MUSIC_CENTER_Y / REF_H) * bgH) - SOUND_SIZE / 2 + 220;
-
         musicB = new SoundButton(soundX, soundY);
 
-        // === URM BUTTONS (giữ nguyên) ===
+        // === URM BUTTONS ===
         int groupW = URM_SIZE * 3 + Constants.UI.PauseButtons.URM_GAP * 2;
-        int baseY = bgY + (int)(bgH * (Constants.UI.PauseButtons.GROUP_Y - 0.215f));
-        int startX = centerX - groupW / 2 + (int)(bgW * -0.01f);
+        int baseY = bgY + (int) (bgH * (Constants.UI.PauseButtons.GROUP_Y - 0.215f));
+        int startX = centerX - groupW / 2 + (int) (bgW * -0.01f);
 
         menuB   = new UrmButton(startX, baseY, 2);
         replayB = new UrmButton(startX + URM_SIZE + Constants.UI.PauseButtons.URM_GAP, baseY, 1);
         resumeB = new UrmButton(startX + (URM_SIZE + Constants.UI.PauseButtons.URM_GAP) * 2, baseY, 0);
     }
 
-
-
-
-
     // === Update & Draw ===
+    @Override
     public void update() {
         musicB.update();
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         // Background
         g2.drawImage(bgImg, bgX, bgY, bgW, bgH, null);
@@ -98,9 +83,24 @@ public class PauseOverlay {
         menuB.draw(g2);
         replayB.draw(g2);
         resumeB.draw(g2);
-
-        // (Tuỳ chọn) tô sáng nút đang focus
         highlightFocusedButton(g2);
+    }
+
+    // === Điều kiện hiển thị trong UIManager ===
+    @Override
+    public boolean shouldRenderIn(GameState state) {
+        // Chỉ hoạt động trong gameplay
+        return state == GameState.PLAY;
+    }
+
+    @Override
+    public boolean shouldDraw() {
+        return gp.isPaused();
+    }
+
+    @Override
+    public boolean shouldUpdate() {
+        return gp.isPaused();
     }
 
     /** Tô sáng nút đang focus (tùy chọn để dễ nhìn hơn) */
@@ -147,7 +147,6 @@ public class PauseOverlay {
         else
             SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
     }
-
 
     private void goMenu() {
         gp.setPaused(false);

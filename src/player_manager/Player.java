@@ -51,10 +51,10 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues() {
-        // trung tâm chunk
-        worldX = gp.tileSize * gp.chunkSize / 2;
-        worldY = gp.tileSize * gp.chunkSize / 2;
-        defaultSpeed = 5;
+        
+        worldX = gp.tileSize * (gp.chunkSize / 2 + 7) - 8;
+        worldY = gp.tileSize * (gp.chunkSize / 2 + 1) - 8;
+        defaultSpeed = 10;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "down";
@@ -78,6 +78,7 @@ public class Player extends Entity {
 
         handleAttackInput();
         CombatSystem.tick(this);
+
     }
     @Override
     public void draw(Graphics2D g2) {

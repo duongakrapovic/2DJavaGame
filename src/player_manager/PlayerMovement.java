@@ -81,7 +81,7 @@ public class PlayerMovement {
         pi.allCheck(nextX, nextY);
         if(!player.collisionXOn && !player.collisionOn)
             player.worldX = nextX;
-
+        //System.out.println(player.worldX);
         // Y
         player.collisionOn=false;
         player.collisionYOn=false;
@@ -91,6 +91,7 @@ public class PlayerMovement {
         pi.allCheck(nextX, nextY);
         if(!player.collisionYOn && !player.collisionOn) 
             player.worldY = nextY;
+        //System.out.println( player.worldY);
     }
 }
 
