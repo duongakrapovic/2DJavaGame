@@ -17,6 +17,7 @@ import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
 
+
 public class GamePanel extends JPanel {
     // ===== SCREEN SETTING =====
     public final int originalTileSize = 16; // 16x16 tile
@@ -91,6 +92,8 @@ public class GamePanel extends JPanel {
         uiManager.add(pauseMenuUI);
         uiManager.add(fadeUI);
         uiManager.add(healthUI);
+        // sau dòng: cChecker = new CollisionChecker(this)
+
     }
 
     // Toggle the "About" screen in Main Menu

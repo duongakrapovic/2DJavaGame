@@ -48,7 +48,7 @@ public class SkeletonLord extends Monster {
         atkW = gp.tileSize * 2;
         atkH = gp.tileSize * 2;
         combat.setAttackBoxSize(atkW, atkH);
-        combat.setTimingFrames(10, 8, 14, 24);
+        combat.setTimingFrames(10, 8, 14, 88);
 
         // trigger radius & face lock
         attackTriggerRadius = Math.max(gp.tileSize * 6, 48);
@@ -138,7 +138,7 @@ public class SkeletonLord extends Monster {
             combat.setAttackBoxSize(atkW, atkH);
 
             attackTriggerRadius = Math.max(gp.tileSize * 8, attackTriggerRadius);
-            combat.setTimingFrames(6, 8, 10, 18);
+            combat.setTimingFrames(6, 8, 10, 74);
             faceLockThreshold = 4;
 
             switchToPhase2Sprites();
