@@ -8,7 +8,7 @@ public final class Sword extends Weapon {
 
     public Sword(GamePanel gp) {
         super(gp);
-        name = "Sword";
+        name = "sword";
         width  = gp.tileSize;
         height = gp.tileSize;
         collision = false;
