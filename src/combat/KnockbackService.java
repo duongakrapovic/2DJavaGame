@@ -7,9 +7,9 @@ public final class KnockbackService {
     private KnockbackService() {}
 
     // cấu hình nhanh
-    private static final int DEFAULT_PLAYER_KB = 8;
-    private static final int DEFAULT_MONSTER_KB = 6;
-    private static final int MAX_KB = 16;
+    private static final int DEFAULT_PLAYER_KB = 2;
+    private static final int DEFAULT_MONSTER_KB = 2;
+    private static final int MAX_KB = 2;
 
     private static int clamp(int v, int lo, int hi){ return Math.max(lo, Math.min(hi, v)); }
 

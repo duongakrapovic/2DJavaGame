@@ -24,10 +24,6 @@ public final class CombatSystem {
         AttackPhaseSystem.update(cc, owner);
     }
 
-    public static void updateAttackBoxToOwnerFacing(CombatComponent cc, CombatContext owner) {
-        AttackPhaseSystem.alignAttackBox(cc, owner);
-    }
-
     // mark hit
     public static boolean wasHitThisSwing(CombatComponent cc, Object target) { return cc.wasHitThisSwing(target); }
     public static void    markHitLanded(CombatComponent cc, Object target)   { cc.markHit(target); }
@@ -43,13 +39,11 @@ public final class CombatSystem {
         update(e.combat, e);
         updateStatus(e);
     }
-
     // KnockBack (Player → Monster)
     public static int[] computePlayerAttackKnockback(Player p) {
         return KnockbackService.forPlayerAttack(p);
     }
     public static int[] computeMonsterAttackKnockback(Monster m, Player p) {return KnockbackService.forMonsterAttack(m, p);}
-    // Resolve hits
     public static void resolvePlayerHits(Player player, List<entity.Entity> monsters) {
         HitResolvePlayer.resolve(player, monsters);
     }

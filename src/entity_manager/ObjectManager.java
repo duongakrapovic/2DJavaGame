@@ -3,6 +3,7 @@ package entity_manager;
 import object_data.*;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
+import object_data.weapons.Sword;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -31,6 +32,7 @@ public class ObjectManager {
         addObject(new Shop(gp, 0),46 * t, 15 * t);
         addObject(new ObjectDoor(gp, 0),48 * t - 23, 18 * t);
         addObject(new ObjectPortal(gp, 0),47 * t + 12, 47 * t + 12);
+        addObject(new Sword(gp) ,23 *t , 20 * t);
         
     }
     private void spawnMap1() {

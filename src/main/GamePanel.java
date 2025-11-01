@@ -12,9 +12,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import entity_manager.EntityManager;
+import entity_manager.ObjectManager;
 import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
+
 
 public class GamePanel extends JPanel {
     // ===== SCREEN SETTING =====
@@ -43,6 +45,7 @@ public class GamePanel extends JPanel {
 
     // ===== ENTITY MANAGER =====
     public EntityManager em;
+    public final ObjectManager om = new ObjectManager(this);
 
     // ===== UI SYSTEM =====
     public UIManager uiManager;
@@ -89,6 +92,8 @@ public class GamePanel extends JPanel {
         uiManager.add(pauseMenuUI);
         uiManager.add(fadeUI);
         uiManager.add(healthUI);
+        // sau dòng: cChecker = new CollisionChecker(this)
+
     }
 
     // Toggle the "About" screen in Main Menu

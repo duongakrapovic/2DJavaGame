@@ -28,6 +28,7 @@ public class WorldObject {
     // Map
     public int mapIndex = 0;
 
+    public int value = 0;
     protected final GamePanel gp;
 
     public WorldObject(GamePanel gp) {

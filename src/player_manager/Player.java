@@ -1,17 +1,25 @@
 package player_manager;
 
 import combat.CombatSystem;
+import combat.KnockbackService;
 import entity.Entity;
 import interact_manager.Interact;
 import input_manager.InputController;
 import main.GamePanel;
+import object_data.weapons.Weapon;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import object_data.weapons.Weapon;
+import object_data.weapons.Sword;
+import object_data.weapons.Axe;
+import object_data.weapons.Pick ;
 
 public class Player extends Entity {
+    private Weapon currentWeapon;
+    public Weapon getCurrentWeapon() { return currentWeapon; }
 
     public int hasKey = 0;
     int speedTimer = 0;
@@ -45,9 +53,9 @@ public class Player extends Entity {
         pa = new PlayerAnimation(this);
 
         // ---- Combat config
-        combat.setAttackBoxSize(36, 36);           // kích thước hitbox
-        combat.setTimingFrames(6, 8, 12, 18);       // windup, active, recover, cooldown
-        setStats(100, 3, 1);                        // maxHp, atk, def
+        setStats(100, 3, 1);
+        currentWeapon = new Sword(gp);   // hoặc new Sword(gp)
+        equipWeapon(currentWeapon);
     }
 
     public void setDefaultValues() {
@@ -79,6 +87,7 @@ public class Player extends Entity {
         handleAttackInput();
         CombatSystem.tick(this);
     }
+
     @Override
     public void draw(Graphics2D g2) {
         if (isInvulnerable()) {
@@ -148,4 +157,21 @@ public class Player extends Entity {
             }
         }
     }
+    public void equipWeapon(Weapon weapon) {
+        if (weapon == null) return;
+        this.currentWeapon = weapon;
+
+        combat.setTimingFrames(
+                weapon.windup(), weapon.active(), weapon.recover(), weapon.cooldown()
+        );
+        combat.setAttackBoxSize(
+                weapon.atkBoxW(), weapon.atkBoxH()
+        );
+
+        psm.loadAttackSprites(this, weapon.spriteKey());
+        if (gp.messageUI != null) {
+            gp.messageUI.showMessage("Equipped " + weapon.displayName());
+        }
+    }
+
 }

@@ -37,48 +37,36 @@ public abstract class Monster extends Entity {
         if (hold) { worldX = preX; worldY = preY; }
     }
 
-
     protected void decideAttack() {
-        Player p = gp.em.getPlayer();
+        // 0) Lấy player an toàn
+        Player p = (gp.em != null ? gp.em.getPlayer() : null);
         if (p == null || p.isDead()) return;
 
-        final int px = p.worldX, py = p.worldY;
-        final int dx = px - this.worldX, dy = py - this.worldY;
-
-        // chose direction
-        final int absDx = Math.abs(dx), absDy = Math.abs(dy);
-        if (absDx - absDy > faceLockThreshold) {
-            this.direction = (dx >= 0) ? "right" : "left";
-        } else if (absDy - absDx > faceLockThreshold) {
-            this.direction = (dy >= 0) ? "down" : "up";
-        } else {
-            if ("left".equals(direction) || "right".equals(direction)) {
-                this.direction = (dx >= 0) ? "right" : "left";
-            } else {
-                this.direction = (dy >= 0) ? "down" : "up";
-            }
-        }
-
+        // 1) Tính body rect của quái & player (world space)
         Rectangle meBody = getSolidAreaWorld();
         Rectangle plBody = getSolidAreaWorld(p);
 
+        // Player “béo” hơn 1 chút để dễ trúng (tránh hụt vì lẻ pixel)
         Rectangle plFat = new Rectangle(plBody);
         plFat.grow(2, 2);
 
-        // hit when body touch
+        // 2) Nếu đã chạm thân -> đánh ngay
         if (meBody.intersects(plFat)) {
             if (CombatSystem.canStartAttack(this.combat)) {
+                // Không đổi hướng khi đang giữa pha; chỉ face khi bắt đầu
+                faceOnceToward(p);
                 CombatSystem.startAttack(this.combat, this);
                 this.combat.clearHitThisSwing();
             }
             return;
         }
 
-        // 4) REACH-RECTANGLE: extend body react toward movement direction
-        Rectangle reach = new Rectangle(meBody);
+        // 3) Reach-rectangle: kéo ô meBody theo hướng đang nhìn
+        //    => cho phép “đánh tầm ngắn” khi đứng sát trước mặt
         final int rw = (atkW > 0 ? atkW : gp.tileSize);
         final int rh = (atkH > 0 ? atkH : gp.tileSize);
 
+        Rectangle reach = new Rectangle(meBody);
         switch (this.direction) {
             case "up":
                 reach.y      -= rh;
@@ -96,17 +84,28 @@ public abstract class Monster extends Entity {
                 break;
         }
 
-        // Player in react => attack
+        // 4) Nếu player ở trong tầm reach -> bắt đầu đòn (nếu hết CD)
         if (reach.intersects(plFat)) {
             if (CombatSystem.canStartAttack(this.combat)) {
+                faceOnceToward(p); // chỉ set hướng 1 lần tại thời điểm bắt đầu
                 CombatSystem.startAttack(this.combat, this);
                 this.combat.clearHitThisSwing();
             }
         }
-
     }
 
-    // solid area
+    // === Helper: chỉ xoay mặt 1 lần khi bắt đầu đòn ===
+    private void faceOnceToward(Player p) {
+        int dx = p.worldX - this.worldX;
+        int dy = p.worldY - this.worldY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            this.direction = (dx >= 0) ? "right" : "left";
+        } else {
+            this.direction = (dy >= 0) ? "down" : "up";
+        }
+    }
+
+    // === Đổi sang world-rect tiện dùng ===
     protected Rectangle getSolidAreaWorld() {
         Rectangle sa = this.getSolidArea();
         return new Rectangle(this.worldX + sa.x, this.worldY + sa.y, sa.width, sa.height);
