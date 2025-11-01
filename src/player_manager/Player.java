@@ -7,6 +7,7 @@ import interact_manager.Interact;
 import input_manager.InputController;
 import main.GamePanel;
 import object_data.weapons.Weapon;
+import ui.MessageUI;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -24,6 +25,9 @@ public class Player extends Entity {
     public int hasKey = 0;
     int speedTimer = 0;
 
+    //ui
+    private MessageUI msgUI;
+
     // managers
     public Interact iR;
     public final InputController input;
@@ -38,6 +42,7 @@ public class Player extends Entity {
         super(gp);
         this.iR = new Interact(gp, this, input);
         this.input = input;
+        this.msgUI = gp.uiManager.get(MessageUI.class);
 
         // default collision hitbox
         solidArea = new Rectangle(11, 16, 25, 25);
@@ -86,6 +91,7 @@ public class Player extends Entity {
 
         handleAttackInput();
         CombatSystem.tick(this);
+
     }
 
     @Override
@@ -169,8 +175,8 @@ public class Player extends Entity {
         );
 
         psm.loadAttackSprites(this, weapon.spriteKey());
-        if (gp.messageUI != null) {
-            gp.messageUI.showMessage("Equipped " + weapon.displayName());
+        if (msgUI != null) {
+            msgUI.showTouchMessage("Equipped " + weapon.displayName(), null, gp);
         }
     }
 

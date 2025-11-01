@@ -1,13 +1,14 @@
 package ui;
 
 import main.GamePanel;
+import main.GameState;
 import java.awt.*;
 
 public class HealthUI extends BaseUI {
     public HealthUI(GamePanel gp){ super(gp); }
 
     @Override
-    public void update(){ /* cập nhật máu từ player */ }
+    public void update(){}
 
     @Override
     public void draw(Graphics2D g2){
@@ -28,5 +29,13 @@ public class HealthUI extends BaseUI {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(2));
         g2.drawRect(x, y, barWidth, barHeight);
+    }
+    @Override
+    public boolean shouldRenderIn(GameState state) {
+        return state == GameState.PLAY;
+    }
+    @Override
+    public boolean shouldUpdate() {
+        return false;
     }
 }

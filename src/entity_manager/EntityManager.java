@@ -35,6 +35,11 @@ public class EntityManager {
         return oM.getObjects(map);
     }
 
+   
+    public List<Entity> getMonsters() {
+        return mM.getMonsters(gp.currentMap);
+    }
+
     public void update(int currentMap) {
         player.update();
         oM.update();
