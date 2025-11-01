@@ -1,6 +1,7 @@
 package ui;
 
 import main.GamePanel;
+import main.GameState;
 import java.awt.*;
 
 public class MessageUI extends BaseUI {
@@ -10,10 +11,11 @@ public class MessageUI extends BaseUI {
 
     public MessageUI(GamePanel gp){ super(gp); }
 
-    public void showMessage(String msg){
-        message = msg; show = true; counter = 0;
+    public void showTouchMessage(String text, Object obj, GamePanel gp) {
+        message = text;
+        show = true;
+        counter = 0;
     }
-
     @Override
     public void update(){
         if(show && ++counter > 120) show = false;
@@ -27,10 +29,19 @@ public class MessageUI extends BaseUI {
             g2.drawString(message, gp.tileSize, gp.tileSize*5);
         }
     }
-    public void showTouchMessage(String text, Object obj, GamePanel gp) {
-        message = text;
-        show = true;
-        counter = 0;
+    @Override
+    public boolean shouldRenderIn(GameState state) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean shouldDraw() {
+        return show;
     }
     public void hideTouchMessage() {
         show = false;

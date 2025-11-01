@@ -37,7 +37,7 @@ public class RedSlimeMonster extends Monster {
 
         // combat: quệt ngắn
         combat.setAttackBoxSize(30, 26);
-        combat.setTimingFrames(6, 6, 10, 18);
+        combat.setTimingFrames(6, 6, 10, 98);
 
         setController(new WanderMovement(wanderSpeed, 80));
     }

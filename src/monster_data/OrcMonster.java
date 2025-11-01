@@ -1,8 +1,15 @@
 package monster_data;
 
+import ai.movement.AggroSwitchMovement;
+import ai.movement.ChaseMovement;
 import ai.movement.WanderMovement;
+import entity.Entity;
 import main.GamePanel;
+import player_manager.Player;
+
 import java.awt.Rectangle;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class OrcMonster extends Monster {
 
@@ -34,10 +41,25 @@ public class OrcMonster extends Monster {
 
         // ===== Combat config =====
         this.combat.setAttackBoxSize(40, 32);
-        this.combat.setTimingFrames(12, 10, 16, 36);
+        this.combat.setTimingFrames(12, 10, 16, 82);
 
         // movement AI
-        setController(new WanderMovement(wanderSpeed, 90));
+        var wander = new WanderMovement(2, 80);
+        Supplier<Player> playerSup = () -> (gp.em != null ? gp.em.getPlayer() : null);
+        var chase  = new ChaseMovement(gp, playerSup, 3, gp.tileSize);
+
+        Predicate<Entity> aggroCond = me -> {
+            Player p = playerSup.get();
+            if (p == null || p.isDead()) return false;
+            long dx = (long)p.worldX - me.worldX;
+            long dy = (long)p.worldY - me.worldY;
+            long dist2 = dx*dx + dy*dy;
+            long r = 1L * gp.tileSize * 6;
+            return dist2 < r*r;
+        };
+
+        setController(new AggroSwitchMovement(wander, chase, aggroCond));
+
     }
 
     private void getImage() {

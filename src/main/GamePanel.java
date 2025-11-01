@@ -6,15 +6,15 @@ package main;
 
 import ui.*;
 import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import entity_manager.EntityManager;
+import entity_manager.ObjectManager;
 import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
+
 
 public class GamePanel extends JPanel {
     // ===== SCREEN SETTING =====
@@ -43,14 +43,15 @@ public class GamePanel extends JPanel {
 
     // ===== ENTITY MANAGER =====
     public EntityManager em;
+    public final ObjectManager om = new ObjectManager(this);
 
     // ===== UI SYSTEM =====
-    public UIManager uiManager;
-    public MessageUI messageUI;
-    public FadeUI fadeUI;
-    public MainMenuUI mainMenuUI;
-    public PauseMenuUI pauseMenuUI;
-    public HealthUI healthUI;
+    public final UIManager uiManager = new UIManager();
+    private PauseOverlay pauseOverlay;
+    public static final float SCALE = 3f;
+
+    // ===== PAUSE SYSTEM =====
+    private boolean paused = false;
 
     // ===== MAP =====
     public int numMaps = 3;
@@ -68,6 +69,15 @@ public class GamePanel extends JPanel {
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
+        // ===== UI INITIALIZATION =====
+        pauseOverlay = new PauseOverlay(this);
+        uiManager.add(pauseOverlay);
+        uiManager.add(new MainMenuUI(this));
+        uiManager.add(new MessageUI(this));
+        uiManager.add(new FadeUI(this));
+        uiManager.add(new HealthUI(this));
+        uiManager.add(new MonsterHealthUI(this));
+        uiManager.add(new GameOverUI(this));
         // Input
         this.input = new InputManager(this, this);
 
@@ -75,28 +85,9 @@ public class GamePanel extends JPanel {
         em = new EntityManager(this, input.getKeyController());
         cChecker = new CollisionChecker(this);
 
-        // ===== UI INITIALIZATION =====
-        uiManager = new UIManager();
 
-        messageUI = new MessageUI(this);
-        mainMenuUI = new MainMenuUI(this);
-        pauseMenuUI = new PauseMenuUI(this);
-        fadeUI = new FadeUI(this);
-        healthUI = new HealthUI(this);
-
-        uiManager.add(messageUI);
-        uiManager.add(mainMenuUI);
-        uiManager.add(pauseMenuUI);
-        uiManager.add(fadeUI);
-        uiManager.add(healthUI);
     }
 
-    // Toggle the "About" screen in Main Menu
-    public void toggleMainMenuAbout() {
-        if (mainMenuUI != null) {
-            mainMenuUI.toggleAbout();
-        }
-    }
 
     public void setupGame() {
         em.getPlayer().setDefaultValues();
@@ -109,59 +100,76 @@ public class GamePanel extends JPanel {
         gameThread.start();
     }
 
+    // ===== UPDATE LOOP =====
     public void update() {
-        if (gsm.getState() == GameState.PLAY) {
-            chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
-            currentMap = uTool.mapNameToIndex(chunkM.pathMap);
-            em.update(currentMap);
-        } else if (gsm.getState() == GameState.PAUSE) {
-            // nothing happen
+        // Nếu tạm dừng, chỉ cập nhật UI (ví dụ PauseOverlay)
+        if (paused) {
+            uiManager.update(gsm.getState());
+            return;
         }
 
-        uiManager.update();
+        switch (gsm.getState()) {
+            case START -> {
+                uiManager.update(gsm.getState());
+            }
+            case PLAY -> {
+                chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
+                currentMap = uTool.mapNameToIndex(chunkM.pathMap);
+                em.update(currentMap);
 
+                // Kiểm tra nếu Player chết => sang Game Over
+                if (em.getPlayer() != null && em.getPlayer().isDead()) {
+                    setPaused(false);
+                    gsm.setState(GameState.GAME_OVER);
+                }
+
+                uiManager.update(gsm.getState());
+            }
+            case GAME_OVER -> {
+                uiManager.update(gsm.getState());
+            }
+        }
     }
 
+    // ===== KEYBOARD CONTROL =====
+    public void handleKeyPressed(int code) {
+        if (!paused) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                paused = true;
+                return;
+            }
+        } else {
+            switch (code) {
+                case KeyEvent.VK_ESCAPE -> paused = false;
+                case KeyEvent.VK_LEFT -> pauseOverlay.moveLeft();
+                case KeyEvent.VK_RIGHT -> pauseOverlay.moveRight();
+                case KeyEvent.VK_ENTER -> pauseOverlay.select();
+            }
+        }
+    }
+
+    // ===== DRAW LOOP =====
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        switch (gsm.getState()) {
-            case START:
-                // Only draw main menu
-                mainMenuUI.draw(g2);
-                break;
+        // Vẽ thế giới + entity
+        if (gsm.getState() != GameState.START)
+            tileM.draw(g2, chunkM);
+        em.draw(g2, currentMap);
 
-            case PLAY:
-                // Draw world and entities
-                tileM.draw(g2, chunkM);
-                em.draw(g2, currentMap);
+        // Vẽ toàn bộ UI qua UIManager
+        uiManager.draw(g2, gsm.getState());
 
-                // Gameplay UI
-                healthUI.draw(g2);
-                messageUI.draw(g2);
-                fadeUI.draw(g2);
-                break;
 
-            case PAUSE:
-                // Draw background world
-                tileM.draw(g2, chunkM);
-                em.draw(g2, currentMap);
-
-                // Dark overlay
-                g2.setColor(new Color(0, 0, 0, 150));
-                g2.fillRect(0, 0, screenWidth, screenHeight);
-
-                // Pause menu
-                pauseMenuUI.draw(g2);
-                break;
-        }
-        // Frame counter
         frameCounter++;
-        if (frameCounter >= 1_000_000) {
-            frameCounter = 0;
-        }
+        if (frameCounter >= 1_000_000) frameCounter = 0;
         g2.dispose();
     }
+
+
+    // ===== ACCESSORS =====
+    public boolean isPaused() { return paused; }
+    public void setPaused(boolean value) { this.paused = value; }
 }

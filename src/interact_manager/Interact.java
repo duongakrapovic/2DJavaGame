@@ -10,20 +10,31 @@ import java.util.List;
 import input_manager.InputController;
 import sound_manager.SoundManager;
 import main.GamePanel;
+import ui.MessageUI;
+import ui.FadeUI;
+
+
+
 
 public class Interact {
     private final GamePanel gp;
     private final Player player;
     private final InputController input;
+    private MessageUI msgUI;
+    private FadeUI fadeUI;
 
     public Interact(GamePanel gp, Player player, InputController input) {
         this.gp = gp;
         this.player = player;
         this.input = input;
+
+        this.msgUI = gp.uiManager.get(MessageUI.class);
+        this.fadeUI = gp.uiManager.get(FadeUI.class);
     }
 
     // OBJECT
     public void InteractObject(int index) {
+
         if (index != 999) {
             // Lấy object theo map hiện tại
             List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap); // <<- đổi API
@@ -35,34 +46,34 @@ public class Interact {
 
                     switch (objectName) {
                     case "key":
-                        gp.messageUI.showTouchMessage("press 'F' to pick key", obj, gp);
+                        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick key", obj, gp);
                         if (input.isPicked()) {
                             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
                             player.hasKey++;
                             objects.remove(index); // xoá object ra khỏi map
-                            gp.messageUI.showMessage("Ya got a key!");
+                            if (msgUI != null) msgUI.showTouchMessage("Ya got a key!", obj, gp);
                         }
                         break;
                     case "manaposion":
-                        gp.messageUI.showTouchMessage("press 'F' to heal mana", obj, gp);
+                        if (msgUI != null) msgUI.showTouchMessage("press 'F' to heal mana", obj, gp);
                         if (input.isPicked()) {
                             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
                             objects.remove(index); // xoá object ra khỏi map
-                            gp.messageUI.showMessage("full fuel!");
+                            if (msgUI != null) msgUI.showTouchMessage("full fuel!", obj, gp);
                         }
                         break;
                     case "healthposion":
-                        gp.messageUI.showTouchMessage("press 'F' to heal health", obj, gp);
+                        if (msgUI != null) msgUI.showTouchMessage("press 'F' to heal health", obj, gp);
                         if (input.isPicked()) {
                             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
                             objects.remove(index); // xoá object ra khỏi map
-                            gp.messageUI.showMessage("That close!");
+                            if (msgUI != null) msgUI.showTouchMessage("That close!", obj, gp);
                         }
                         break;    
                     case "portal":
-                        gp.messageUI.showTouchMessage("press 'F' to tele", obj, gp);
+                        if (msgUI != null) msgUI.showTouchMessage("press 'F' to tele", obj, gp);
                         if (input.isPicked()) {
-                            gp.fadeUI.startFade(() -> {
+                            if (fadeUI != null) fadeUI.startFade(() -> {
                                 if ("map0".equals(gp.chunkM.pathMap)) {
                                     gp.chunkM.pathMap = "map1";
                                     gp.currentMap = 1;                         // <<< QUAN TRỌNG
@@ -84,14 +95,14 @@ public class Interact {
                                 gp.chunkM.clearChunks();
                                 gp.chunkM.updateChunks(gp.em.getPlayer().worldX, gp.em.getPlayer().worldY);
 
-                                gp.messageUI.showMessage("Teleported!");
+                                if (msgUI != null) msgUI.showTouchMessage("Teleported!", obj, gp);
                             });
                         }
                         break;
                     case "door":
-                        gp.messageUI.showTouchMessage("press 'F' to shopping", obj, gp);
+                        if (msgUI != null) msgUI.showTouchMessage("press 'F' to shopping", obj, gp);
                         if (input.isPicked()) {
-                            gp.fadeUI.startFade(() -> {
+                            if (fadeUI != null) fadeUI.startFade(() -> {
                                 if ("map0".equals(gp.chunkM.pathMap)) {
                                     gp.chunkM.pathMap = "map3";
                                     gp.currentMap = 3;                         // <<< QUAN TRỌNG
@@ -113,7 +124,7 @@ public class Interact {
                                 gp.chunkM.clearChunks();
                                 gp.chunkM.updateChunks(gp.em.getPlayer().worldX, gp.em.getPlayer().worldY);
 
-                                gp.messageUI.showMessage("shop!");
+                                if (msgUI != null) msgUI.showTouchMessage("shop!", obj, gp);
                             });
                         }
                         break;
@@ -121,7 +132,7 @@ public class Interact {
                 }
             }
         } else {
-            gp.messageUI.hideTouchMessage();
+            if (msgUI != null) msgUI.hideTouchMessage();
         }
     }
 
