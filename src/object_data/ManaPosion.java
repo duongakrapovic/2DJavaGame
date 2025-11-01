@@ -12,7 +12,6 @@ public class ManaPosion extends WorldObject {
     public ManaPosion(GamePanel gp, int mapIndex) {
         super(gp);
         this.mapIndex = mapIndex;
-
         name   = "manaposion";
         width  = gp.tileSize;
         height = gp.tileSize;

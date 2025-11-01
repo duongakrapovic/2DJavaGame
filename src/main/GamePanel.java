@@ -10,9 +10,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import entity_manager.EntityManager;
+import entity_manager.ObjectManager;
 import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
+
 
 public class GamePanel extends JPanel {
     // ===== SCREEN SETTING =====
@@ -41,6 +43,7 @@ public class GamePanel extends JPanel {
 
     // ===== ENTITY MANAGER =====
     public EntityManager em;
+    public final ObjectManager om = new ObjectManager(this);
 
     // ===== UI SYSTEM =====
     public final UIManager uiManager = new UIManager();
@@ -81,7 +84,6 @@ public class GamePanel extends JPanel {
         // Core managers
         em = new EntityManager(this, input.getKeyController());
         cChecker = new CollisionChecker(this);
-
 
 
     }

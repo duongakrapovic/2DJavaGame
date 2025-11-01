@@ -1,9 +1,6 @@
 package entity;
 
-import combat.CombatComponent;
-import combat.CombatContext;
-import combat.CombatSystem;
-import combat.DamageProcessor;
+import combat.*;
 import main.GamePanel;
 
 import java.awt.*;
@@ -36,6 +33,11 @@ public class Entity implements CombatContext {
     public boolean collision    = false;
     public int solidAreaDefaultX, solidAreaDefaultY;
 
+    // --- auto-slide config ---
+    public boolean autoSlideEnabled = true;
+    private int slideStepPx = 2;        // mỗi bước trượt mấy px
+    private int slideMaxTries = 8;      // thử tối đa bao nhiêu lần mỗi frame
+
     // --- state / stats ---
     public String name;
     public int defaultSpeed, actualSpeed, buffSpeed;
@@ -48,10 +50,11 @@ public class Entity implements CombatContext {
     private int invulnFrames = 20; // ~0.33s @60fps
     private int invulnCounter = 0;
 
-    // --- knockback ---
-    public int velX = 0, velY = 0;
+    // --- Fields (thêm hoặc giữ nếu đã có) ---
+    public int  velX = 0, velY = 0;
     private int knockbackCounter = 0;
-    private int knockbackFrames  = 10; // ~0.16s @60fps
+    private int knockbackFrames  = 12;
+    public  int knockbackPower   = 2;
 
     // --- attack box (shared with CombatComponent) ---
     public Rectangle attackBox = new Rectangle(0, 0, 0, 0);
@@ -69,7 +72,7 @@ public class Entity implements CombatContext {
     // --- Movement Controller (AI / input strategy) ---
     protected MovementController controller;
     public boolean hasAttackAnim = false; // default: false (Slime, v.v.)
-
+    public Entity lastHitBy = null;
     public Entity(GamePanel gp) {
         this.gp = gp;
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
@@ -110,19 +113,16 @@ public class Entity implements CombatContext {
     public int     getInvulnCounter()         { return invulnCounter; }
     public void    setInvulnCounter(int v)    { invulnCounter = v; }
 
-    public void applyKnockback(int kbX, int kbY, int durationFrames) {
-        velX = kbX; velY = kbY; knockbackCounter = durationFrames;
-    }
+    public int  getKnockbackFrames()      { return knockbackFrames; }
     public int  getKnockbackCounter()      { return knockbackCounter; }
     public void setKnockbackCounter(int v) { knockbackCounter = v; }
-    public int  getKnockbackFrames()       { return knockbackFrames; }
     public boolean isKnockbackActive()     { return knockbackCounter > 0; }
+    public void setKnockbackFrames(int f) { knockbackFrames = Math.max(1, f); }
 
-    public void translate(int dx, int dy) { this.worldX += dx; this.worldY += dy; }
-    public void setVelocity(int vx, int vy) { this.velX = vx; this.velY = vy; }
     public void clearVelocity() { this.velX = 0; this.velY = 0; }
     public int getVelX() { return this.velX; }
     public int getVelY() { return this.velY; }
+
     @Override public int getWorldX() { return worldX; }
     @Override public int getWorldY() { return worldY; }
     @Override public Rectangle getSolidArea() {
@@ -142,28 +142,35 @@ public class Entity implements CombatContext {
         return new int[]{dx, dy};
     }
 
+    // Entity.java
     public void update() {
-        if (!isKnockbackActive()) {
-            // 1) AI/input quyết định hướng & tốc độ
+        // Nếu đang KB → chỉ đẩy; bỏ qua input/AI ở frame này
+        if (isKnockbackActive()) {
+            emo.applyKnockback(this);
+        } else {
             if (controller != null) {
                 controller.decide(this);
                 emo.moveByDirection(this);
             } else {
-                int[] d = computeDelta();    // fallback: if entity has no controller
+                int[] d = computeDelta();
                 emo.moveWithDelta(this, d[0], d[1]);
             }
         }
 
-        // 2) Combat phase + i-frame + knockback
-        CombatSystem.tick(this);
-
-        // 3) sprite
+        CombatSystem.tick(this);     // (giữ như cũ)
+        StatusSystem.update(this);   // chỉ timers (i-frames…), KHÔNG translate
         esm.updateSprite(this);
     }
+
+
 
     public void draw(Graphics2D g2) { ed.draw(g2, this); }
     public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
 
     public void onDamaged(int damage) {}
+    // --- Method (THÊM MỚI): gọi từ DamageProcessor ---
+    public void applyKnockback(int kbX, int kbY, int durationFrames) {
+        velX = kbX; velY = kbY; knockbackCounter = durationFrames;
+    }
 
 }

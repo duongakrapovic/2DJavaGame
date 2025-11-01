@@ -32,7 +32,7 @@ public class SlimeMonster extends Monster {
         this.attackTriggerRadius = 28;
         // attackbox and timming
         this.combat.setAttackBoxSize(28, 28);
-        this.combat.setTimingFrames(6, 6, 10, 20);
+        this.combat.setTimingFrames(6, 6, 10, 98);
 
         // easy movement
         setController(new WanderMovement(/*speed*/wanderSpeed, /*changeEveryFrames*/120));
