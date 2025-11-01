@@ -130,42 +130,52 @@ public class CollisionChecker {
     public int checkWorldObject(Entity mover, List<WorldObject> objects, int nextDX, int nextDY) {
         if (mover == null || objects == null || objects.isEmpty()) return 999;
 
-        Rectangle moverSolid = (mover.solidArea != null)
+        Rectangle moverSolid = mover.solidArea != null
                 ? new Rectangle(mover.solidArea)
-                : new Rectangle(0, 0, Math.max(1, mover.width), Math.max(1, mover.height));
+                : new Rectangle(0, 0, mover.width, mover.height);
 
         int nextWorldX = mover.worldX + nextDX;
         int nextWorldY = mover.worldY + nextDY;
 
-        Rectangle moverNextBody = new Rectangle(
+        Rectangle moverNext = new Rectangle(
                 nextWorldX + moverSolid.x,
                 nextWorldY + moverSolid.y,
                 moverSolid.width,
                 moverSolid.height
         );
 
+        int interactedIndex = 999;
+
         for (int i = 0; i < objects.size(); i++) {
             WorldObject obj = objects.get(i);
             if (obj == null || obj.mapIndex != mover.mapIndex) continue;
 
-            Rectangle objSolid = (obj.solidArea != null)
+            Rectangle objSolid = obj.solidArea != null
                     ? obj.solidArea
-                    : new Rectangle(0, 0, Math.max(1, obj.width), Math.max(1, obj.height));
+                    : new Rectangle(0, 0, obj.width, obj.height);
 
-            Rectangle objBody = new Rectangle(
+            Rectangle objRect = new Rectangle(
                     obj.worldX + objSolid.x,
                     obj.worldY + objSolid.y,
                     objSolid.width,
                     objSolid.height
             );
 
-            if (moverNextBody.intersects(objBody)) {
+            if (moverNext.intersects(objRect)) {
                 if (obj.collision) mover.collisionOn = true;
-                return i;
+
+                // Ưu tiên door hơn các object khác
+                if (interactedIndex == 999) {
+                    interactedIndex = i;
+                } else {
+                    WorldObject current = objects.get(interactedIndex);
+                    if (!"door".equals(current.name) && "door".equals(obj.name)) {
+                        interactedIndex = i; // ưu tiên door
+                    }
+                }
             }
         }
-        return 999;
+    return interactedIndex;
     }
-
 }
 

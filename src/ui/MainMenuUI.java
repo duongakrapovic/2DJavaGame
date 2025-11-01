@@ -2,15 +2,15 @@ package ui;
 
 import main.GamePanel;
 import main.GameState;
+import sound_manager.SoundManager;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class MainMenuUI extends BaseUI {
-
-    private GamePanel gp;
 
     // Menu assets
     private BufferedImage backgroundImg;   // pink sky background
@@ -22,11 +22,10 @@ public class MainMenuUI extends BaseUI {
     private final int B_HEIGHT_DEFAULT = 56;
 
     public int commandNum = 0;
-    private boolean showAbout = false;
+    private boolean showingCredits = false;
 
     public MainMenuUI(GamePanel gp) {
         super(gp);
-        this.gp = gp;
         loadImages();
         loadButtons();
     }
@@ -69,6 +68,12 @@ public class MainMenuUI extends BaseUI {
         // ===== 1. Draw background =====
         g2.drawImage(backgroundImg, 0, 0, gp.screenWidth, gp.screenHeight, null);
 
+        // If showing credits — draw overlay and stop here
+        if (showingCredits) {
+            drawCreditsScreen(g2);
+            return;
+        }
+
         // ===== 2. Draw centered menu board =====
         int boardX = gp.screenWidth / 2 - menuBoardImg.getWidth() / 2;
         int boardY = gp.screenHeight / 2 - menuBoardImg.getHeight() / 2;
@@ -87,20 +92,56 @@ public class MainMenuUI extends BaseUI {
         }
     }
 
+    /** Draw credit overlay when showingCredits = true */
+    private void drawCreditsScreen(Graphics2D g2) {
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 24));
+        int centerY = gp.screenHeight / 2;
+
+        g2.drawString("Credits", 80, centerY - 60);
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.drawString("Vu Hai Duong", 80, centerY - 20);
+        g2.drawString("Luu Duc Thanh Dat", 80, centerY + 10);
+        g2.drawString("Do Minh Vu", 80, centerY + 40);
+
+        g2.setFont(new Font("Arial", Font.ITALIC, 18));
+        g2.drawString("Press ESC to return", 80, centerY + 90);
+    }
 
     /** Handle menu selection (to switch game state or exit) */
     public void select() {
+        if (showingCredits) {
+            showingCredits = false; // close credits when ENTER is pressed again
+            return;
+        }
+
         switch (commandNum) {
-            case 0 -> gp.gsm.setState(GameState.PLAY);
-            case 1 -> gp.gsm.setState(GameState.OPTIONS);
-            case 2 -> toggleAbout();
-            case 3 -> System.exit(0);
+            case 0 -> { // PLAY
+                gp.gsm.setState(GameState.PLAY);
+                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+                }
+            case 1 -> gp.gsm.setState(GameState.OPTIONS);   // OPTIONS
+            case 2 -> System.exit(0);                       // QUIT
+            case 3 -> showingCredits = true;                // CREDITS
         }
     }
 
-    /** Toggle visibility of the About section */
-    public void toggleAbout() { showAbout = !showAbout; }
+    /** Public method to close credits with ESC */
+    public void handleKey(int code) {
+        if (showingCredits && code == KeyEvent.VK_ESCAPE) {
+            showingCredits = false;
+        }
+    }
 
-    /** Check if the About screen is active */
-    public boolean isShowingAbout() { return showAbout; }
+    /** Optional getter for state */
+    public boolean isShowingCredits() {
+        return showingCredits;
+    }
+    @Override
+    public boolean shouldRenderIn(GameState state) {
+        return state == GameState.START;
+    }
 }

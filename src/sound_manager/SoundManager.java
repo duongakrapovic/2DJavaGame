@@ -40,6 +40,7 @@ public class SoundManager {
     private final EnumMap<SoundID, URL> soundFiles = new EnumMap<>(SoundID.class);
     // Background music (looped continuously)
     private final Sound music = new Sound();
+    private boolean isMusicPlaying = false;
     // Short sound effects (played once)
     private final Sound se = new Sound();
 
@@ -66,15 +67,18 @@ public class SoundManager {
     public void playMusic(SoundID id) {
         URL url = soundFiles.get(id);
         if (url != null) {
+            if (isMusicPlaying) return;
             music.setFile(url);  // assign file to music object
             music.play();        // start playback
             music.loop();        // loop continuously
+            isMusicPlaying = true;
         }
     }
 
     /** Stops the currently playing background music */
     public void stopMusic() {
         music.stop();
+        isMusicPlaying = false;
     }
 
     // --- Sound effect management ---

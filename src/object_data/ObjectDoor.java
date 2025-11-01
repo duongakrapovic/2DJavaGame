@@ -14,7 +14,7 @@ public class ObjectDoor extends WorldObject {
         height = gp.tileSize;
 
         staticImage = setup("/object/door", width, height);
-        collision = true;
+        collision = false;
         solidArea = new Rectangle(2, 2, width - 4, height - 4);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;

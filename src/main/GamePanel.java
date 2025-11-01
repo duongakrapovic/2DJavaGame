@@ -6,10 +6,7 @@ package main;
 
 import ui.*;
 import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import entity_manager.EntityManager;
@@ -46,17 +43,12 @@ public class GamePanel extends JPanel {
     public EntityManager em;
 
     // ===== UI SYSTEM =====
-    public UIManager uiManager;
-    public MessageUI messageUI;
-    public FadeUI fadeUI;
-    public MainMenuUI mainMenuUI;
-    public HealthUI healthUI;
-    public MonsterHealthUI monsterHealthUI;
+    public final UIManager uiManager = new UIManager();
+    private PauseOverlay pauseOverlay;
     public static final float SCALE = 3f;
 
     // ===== PAUSE SYSTEM =====
     private boolean paused = false;
-    private PauseOverlay pauseOverlay; // Dùng bản mình viết lại ở ui/
 
     // ===== MAP =====
     public int numMaps = 3;
@@ -74,6 +66,15 @@ public class GamePanel extends JPanel {
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
+        // ===== UI INITIALIZATION =====
+        pauseOverlay = new PauseOverlay(this);
+        uiManager.add(pauseOverlay);
+        uiManager.add(new MainMenuUI(this));
+        uiManager.add(new MessageUI(this));
+        uiManager.add(new FadeUI(this));
+        uiManager.add(new HealthUI(this));
+        uiManager.add(new MonsterHealthUI(this));
+        uiManager.add(new GameOverUI(this));
         // Input
         this.input = new InputManager(this, this);
 
@@ -81,34 +82,14 @@ public class GamePanel extends JPanel {
         em = new EntityManager(this, input.getKeyController());
         cChecker = new CollisionChecker(this);
 
-        // ===== UI INITIALIZATION =====
-        uiManager = new UIManager();
 
-        messageUI = new MessageUI(this);
-        mainMenuUI = new MainMenuUI(this);
-        fadeUI = new FadeUI(this);
-        healthUI = new HealthUI(this);
-        monsterHealthUI = new MonsterHealthUI(this);
 
-        uiManager.add(messageUI);
-        uiManager.add(mainMenuUI);
-        uiManager.add(fadeUI);
-        uiManager.add(healthUI);
-
-        // ===== PAUSE OVERLAY =====
-        pauseOverlay = new PauseOverlay(this); // Truyền GamePanel hiện tại vào để tránh null
     }
 
-    // Toggle Credits in Main Menu
-    public void toggleMainMenuCredits() {
-        if (mainMenuUI != null) {
-            mainMenuUI.toggleAbout();
-        }
-    }
 
     public void setupGame() {
         em.getPlayer().setDefaultValues();
-        chunkM.pathMap = "map1";
+        chunkM.pathMap = "map0";
         gsm.setState(GameState.START);
     }
 
@@ -119,18 +100,33 @@ public class GamePanel extends JPanel {
 
     // ===== UPDATE LOOP =====
     public void update() {
+        // Nếu tạm dừng, chỉ cập nhật UI (ví dụ PauseOverlay)
         if (paused) {
-            pauseOverlay.update();
+            uiManager.update(gsm.getState());
             return;
         }
 
-        if (gsm.getState() == GameState.PLAY) {
-            chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
-            currentMap = uTool.mapNameToIndex(chunkM.pathMap);
-            em.update(currentMap);
-        }
+        switch (gsm.getState()) {
+            case START -> {
+                uiManager.update(gsm.getState());
+            }
+            case PLAY -> {
+                chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
+                currentMap = uTool.mapNameToIndex(chunkM.pathMap);
+                em.update(currentMap);
 
-        uiManager.update();
+                // Kiểm tra nếu Player chết => sang Game Over
+                if (em.getPlayer() != null && em.getPlayer().isDead()) {
+                    setPaused(false);
+                    gsm.setState(GameState.GAME_OVER);
+                }
+
+                uiManager.update(gsm.getState());
+            }
+            case GAME_OVER -> {
+                uiManager.update(gsm.getState());
+            }
+        }
     }
 
     // ===== KEYBOARD CONTROL =====
@@ -156,34 +152,22 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        switch (gsm.getState()) {
-            case START:
-                mainMenuUI.draw(g2);
-                break;
+        // Vẽ thế giới + entity
+        if (gsm.getState() != GameState.START)
+            tileM.draw(g2, chunkM);
+        em.draw(g2, currentMap);
 
-            case PLAY:
-                tileM.draw(g2, chunkM);
-                em.draw(g2, currentMap);
-                monsterHealthUI.draw(g2);
-                healthUI.draw(g2);
-                messageUI.draw(g2);
-                fadeUI.draw(g2);
+        // Vẽ toàn bộ UI qua UIManager
+        uiManager.draw(g2, gsm.getState());
 
-                if (paused) {
-                    g2.setColor(new Color(0, 0, 0, 150));
-                    g2.fillRect(0, 0, screenWidth, screenHeight);
-                    pauseOverlay.draw(g2);
-                }
-                break;
-        }
 
         frameCounter++;
         if (frameCounter >= 1_000_000) frameCounter = 0;
         g2.dispose();
     }
 
+
     // ===== ACCESSORS =====
     public boolean isPaused() { return paused; }
     public void setPaused(boolean value) { this.paused = value; }
-    public PauseOverlay getPauseOverlay() { return pauseOverlay; }
 }

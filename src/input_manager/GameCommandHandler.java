@@ -6,110 +6,111 @@ import java.awt.event.KeyListener;
 import main.GamePanel;
 import sound_manager.SoundManager;
 import main.GameState;
+import ui.MainMenuUI;
 
 /**
- * Lớp GameCommandHandler chịu trách nhiệm xử lý các phím chức năng toàn cục
- * (ESC, ENTER, mũi tên điều hướng, v.v...) cho các trạng thái chính của trò chơi:
- * - Menu chính (START)
- * - Trạng thái chơi (PLAY)
- * - Trạng thái tạm dừng (PAUSE)
+ * GameCommandHandler.java
+ * Handles global keyboard commands (ESC, ENTER, arrows, etc.)
+ * for major game states:
+ * - Main menu (START)
+ * - Gameplay (PLAY)
+ * - Pause state (PAUSE)
  *
- * Lớp này không xử lý di chuyển nhân vật hay hành động trong gameplay;
- * phần đó được quản lý bởi KeyHandler.
+ * This class does NOT control player movement or combat actions;
+ * those are handled in KeyHandler.
  */
 public class GameCommandHandler implements KeyListener {
 
-    /** Tham chiếu đến GamePanel chính để truy cập state và UI. */
+    /** Reference to the main GamePanel instance. */
     private final GamePanel gp;
 
-    /** Khởi tạo handler và gắn với GamePanel hiện tại. */
+    /** Constructor: attach to the current GamePanel. */
     public GameCommandHandler(GamePanel gp) {
         this.gp = gp;
     }
 
     /**
-     * Hàm xử lý khi người chơi nhấn phím.
-     * Tùy theo trạng thái game hiện tại mà thực hiện hành động tương ứng.
+     * Called when a key is pressed.
+     * Executes different logic depending on the current GameState.
      */
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        // =====================================
-        // ======= MENU CHÍNH (START STATE) =====
-        // =====================================
+        // ===========================================
+        // ======= MAIN MENU (START STATE) ===========
+        // ===========================================
         if (gp.gsm.getState() == GameState.START) {
 
-            // Di chuyển lên / xuống giữa các lựa chọn trong menu
+            // Get MainMenuUI through UIManager
+            MainMenuUI menu = gp.uiManager.get(MainMenuUI.class);
+            if (menu == null) return; // safety check
+
+            // Let menu handle ESC for closing credits
+            menu.handleKey(code);
+
+            // If credits are showing, ignore other key inputs
+            if (menu.isShowingCredits()) return;
+
+            // Move selection up
             if (code == KeyEvent.VK_UP) {
-                gp.mainMenuUI.commandNum--;
-                if (gp.mainMenuUI.commandNum < 0) {
-                    gp.mainMenuUI.commandNum = 3; // vòng về lựa chọn cuối cùng
-                }
-            }
-            if (code == KeyEvent.VK_DOWN) {
-                gp.mainMenuUI.commandNum++;
-                if (gp.mainMenuUI.commandNum > 3) {
-                    gp.mainMenuUI.commandNum = 0; // vòng về đầu
+                menu.commandNum--;
+                if (menu.commandNum < 0) {
+                    menu.commandNum = 3; // wrap to last option
                 }
             }
 
-            // Xử lý khi người chơi nhấn ENTER tại menu chính
-            if (code == KeyEvent.VK_ENTER) {
-                switch (gp.mainMenuUI.commandNum) {
-                    case 0 -> { // PLAY
-                        gp.gsm.setState(GameState.PLAY);
-                        SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
-                    }
-                    case 1 -> { // OPTIONS
-                        // Tạm thời để trống, có thể mở menu tùy chọn sau
-                    }
-                    case 2 -> { // QUIT
-                        System.exit(0);
-                    }
-                    case 3 -> { // CREDITS
-                        gp.toggleMainMenuCredits(); // chuyển sang phần giới thiệu nhóm
-                    }
+            // Move selection down
+            if (code == KeyEvent.VK_DOWN) {
+                menu.commandNum++;
+                if (menu.commandNum > 3) {
+                    menu.commandNum = 0; // wrap to first option
                 }
+            }
+
+            // Execute menu action
+            if (code == KeyEvent.VK_ENTER) {
+                menu.select();
             }
         }
 
-        // =====================================
-        // =========== TRẠNG THÁI CHƠI ==========
-        // =====================================
+        // ===========================================
+        // =========== PLAY STATE ====================
+        // ===========================================
         else if (gp.gsm.getState() == GameState.PLAY) {
 
-            // Nhấn ESC để bật menu tạm dừng
+            // Press ESC to open the pause menu
             if (code == KeyEvent.VK_ESCAPE) {
-                gp.setPaused(true); // bật cờ tạm dừng trong GamePanel
+                gp.setPaused(true);
                 SoundManager.getInstance().stopMusic();
                 return;
             }
 
-            // Nếu đang ở trạng thái tạm dừng, chuyển tiếp phím sang GamePanel
+            // Forward key events to pause overlay if the game is paused
             if (gp.isPaused()) {
                 gp.handleKeyPressed(code);
                 return;
             }
 
-            // TODO: xử lý các phím gameplay khác ở đây (nhảy, tấn công, di chuyển...)
+            // TODO: handle gameplay keys (movement, attack, etc.)
         }
 
-        // =====================================
-        // ======= TRẠNG THÁI PAUSE (CŨ) =======
-        // =====================================
-        // Giữ lại để tương thích, nhưng hiện tại việc tạm dừng
-        // được xử lý trực tiếp trong GamePanel qua biến paused.
+        // ===========================================
+        // ======== LEGACY PAUSE STATE ===============
+        // ===========================================
         else if (gp.gsm.getState() == GameState.PAUSE) {
+            // This is kept for compatibility; real pause logic is in GamePanel.
             gp.handleKeyPressed(code);
         }
     }
 
-    /** Không sử dụng trong hệ thống phím chung. */
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        // Not used in global command handler
+    }
 
-    /** Không sử dụng trong hệ thống phím chung. */
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+        // Not used in global command handler
+    }
 }
