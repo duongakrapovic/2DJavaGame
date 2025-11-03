@@ -29,8 +29,8 @@ public class Entity implements CombatContext {
     public Rectangle solidArea;
     public boolean collisionXOn = false;
     public boolean collisionYOn = false;
-    public boolean collisionOn  = false;
-    public boolean collision    = false;
+    public boolean collisionOn = false;
+    public boolean collision = false;
     public int solidAreaDefaultX, solidAreaDefaultY;
 
     // --- auto-slide config ---
@@ -51,10 +51,10 @@ public class Entity implements CombatContext {
     private int invulnCounter = 0;
 
     // --- Fields (thêm hoặc giữ nếu đã có) ---
-    public int  velX = 0, velY = 0;
+    public int velX = 0, velY = 0;
     private int knockbackCounter = 0;
-    private int knockbackFrames  = 12;
-    public  int knockbackPower   = 2;
+    private int knockbackFrames = 12;
+    public int knockbackPower = 2;
 
     // --- attack box (shared with CombatComponent) ---
     public Rectangle attackBox = new Rectangle(0, 0, 0, 0);
@@ -73,6 +73,7 @@ public class Entity implements CombatContext {
     protected MovementController controller;
     public boolean hasAttackAnim = false; // default: false (Slime, v.v.)
     public Entity lastHitBy = null;
+
     public Entity(GamePanel gp) {
         this.gp = gp;
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
@@ -80,64 +81,148 @@ public class Entity implements CombatContext {
 
         this.emo = new EntityMovement(gp);
         this.esm = new EntitySpriteManager();
-        this.ed  = new EntityDraw(gp);
+        this.ed = new EntityDraw(gp);
 
         this.combat = new CombatComponent();
         this.attackBox = combat.getAttackBox(); // dùng chung rect để code vẽ cũ không phải đổi
     }
 
     // -------- controller ----------
-    public void setController(MovementController c){ this.controller = c; }
-    public MovementController getController(){ return controller; }
+    public void setController(MovementController c) {
+        this.controller = c;
+    }
+
+    public MovementController getController() {
+        return controller;
+    }
 
     // -------- stats ----------
     public void setStats(int maxHp, int atk, int def) {
         this.maxHp = Math.max(1, maxHp);
-        this.hp    = this.maxHp;
-        this.atk   = Math.max(0, atk);
-        this.def   = Math.max(0, def);
+        this.hp = this.maxHp;
+        this.atk = Math.max(0, atk);
+        this.def = Math.max(0, def);
     }
-    public int  getHP()     { return hp; }
-    public int  getMaxHP()  { return maxHp; }
-    public int  getATK()    { return atk; }
-    public int  getDEF()    { return def; }
 
-    public void reduceHP(int amount) { hp = Math.max(0, hp - Math.max(0, amount)); }
-    public void setInvulnFrames(int frames) { invulnFrames = Math.max(0, frames); }
-    public int  getInvulnFrames() { return invulnFrames; }
+    public int getHP() {
+        return hp;
+    }
 
-    @Override public boolean isDead() { return hp <= 0; }
+    public int getMaxHP() {
+        return maxHp;
+    }
 
-    public boolean isInvulnerable()           { return invulnerable; }
-    public void    setInvulnerable(boolean v) { invulnerable = v; }
-    public int     getInvulnCounter()         { return invulnCounter; }
-    public void    setInvulnCounter(int v)    { invulnCounter = v; }
+    public int getATK() {
+        return atk;
+    }
 
-    public int  getKnockbackFrames()      { return knockbackFrames; }
-    public int  getKnockbackCounter()      { return knockbackCounter; }
-    public void setKnockbackCounter(int v) { knockbackCounter = v; }
-    public boolean isKnockbackActive()     { return knockbackCounter > 0; }
-    public void setKnockbackFrames(int f) { knockbackFrames = Math.max(1, f); }
+    public int getDEF() {
+        return def;
+    }
 
-    public void clearVelocity() { this.velX = 0; this.velY = 0; }
-    public int getVelX() { return this.velX; }
-    public int getVelY() { return this.velY; }
+    public void reduceHP(int amount) {
+        hp = Math.max(0, hp - Math.max(0, amount));
+    }
 
-    @Override public int getWorldX() { return worldX; }
-    @Override public int getWorldY() { return worldY; }
-    @Override public Rectangle getSolidArea() {
+    public void setInvulnFrames(int frames) {
+        invulnFrames = Math.max(0, frames);
+    }
+
+    public int getInvulnFrames() {
+        return invulnFrames;
+    }
+
+    @Override
+    public boolean isDead() {
+        return hp <= 0;
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    public void setInvulnerable(boolean v) {
+        invulnerable = v;
+    }
+
+    public int getInvulnCounter() {
+        return invulnCounter;
+    }
+
+    public void setInvulnCounter(int v) {
+        invulnCounter = v;
+    }
+
+    public int getKnockbackFrames() {
+        return knockbackFrames;
+    }
+
+    public int getKnockbackCounter() {
+        return knockbackCounter;
+    }
+
+    public void setKnockbackCounter(int v) {
+        knockbackCounter = v;
+    }
+
+    public boolean isKnockbackActive() {
+        return knockbackCounter > 0;
+    }
+
+    public void setKnockbackFrames(int f) {
+        knockbackFrames = Math.max(1, f);
+    }
+
+    public void clearVelocity() {
+        this.velX = 0;
+        this.velY = 0;
+    }
+
+    public int getVelX() {
+        return this.velX;
+    }
+
+    public int getVelY() {
+        return this.velY;
+    }
+
+    @Override
+    public int getWorldX() {
+        return worldX;
+    }
+
+    @Override
+    public int getWorldY() {
+        return worldY;
+    }
+
+    @Override
+    public Rectangle getSolidArea() {
         return (solidArea != null)
                 ? solidArea
                 : new Rectangle(0, 0, Math.max(1, width), Math.max(1, height));
     }
-    @Override public String getDirection() { return direction; }
+
+    @Override
+    public String getDirection() {
+        return direction;
+    }
+
     protected int[] computeDelta() {
         int dx = 0, dy = 0;
         switch (direction) {
-            case "up":    dy = -actualSpeed; break;
-            case "down":  dy =  actualSpeed; break;
-            case "left":  dx = -actualSpeed; break;
-            case "right": dx =  actualSpeed; break;
+            case "up":
+                dy = -actualSpeed;
+                break;
+            case "down":
+                dy = actualSpeed;
+                break;
+            case "left":
+                dx = -actualSpeed;
+                break;
+            case "right":
+                dx = actualSpeed;
+                break;
         }
         return new int[]{dx, dy};
     }
@@ -163,14 +248,30 @@ public class Entity implements CombatContext {
     }
 
 
-
-    public void draw(Graphics2D g2) { ed.draw(g2, this); }
-    public BufferedImage setup(String path, int w, int h) { return esm.setup(path, w, h); }
-
-    public void onDamaged(int damage) {}
-    // --- Method (THÊM MỚI): gọi từ DamageProcessor ---
-    public void applyKnockback(int kbX, int kbY, int durationFrames) {
-        velX = kbX; velY = kbY; knockbackCounter = durationFrames;
+    public void draw(Graphics2D g2) {
+        ed.draw(g2, this);
     }
 
+    public BufferedImage setup(String path, int w, int h) {
+        return esm.setup(path, w, h);
+    }
+
+    public void onDamaged(int damage) {
+    }
+
+    // --- Method (THÊM MỚI): gọi từ DamageProcessor ---
+    public void applyKnockback(int kbX, int kbY, int durationFrames) {
+        velX = kbX;
+        velY = kbY;
+        knockbackCounter = durationFrames;
+    }
+
+    // --- Save/Load support ---
+    public void setHP(int value) {
+        this.hp = Math.max(0, Math.min(value, maxHp));
+    }
+
+    public void revive() {
+        this.hp = Math.max(1, maxHp); // hồi sinh với full máu
+    }
 }

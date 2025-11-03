@@ -8,7 +8,7 @@ import ui.*;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
+import game_data.SaveManager;
 import entity_manager.EntityManager;
 import entity_manager.ObjectManager;
 import tile.ChunkManager;
@@ -35,6 +35,9 @@ public class GamePanel extends JPanel {
     public TileManager tileM = new TileManager(this);
     public ChunkManager chunkM = new ChunkManager(chunkSize, this);
     private final InputManager input;
+
+    // ===== SAVE  =====
+    public final SaveManager saveManager = new SaveManager();
 
     // ===== OTHERS =====
     public CollisionChecker cChecker;

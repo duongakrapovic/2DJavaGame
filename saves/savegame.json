@@ -1,0 +1,32 @@
+{
+  "player": {
+    "worldX": 1074,
+    "worldY": 1108,
+    "health": 96,
+    "maxHealth": 100,
+    "weaponName": "Sword",
+    "mapIndex": 1
+  },
+  "objects": [
+    {
+      "type": "Orc",
+      "worldX": 768,
+      "worldY": 816,
+      "active": true
+    },
+    {
+      "type": "RedSlime",
+      "worldX": 778,
+      "worldY": 400,
+      "active": true
+    },
+    {
+      "type": "Bat",
+      "worldX": 710,
+      "worldY": 564,
+      "active": true
+    }
+  ],
+  "mapIndex": 1,
+  "mapPath": "map1"
+}

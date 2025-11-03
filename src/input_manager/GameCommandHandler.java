@@ -7,6 +7,7 @@ import main.GamePanel;
 import sound_manager.SoundManager;
 import main.GameState;
 import ui.MainMenuUI;
+import ui.MessageUI;
 
 /**
  * GameCommandHandler.java
@@ -78,6 +79,21 @@ public class GameCommandHandler implements KeyListener {
         // =========== PLAY STATE ====================
         // ===========================================
         else if (gp.gsm.getState() == GameState.PLAY) {
+            // === SAVE & LOAD GAME ===
+            if (code == KeyEvent.VK_F5) {
+                gp.saveManager.saveGame(gp);
+                var msgUI = gp.uiManager.get(MessageUI.class);
+                if (msgUI != null) msgUI.showTouchMessage("Game Saved!",null,gp);
+                return;
+            }
+
+            if (code == KeyEvent.VK_F9) {
+                gp.saveManager.loadGame(gp);
+                var msgUI = gp.uiManager.get(MessageUI.class);
+                if (msgUI != null) msgUI.showTouchMessage("Game Loaded!",null,gp);
+                return;
+            }
+
 
             // Press ESC to open the pause menu
             if (code == KeyEvent.VK_ESCAPE) {
