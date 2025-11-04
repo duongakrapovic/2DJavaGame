@@ -157,7 +157,13 @@ public class ChunkManager {
             return new HashMap<>(chunks).values(); 
         }
     }
-
+    /**
+     * Force load a new map immediately (clears old chunks)
+     */
+    public void loadMap(String mapName) {
+        clearChunks();                // xoá toàn bộ chunk cũ
+        this.pathMap = mapName;       // cập nhật đường dẫn map mới
+    }
     /** Shutdown the background loader thread */
     public void shutdown(){
         loader.shutdownNow();

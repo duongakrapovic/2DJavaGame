@@ -123,7 +123,15 @@ public class MainMenuUI extends BaseUI {
                 gp.gsm.setState(GameState.PLAY);
                 SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
                 }
-            case 1 -> gp.gsm.setState(GameState.OPTIONS);   // OPTIONS
+            case 1 -> { // OPTIONS → thực hiện load game luôn
+                if (gp.saveManager != null) {
+                    gp.saveManager.loadGame(gp);
+                    System.out.println("[MainMenu] Game loaded successfully.");
+                }
+                // chuyển sang PLAY luôn sau khi load
+                gp.gsm.setState(GameState.PLAY);
+                SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+            }
             case 2 -> System.exit(0);                       // QUIT
             case 3 -> showingCredits = true;                // CREDITS
         }

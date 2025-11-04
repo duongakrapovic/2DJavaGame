@@ -8,12 +8,13 @@ import ui.*;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
+import game_data.SaveManager;
 import entity_manager.EntityManager;
 import entity_manager.ObjectManager;
 import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
+import interact_manager.Interact;
 
 
 public class GamePanel extends JPanel {
@@ -36,11 +37,14 @@ public class GamePanel extends JPanel {
     public ChunkManager chunkM = new ChunkManager(chunkSize, this);
     private final InputManager input;
 
+    // ===== SAVE  =====
+    public final SaveManager saveManager = new SaveManager();
+
     // ===== OTHERS =====
     public CollisionChecker cChecker;
     public UtilityTool uTool = new UtilityTool();
     public int frameCounter = 0;
-
+    public Interact iR;
     // ===== ENTITY MANAGER =====
     public EntityManager em;
     public final ObjectManager om = new ObjectManager(this);
@@ -157,6 +161,7 @@ public class GamePanel extends JPanel {
         // Vẽ thế giới + entity
         if (gsm.getState() != GameState.START)
             tileM.draw(g2, chunkM);
+
         em.draw(g2, currentMap);
 
         // Vẽ toàn bộ UI qua UIManager
