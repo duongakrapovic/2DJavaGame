@@ -4,6 +4,12 @@
  */
 package interact_manager.object_interact;
 
+import interact_manager.object_interact.items.ManaPosionInteraction;
+import interact_manager.object_interact.items.KeyInteraction;
+import interact_manager.object_interact.items.HealthPosionInteraction;
+import interact_manager.object_interact.items.DoorInteraction;
+import interact_manager.object_interact.weapon.*;
+
 public class ObjectInteractionFactory {
 
     public static IObjectInteraction getHandler(String name) {
@@ -16,6 +22,8 @@ public class ObjectInteractionFactory {
             case "manaposion" -> new ManaPosionInteraction();
             case "healthposion" -> new HealthPosionInteraction();
             case "sword" -> new SwordInteraction();
+            case "axe" -> new AxeInteraction();
+            case "pick" ->  new PickInteraction();
             default -> null;
         };
     }

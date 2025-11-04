@@ -2,31 +2,34 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package interact_manager.object_interact;
+package interact_manager.object_interact.weapon;
 
 import main.GamePanel;
 import object_data.WorldObject;
+import object_data.weapons.*;
 import player_manager.Player;
 import input_manager.InputController;
+import interact_manager.object_interact.IObjectInteraction;
 import sound_manager.SoundManager;
 import ui.MessageUI;
 
 import java.util.List;
 
-public class KeyInteraction implements IObjectInteraction {
+public class PickInteraction implements IObjectInteraction {
 
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
         List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
 
-        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick key", obj, gp);
+        if (msgUI != null) msgUI.showTouchMessage("press 'F' to hold pick", obj, gp);
         if (input.isPicked()) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
-            player.hasKey++;
             objects.remove(obj);
-            if (msgUI != null) msgUI.showTouchMessage("Ya got a key!", obj, gp);
+            player.setCurrentWeapon(new Axe(gp, gp.currentMap));
+            Weapon temp = player.getCurrentWeapon();
+            player.equipWeapon(temp);
+            if (msgUI != null) msgUI.showTouchMessage("Ya got a pick!", obj, gp);
         }
     }
 }
-

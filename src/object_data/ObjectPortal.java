@@ -5,6 +5,7 @@ import main.GamePanel;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import object_data.WorldObject;
 
 public class ObjectPortal extends WorldObject {
 

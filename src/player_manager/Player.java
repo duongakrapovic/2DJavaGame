@@ -1,12 +1,10 @@
 package player_manager;
 
 import combat.CombatSystem;
-import combat.KnockbackService;
 import entity.Entity;
 import interact_manager.Interact;
 import input_manager.InputController;
 import main.GamePanel;
-import object_data.weapons.Weapon;
 import ui.MessageUI;
 
 import java.awt.Color;
@@ -14,13 +12,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import object_data.weapons.Weapon;
-import object_data.weapons.Sword;
-import object_data.weapons.Axe;
-import object_data.weapons.Pick ;
 
 public class Player extends Entity {
     private Weapon currentWeapon;
     public Weapon getCurrentWeapon() { return currentWeapon; }
+    public Weapon setCurrentWeapon(Weapon w){return currentWeapon = w;}
 
     public int hasKey = 0;
     int speedTimer = 0;
@@ -59,10 +55,8 @@ public class Player extends Entity {
 
         // ---- Combat config
         setStats(100, 3, 1);
-        currentWeapon = new Sword(gp);   // hoặc new Sword(gp)
-        equipWeapon(currentWeapon);
     }
-
+    
     public void setDefaultValues() {
         
         worldX = gp.tileSize * (gp.chunkSize / 2 + 7) - 8;

@@ -5,7 +5,6 @@ import main.GamePanel;
 import object_data.WorldObject;
 import player_manager.Player;
 
-import java.awt.image.BufferedImage;
 
 /**
  * Base Weapon class:
@@ -13,9 +12,9 @@ import java.awt.image.BufferedImage;
  * - Có config combat (damage, knockback, timing, spriteKey)
  */
 public abstract class Weapon extends WorldObject {
-    // ✅ Overload mặc định: mapIndex = 0
+
     public Weapon(GamePanel gp) {
-        this(gp, 0);
+        this(gp, gp.currentMap);
     }
 
     // ✅ Constructor đầy đủ
