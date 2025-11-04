@@ -119,4 +119,8 @@ public class ObjectManager {
             
         }
     }
+    public void reloadMapObjects(int mapId) {
+        objectsByMap.clear();     // xóa toàn bộ object cũ
+        spawnObjects();           // tạo lại toàn bộ object (bao gồm portal)
+    }
 }

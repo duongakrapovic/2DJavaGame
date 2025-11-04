@@ -42,8 +42,6 @@ public class SaveManager {
             }
 
             List<InventoryData> inventoryList = new ArrayList<>();
-
-
             PlayerData playerData = new PlayerData(
                     player.worldX,
                     player.worldY,
@@ -52,7 +50,6 @@ public class SaveManager {
                     (player.getCurrentWeapon() != null ? player.getCurrentWeapon().name : null),
                     gp.currentMap
             );
-
 
             // ==== MONSTERS ====
             List<ObjectData> monsterList = new ArrayList<>();
@@ -116,6 +113,11 @@ public class SaveManager {
                 String newMap = "map" + gp.currentMap;
 
                 gp.chunkM.loadMap(newMap);
+                // ==== REBIND SYSTEMS ====
+                if (gp.om != null) {
+                    gp.om.reloadMapObjects(gp.currentMap);
+                }
+
                 gp.em.update(gp.currentMap);
 
             }
@@ -140,9 +142,11 @@ public class SaveManager {
                 }
             }
 
-            // ==== RESTORE MAP ====
-            gp.currentMap = data.mapIndex;
-            if (data.mapPath != null) gp.chunkM.pathMap = data.mapPath;
+
+
+            if (gp.em != null && gp.em.getPlayer() != null) {
+                gp.iR = new interact_manager.Interact(gp, gp.em.getPlayer(), gp.em.getPlayer().input);
+            }
 
             System.out.println("[SaveManager] Game loaded successfully.");
 

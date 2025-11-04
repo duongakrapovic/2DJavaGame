@@ -163,7 +163,6 @@ public class ChunkManager {
     public void loadMap(String mapName) {
         clearChunks();                // xoá toàn bộ chunk cũ
         this.pathMap = mapName;       // cập nhật đường dẫn map mới
-        System.out.println("[ChunkManager] Loaded map: " + mapName);
     }
     /** Shutdown the background loader thread */
     public void shutdown(){
