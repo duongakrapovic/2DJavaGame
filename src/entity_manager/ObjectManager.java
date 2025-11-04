@@ -1,9 +1,10 @@
 package entity_manager;
 
+import object_data.items.*;
 import object_data.*;
 import entity.Entity;            // lấy player để tính world->screen
 import main.GamePanel;
-import object_data.weapons.Sword;
+import object_data.weapons.*;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -32,7 +33,8 @@ public class ObjectManager {
         addObject(new Shop(gp, 0),46 * t, 15 * t);
         addObject(new ObjectDoor(gp, 0),48 * t - 23, 18 * t);
         addObject(new ObjectPortal(gp, 0),47 * t + 12, 47 * t + 12);
-        addObject(new Sword(gp) ,23 *t , 20 * t);
+        addObject(new Sword(gp, 0) ,23 *t , 20 * t);
+        addObject(new Axe(gp, 0), 23*t , 23 * t);
         
     }
     private void spawnMap1() {
@@ -51,10 +53,13 @@ public class ObjectManager {
         addObject(new ManaPosion(gp, 3), 16 * t, 12 * t - 5);
         addObject(new ManaPosion(gp, 3), 17 * t, 12 * t - 5);
         
-        addObject(new HealthPosion(gp, 3), 15 * t, 17 * t - 5);
-        addObject(new HealthPosion(gp, 3), 16 * t, 17 * t - 5);
         addObject(new HealthPosion(gp, 3), 15 * t, 16 * t - 5);
         addObject(new HealthPosion(gp, 3), 16 * t, 16 * t - 5);
+        addObject(new HealthPosion(gp, 3), 15 * t, 17 * t - 5);
+        addObject(new HealthPosion(gp, 3), 16 * t, 17 * t - 5);
+        
+        addObject(new Sword(gp, 3) ,15 *t , 18 * t);
+        addObject(new Axe(gp, 3), 16 * t , 18 * t);
     }
     public void addObject(WorldObject obj, int wx, int wy) {
         obj.worldX = wx;

@@ -1,7 +1,8 @@
-package object_data;
+package object_data.items;
 
 import java.awt.Rectangle;
 import main.GamePanel;
+import object_data.WorldObject;
 
 public class ObjectKey extends WorldObject {
 

@@ -5,9 +5,12 @@ import main.GamePanel;
 import java.awt.*;
 
 public final class Axe extends Weapon {
-    public Axe(GamePanel gp ) {
+    
+    public Axe(GamePanel gp, int mapIndex ) {
         super(gp);
         name = "Axe";
+        this.mapIndex = mapIndex;
+        
         width  = gp.tileSize;
         height = gp.tileSize;
         collision = false;

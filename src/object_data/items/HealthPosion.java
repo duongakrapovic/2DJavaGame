@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package object_data;
+package object_data.items;
 
 import java.awt.Rectangle;
 import main.GamePanel;
+import object_data.WorldObject;
 
 public class HealthPosion extends WorldObject {
 

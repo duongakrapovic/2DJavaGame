@@ -6,8 +6,10 @@ import java.awt.*;
 
 public final class Sword extends Weapon {
 
-    public Sword(GamePanel gp) {
+    public Sword(GamePanel gp ,int mapIndex) {
         super(gp);
+        this.mapIndex = mapIndex;
+        
         name = "sword";
         width  = gp.tileSize;
         height = gp.tileSize;
