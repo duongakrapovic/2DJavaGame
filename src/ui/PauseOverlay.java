@@ -12,16 +12,6 @@ import static utilz.Constants.UI.URMButtons.*;
 
 
 public class PauseOverlay extends BaseUI {
-    // === Layout constants ===
-    private static final int PAD_L = 28;
-    private static final int PAD_R = 28;
-    private static final int PAD_TOP = 36;
-    private static final int PAD_BOTTOM = 28;
-
-    private static final int ROW_STEP = 48;
-    private static final int URM_GAP = 8;
-    private static final int BOTTOM_CLEAR = 6;
-
     private BufferedImage bgImg;
     private int bgX, bgY, bgW, bgH;
 
@@ -89,18 +79,17 @@ public class PauseOverlay extends BaseUI {
     // === Điều kiện hiển thị trong UIManager ===
     @Override
     public boolean shouldRenderIn(GameState state) {
-        // Chỉ hoạt động trong gameplay
-        return state == GameState.PLAY;
+        return gp.gsm.getState() == GameState.PAUSE;
     }
 
     @Override
     public boolean shouldDraw() {
-        return gp.isPaused();
+        return gp.gsm.getState() == GameState.PAUSE;
     }
 
     @Override
     public boolean shouldUpdate() {
-        return gp.isPaused();
+        return gp.gsm.getState() == GameState.PAUSE;
     }
 
     /** Tô sáng nút đang focus (tùy chọn để dễ nhìn hơn) */
@@ -121,12 +110,10 @@ public class PauseOverlay extends BaseUI {
     // === Keyboard control ===
     public void moveLeft() {
         focusIndex = (focusIndex - 1 + 5) % 5;
-        playClick();
     }
 
     public void moveRight() {
         focusIndex = (focusIndex + 1) % 5;
-        playClick();
     }
 
     public void select() {
@@ -136,7 +123,6 @@ public class PauseOverlay extends BaseUI {
             case 2 -> replay();
             case 3 -> resume();
         }
-        playClick();
     }
 
     // === Actions ===
@@ -149,23 +135,17 @@ public class PauseOverlay extends BaseUI {
     }
 
     private void goMenu() {
-        gp.setPaused(false);
         gp.gsm.setState(GameState.START);
     }
 
     private void replay() {
-        gp.setPaused(false);
         gp.gsm.setState(GameState.PLAY);
     }
 
     private void resume() {
-        gp.setPaused(false);
+        gp.gsm.setState(GameState.PLAY);
         if (!musicB.isMuted()) {
             SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
         }
-    }
-
-    private void playClick() {
-        SoundManager.playSFX("click");
     }
 }

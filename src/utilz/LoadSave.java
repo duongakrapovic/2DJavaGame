@@ -10,7 +10,9 @@ public class LoadSave {
     public static final String PAUSE_BACKGROUND = "pause_background.png";
     public static final String SOUND_BUTTONS = "sound_button.png";
     public static final String URM_BUTTONS = "urm_buttons.png";
-
+    public static final String MENU_BACKGROUND  = "menu_background.png";
+    public static final String BACKGROUND_MENU  = "background_menu.png";
+    public static final String BUTTON_ATLAS     = "button_atlas.png";
     /**
      * Giữ nguyên phong cách bản gốc: dùng try–finally và is.close().
      * Nhưng mở rộng thêm để tìm ảnh trong /ui/, /monster/, /object/, /player/, ...

@@ -75,23 +75,31 @@ public class CollisionChecker {
         }
     }
     // this check player -> entity 
-    public int checkEntity(Entity entity ,List<Entity> targets, int nextX, int nextY){
+    // this check player -> entity (NPC / Monster)
+    public int checkEntity(Entity entity , List<Entity> targets, int nextX, int nextY){
         int index = 999;
 
-        // set solidArea cho entity
-        entity.solidArea.x = nextX + entity.solidArea.x;
-        entity.solidArea.y = nextY + entity.solidArea.y;
+        // === tính offset theo hướng nhìn để va chạm dễ bắt hơn ===
+        int offsetX = 0, offsetY = 0;
+        switch (entity.direction) {
+            case "up" -> offsetY = -entity.actualSpeed;
+            case "down" -> offsetY = entity.actualSpeed;
+            case "left" -> offsetX = -entity.actualSpeed;
+            case "right" -> offsetX = entity.actualSpeed;
+        }
 
-        for(int i = 0 ; i < targets.size() ; i++){
+        // set solidArea cho entity (đã có offset)
+        entity.solidArea.x = nextX + entity.solidArea.x + offsetX;
+        entity.solidArea.y = nextY + entity.solidArea.y + offsetY;
+
+        for (int i = 0; i < targets.size(); i++) {
             Entity target = targets.get(i);
-            if(target != null){
+            if (target != null && target.mapIndex == entity.mapIndex) {
                 target.solidArea.x = target.worldX + target.solidArea.x;
                 target.solidArea.y = target.worldY + target.solidArea.y;
 
                 if (entity.solidArea.intersects(target.solidArea)) {
-                    if (target.collision) {
-                        entity.collisionOn = true;
-                    }
+                    if (target.collision) entity.collisionOn = true;
                     index = i; // trả về index va chạm
                 }
 
@@ -103,9 +111,11 @@ public class CollisionChecker {
 
         // reset entity
         entity.solidArea.x = entity.solidAreaDefaultX;
-        entity.solidArea.y = entity.solidAreaDefaultY; 
+        entity.solidArea.y = entity.solidAreaDefaultY;
         return index;
     }
+
+
     // this check entity -> player 
     public void checkPlayer(Entity entity , int nextX ,int nextY){
         // set solidArea for entity 

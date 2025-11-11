@@ -7,10 +7,6 @@ import main.GamePanel;
 
 import static utilz.Constants.UI.PauseButtons.SOUND_SIZE;
 
-/**
- * SoundButton — chuẩn hóa cho hệ thống GamePanel (không dùng chuột, chỉ phím)
- * Cắt sprite theo kích thước gốc (42x42), vẽ scale theo GamePanel.SCALE
- */
 public class SoundButton {
     private int x, y;
     private boolean muted;

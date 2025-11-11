@@ -12,4 +12,6 @@ public interface InputController {
     boolean isRightPressed();
     boolean isPicked();
     boolean isAttackPressed();
+    boolean isTalkPressed();
+    void resetTalkKey();
 }
