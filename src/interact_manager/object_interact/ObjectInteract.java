@@ -8,7 +8,7 @@ import object_data.WorldObject;
 import player_manager.Player;
 import input_manager.InputController;
 import main.GamePanel;
-import ui.MessageUI;
+import ui.effects.MessageUI;
 import java.util.List;
 
 public class ObjectInteract {

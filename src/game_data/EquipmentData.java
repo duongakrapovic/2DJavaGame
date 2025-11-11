@@ -6,10 +6,8 @@ package game_data;
  */
 public class EquipmentData {
     public String weapon;
-    public String armor;
 
-    public EquipmentData(String weapon, String armor) {
+    public EquipmentData(String weapon) {
         this.weapon = weapon;
-        this.armor = armor;
     }
 }

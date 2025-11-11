@@ -10,7 +10,7 @@ import player_manager.Player;
 import input_manager.InputController;
 import interact_manager.object_interact.IObjectInteraction;
 import sound_manager.SoundManager;
-import ui.MessageUI;
+import ui.effects.MessageUI;
 import java.util.List;
 
 public class ManaPosionInteraction implements IObjectInteraction {

@@ -1,4 +1,4 @@
-package game_data;
+ package game_data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -40,7 +40,6 @@ public class SaveManager {
                 System.err.println("[SaveManager] Player not found!");
                 return;
             }
-
             List<InventoryData> inventoryList = new ArrayList<>();
             PlayerData playerData = new PlayerData(
                     player.worldX,
@@ -99,7 +98,6 @@ public class SaveManager {
                 System.err.println("[SaveManager] Save file corrupted or empty.");
                 return;
             }
-
             // ==== RESTORE PLAYER ====
             Player player = gp.em.getPlayer();
             if (player != null && data.player != null) {
@@ -110,6 +108,7 @@ public class SaveManager {
                 player.setHP(data.player.health);
                 // Restore map
                 gp.currentMap = data.player.mapIndex;
+                player.mapIndex = gp.currentMap;
                 String newMap = "map" + gp.currentMap;
 
                 gp.chunkM.loadMap(newMap);
@@ -122,8 +121,6 @@ public class SaveManager {
 
             }
 
-
-
             // ==== RESTORE MONSTERS ====
             var monsters = gp.em.getMonsters(gp.currentMap);
             if (monsters != null && data.objects != null) {
@@ -134,16 +131,13 @@ public class SaveManager {
                         mon.worldX = saved.worldX;
                         mon.worldY = saved.worldY;
                         if (!saved.active) {
-                            mon.setHP(0); // chết (hp=0)
+                            mon.setHP(0);
                         } else {
-                            mon.revive(); // hồi sinh
+                            mon.revive();
                         }
                     }
                 }
             }
-
-
-
             if (gp.em != null && gp.em.getPlayer() != null) {
                 gp.iR = new interact_manager.Interact(gp, gp.em.getPlayer(), gp.em.getPlayer().input);
             }

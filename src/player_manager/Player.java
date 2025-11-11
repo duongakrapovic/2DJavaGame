@@ -6,7 +6,7 @@ import interact_manager.Interact;
 import input_manager.InputController;
 import main.GamePanel;
 import main.GameState;
-import ui.MessageUI;
+import ui.effects.MessageUI;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -69,7 +69,7 @@ public class Player extends Entity {
         pa = new PlayerAnimation(this);
 
         // ---- Combat config
-        setStats(100, 3, 1);
+        setStats(2, 3, 1);
     }
     
     public void setDefaultValues() {
@@ -191,7 +191,7 @@ public class Player extends Entity {
             msgUI.showTouchMessage("Equipped " + weapon.displayName(), null, gp);
         }
     }
-    /** Handle interaction with NPCs (E key) */
+
     private void handleNPCInteraction() {
         if (input.isTalkPressed()) { // E key
             int npcIndex = gp.cChecker.checkEntity(this, gp.em.getNPCs(gp.currentMap), worldX, worldY);
@@ -203,14 +203,10 @@ public class Player extends Entity {
 
                     gp.gsm.setState(GameState.DIALOGUE);
                 }
-                else {
-                    System.out.println("[DEBUG] npc == null");
-                }
             }
             else {
                 System.out.println("[DEBUG] No NPC collision detected");
             }
-
         }
     }
 }

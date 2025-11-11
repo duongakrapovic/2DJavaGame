@@ -3,7 +3,7 @@ package npc_data;
 import ai.movement.WanderMovement;
 import entity.Entity;
 import main.GamePanel;
-import ui.dialogue.DialogueUI;
+import ui.effects.DialogueUI;
 
 import java.awt.Rectangle;
 

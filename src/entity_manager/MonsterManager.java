@@ -31,7 +31,7 @@ public class MonsterManager {
         addMonster(new OrcMonster(gp, 1) , 16 * t , 17 * t);
         addMonster(new RedSlimeMonster(gp, 1), 15*t, 9*t);
         addMonster(new BatMonster(gp, 1), 20*t, 12*t);
-       // addMonster(new SkeletonLord(gp, 1),   30*t, 12*t);
+        addMonster(new SkeletonLord(gp, 1),   30*t, 12*t);
     }
 
     private void spawnMap2() {

@@ -5,7 +5,7 @@ import main.GamePanel;
 import main.GameState;
 import player_manager.Player;
 import input_manager.InputController;
-import ui.dialogue.DialogueUI;
+import ui.effects.DialogueUI;
 
 import java.util.List;
 

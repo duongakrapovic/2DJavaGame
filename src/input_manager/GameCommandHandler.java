@@ -6,9 +6,10 @@ import java.awt.event.KeyListener;
 import main.GamePanel;
 import sound_manager.SoundManager;
 import main.GameState;
-import ui.MainMenuUI;
-import ui.MessageUI;
-import ui.dialogue.DialogueUI;
+import ui.screens.mainmenu.MainMenuUI;
+import ui.effects.MessageUI;
+import ui.effects.DialogueUI;
+import ui.screens.pause.PauseOverlay;
 
 
 /**
@@ -45,37 +46,33 @@ public class GameCommandHandler implements KeyListener {
             MainMenuUI menu = gp.uiManager.get(MainMenuUI.class);
             if (menu == null) return;
             menu.handleKey(code);
-            // If credits are showing, ignore other key inputs
+
+            // Ignore key inputs when credits showing
             if (menu.isShowingCredits()) return;
 
             // Move selection up
             if (code == KeyEvent.VK_UP) {
-                menu.commandNum--;
-                if (menu.commandNum < 0) {
-                    menu.commandNum = 3; // wrap to last option
-                }
+                menu.moveUp();
             }
 
             // Move selection down
             if (code == KeyEvent.VK_DOWN) {
-                menu.commandNum++;
-                if (menu.commandNum > 3) {
-                    menu.commandNum = 0; // wrap to first option
-                }
+                menu.moveDown();
             }
 
-            // Execute menu action
+            // Select option
             if (code == KeyEvent.VK_ENTER) {
                 menu.select();
             }
         }
 
+
         // =========== PLAY STATE ====================
         else if (gp.gsm.getState() == GameState.PLAY) {
-            // === DIALOGUE: nếu đang hội thoại, Enter sẽ lật trang ===
+            // === DIALOGUE
             DialogueUI dialogue = gp.uiManager.get(DialogueUI.class);
             if (dialogue != null && dialogue.isActive()) {
-                return; // chặn mọi hành động khác khi đang hội thoại
+                return;
             }
             // === SAVE & LOAD GAME ===
             if (code == KeyEvent.VK_F5) {
@@ -105,7 +102,7 @@ public class GameCommandHandler implements KeyListener {
 
         // ============ PAUSE STATE ==================
         else if (gp.gsm.getState() == GameState.PAUSE) {
-            var pause = gp.uiManager.get(ui.PauseOverlay.class);
+            var pause = gp.uiManager.get(PauseOverlay.class);
             if (pause == null) return;
 
             switch (code) {
@@ -114,6 +111,18 @@ public class GameCommandHandler implements KeyListener {
                 case KeyEvent.VK_ENTER -> pause.select();
             }
         }
+        // ============ GAME OVER STATE ==================
+        else if (gp.gsm.getState() == GameState.GAME_OVER) {
+            var gameOver = gp.uiManager.get(ui.screens.gameover.GameOverUI.class);
+            if (gameOver == null) return;
+
+            switch (code) {
+                case KeyEvent.VK_UP -> gameOver.moveUp();
+                case KeyEvent.VK_DOWN -> gameOver.moveDown();
+                case KeyEvent.VK_ENTER -> gameOver.select();
+            }
+        }
+
     }
 
     @Override

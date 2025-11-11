@@ -1,29 +1,34 @@
 {
   "player": {
-    "worldX": 813,
-    "worldY": 812,
-    "health": 95,
-    "maxHealth": 100,
-    "weaponName": "sword",
+    "worldX": 2144,
+    "worldY": 2242,
+    "health": 2,
+    "maxHealth": 2,
     "mapIndex": 1
   },
   "objects": [
     {
       "type": "Orc",
       "worldX": 768,
-      "worldY": 814,
+      "worldY": 816,
       "active": true
     },
     {
       "type": "RedSlime",
-      "worldX": 1098,
-      "worldY": 318,
+      "worldX": 648,
+      "worldY": 484,
       "active": true
     },
     {
       "type": "Bat",
-      "worldX": 1340,
-      "worldY": 324,
+      "worldX": 1010,
+      "worldY": 854,
+      "active": true
+    },
+    {
+      "type": "Skeleton Lord",
+      "worldX": 1440,
+      "worldY": 1184,
       "active": true
     }
   ],
