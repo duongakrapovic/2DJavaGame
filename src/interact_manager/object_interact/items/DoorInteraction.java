@@ -9,8 +9,8 @@ import object_data.WorldObject;
 import player_manager.Player;
 import input_manager.InputController;
 import interact_manager.object_interact.IObjectInteraction;
-import ui.MessageUI;
-import ui.FadeUI;
+import ui.effects.MessageUI;
+import ui.effects.FadeUI;
 
 public class DoorInteraction implements IObjectInteraction {
 

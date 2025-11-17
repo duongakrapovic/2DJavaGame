@@ -4,10 +4,9 @@
  */
 package main;
 
-import ui.*;
 import javax.swing.JPanel;
 import java.awt.*;
-import java.awt.event.KeyEvent;
+
 import game_data.SaveManager;
 import entity_manager.EntityManager;
 import entity_manager.ObjectManager;
@@ -15,6 +14,14 @@ import tile.ChunkManager;
 import tile.TileManager;
 import input_manager.InputManager;
 import interact_manager.Interact;
+import ui.health.HealthUI;
+import ui.health.MonsterHealthUI;
+import ui.base.UIManager;
+import ui.effects.FadeUI;
+import ui.effects.MessageUI;
+import ui.screens.gameover.GameOverUI;
+import ui.screens.mainmenu.MainMenuUI;
+import ui.screens.pause.PauseOverlay;
 
 
 public class GamePanel extends JPanel {
@@ -54,9 +61,6 @@ public class GamePanel extends JPanel {
     private PauseOverlay pauseOverlay;
     public static final float SCALE = 3f;
 
-    // ===== PAUSE SYSTEM =====
-    private boolean paused = false;
-
     // ===== MAP =====
     public int numMaps = 3;
     public int currentMap = 0;
@@ -82,13 +86,14 @@ public class GamePanel extends JPanel {
         uiManager.add(new HealthUI(this));
         uiManager.add(new MonsterHealthUI(this));
         uiManager.add(new GameOverUI(this));
+        uiManager.add(new ui.effects.DialogueUI(this));
         // Input
         this.input = new InputManager(this, this);
 
         // Core managers
         em = new EntityManager(this, input.getKeyController());
         cChecker = new CollisionChecker(this);
-
+        iR = new Interact(this, em.getPlayer(), input.getKeyController());
 
     }
 
@@ -99,6 +104,24 @@ public class GamePanel extends JPanel {
         gsm.setState(GameState.START);
     }
 
+    public void restartGame() {
+        currentMap = 0;
+        chunkM.pathMap = "map0";
+        chunkM.loadMap("map0");
+        em.getPlayer().setDefaultValues();
+        em.getPlayer().setHP(em.getPlayer().getMaxHP());
+        em.getPlayer().mapIndex = currentMap; // <<< QUAN TRỌNG (đồng bộ player map)
+        if (om != null) {
+            om.reloadMapObjects(currentMap); // <<< NẠP LẠI OBJECT ĐÚNG MAP
+        }
+        cChecker = new CollisionChecker(this);
+        if (em != null && em.getPlayer() != null) {
+            iR = new interact_manager.Interact(this, em.getPlayer(), em.getPlayer().input);
+        }
+        em.update(currentMap);
+        gsm.setState(GameState.PLAY);
+    }
+
     public void startGameThread() {
         gameThread = new Thread(new GameLoop(this));
         gameThread.start();
@@ -106,48 +129,25 @@ public class GamePanel extends JPanel {
 
     // ===== UPDATE LOOP =====
     public void update() {
-        // Nếu tạm dừng, chỉ cập nhật UI (ví dụ PauseOverlay)
-        if (paused) {
-            uiManager.update(gsm.getState());
-            return;
-        }
-
         switch (gsm.getState()) {
-            case START -> {
-                uiManager.update(gsm.getState());
-            }
+            case START, GAME_OVER -> uiManager.update(gsm.getState());
+
             case PLAY -> {
                 chunkM.updateChunks(em.getPlayer().worldX, em.getPlayer().worldY);
                 currentMap = uTool.mapNameToIndex(chunkM.pathMap);
                 em.update(currentMap);
-
-                // Kiểm tra nếu Player chết => sang Game Over
                 if (em.getPlayer() != null && em.getPlayer().isDead()) {
-                    setPaused(false);
                     gsm.setState(GameState.GAME_OVER);
+                    return;
                 }
 
+                uiManager.update(GameState.PLAY);
+            }
+            case DIALOGUE -> {
                 uiManager.update(gsm.getState());
             }
-            case GAME_OVER -> {
-                uiManager.update(gsm.getState());
-            }
-        }
-    }
-
-    // ===== KEYBOARD CONTROL =====
-    public void handleKeyPressed(int code) {
-        if (!paused) {
-            if (code == KeyEvent.VK_ESCAPE) {
-                paused = true;
-                return;
-            }
-        } else {
-            switch (code) {
-                case KeyEvent.VK_ESCAPE -> paused = false;
-                case KeyEvent.VK_LEFT -> pauseOverlay.moveLeft();
-                case KeyEvent.VK_RIGHT -> pauseOverlay.moveRight();
-                case KeyEvent.VK_ENTER -> pauseOverlay.select();
+            case PAUSE -> {
+                uiManager.update(GameState.PAUSE);
             }
         }
     }
@@ -164,7 +164,6 @@ public class GamePanel extends JPanel {
 
         em.draw(g2, currentMap);
 
-        // Vẽ toàn bộ UI qua UIManager
         uiManager.draw(g2, gsm.getState());
 
 
@@ -172,9 +171,4 @@ public class GamePanel extends JPanel {
         if (frameCounter >= 1_000_000) frameCounter = 0;
         g2.dispose();
     }
-
-
-    // ===== ACCESSORS =====
-    public boolean isPaused() { return paused; }
-    public void setPaused(boolean value) { this.paused = value; }
 }

@@ -5,7 +5,8 @@ import entity.Entity;
 import interact_manager.Interact;
 import input_manager.InputController;
 import main.GamePanel;
-import ui.MessageUI;
+import main.GameState;
+import ui.effects.MessageUI;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -34,6 +35,20 @@ public class Player extends Entity {
     // combat input
     private int attackBtnLock = 0; // chống spam phím
 
+    // --- Interaction debounce (avoid F-key spamming) ---
+    private boolean interacting = false;
+
+    /** Mark that the player is interacting this frame. */
+    public void setInteracting(boolean value) {
+        this.interacting = value;
+    }
+
+    /** Check if the player is currently interacting. */
+    public boolean isInteracting() {
+        return interacting;
+    }
+
+
     public Player(GamePanel gp, InputController input) {
         super(gp);
         this.iR = new Interact(gp, this, input);
@@ -54,7 +69,7 @@ public class Player extends Entity {
         pa = new PlayerAnimation(this);
 
         // ---- Combat config
-        setStats(100, 3, 1);
+        setStats(2, 3, 1);
     }
     
     public void setDefaultValues() {
@@ -96,6 +111,7 @@ public class Player extends Entity {
 
         handleAttackInput();
         CombatSystem.tick(this);
+        handleNPCInteraction();
     }
 
 
@@ -169,6 +185,7 @@ public class Player extends Entity {
             }
         }
     }
+
     public void equipWeapon(Weapon weapon) {
         if (weapon == null) return;
         this.currentWeapon = weapon;
@@ -183,4 +200,21 @@ public class Player extends Entity {
         psm.loadAttackSprites(this, weapon.spriteKey());
     }
 
+    private void handleNPCInteraction() {
+        if (input.isTalkPressed()) { // E key
+            int npcIndex = gp.cChecker.checkEntity(this, gp.em.getNPCs(gp.currentMap), worldX, worldY);
+            if (npcIndex != 999) {
+                Entity npc = gp.em.getNPCs(gp.currentMap).get(npcIndex);
+                if (npc != null) {
+                    npc.facePlayer();
+                    npc.speak(gp);
+
+                    gp.gsm.setState(GameState.DIALOGUE);
+                }
+            }
+            else {
+                System.out.println("[DEBUG] No NPC collision detected");
+            }
+        }
+    }
 }

@@ -8,6 +8,6 @@ public enum GameState {
     START,
     PLAY,
     PAUSE,
-    OPTIONS,
+    DIALOGUE,
     GAME_OVER
 }

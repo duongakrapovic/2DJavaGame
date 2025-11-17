@@ -65,6 +65,10 @@ public class Entity implements CombatContext {
     protected final EntityDraw ed;
     public int mapIndex = 0;
 
+    // === Dialogue System ===
+    public String[][] dialogues = new String[20][20];  // [set][line]
+    public int dialogueSet = 0;
+
     // --- Combat ECS ---
     public final CombatComponent combat;
 
@@ -273,4 +277,33 @@ public class Entity implements CombatContext {
     public void revive() {
         this.hp = Math.max(1, maxHp); // hồi sinh với full máu
     }
+
+    // === Dialogue Support ===
+
+    /**
+     * Faces the player when starting a dialogue.
+     * Default implementation is empty — can be overridden by NPCs.
+     */
+    public void facePlayer() {
+        if (gp == null || gp.em == null) return;
+        var player = gp.em.getPlayer();
+        if (player == null) return;
+
+        switch (player.direction) {
+            case "up" -> direction = "down";
+            case "down" -> direction = "up";
+            case "left" -> direction = "right";
+            case "right" -> direction = "left";
+        }
+    }
+
+    /**
+     * Starts a dialogue.
+     * Default implementation does nothing — specific NPCs (e.g., Oldman, Frog)
+     * can override this method to trigger DialogueUI.
+     */
+    public void speak(GamePanel gp) {
+        // Each NPC subclass overrides this to start its dialogue
+    }
+
 }

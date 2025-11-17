@@ -1,5 +1,6 @@
 {
   "player": {
+<<<<<<< HEAD
     "worldX": 1615,
     "worldY": 2367,
     "health": 100,
@@ -9,4 +10,40 @@
   "objects": [],
   "mapIndex": 0,
   "mapPath": "map0"
+=======
+    "worldX": 2144,
+    "worldY": 2242,
+    "health": 2,
+    "maxHealth": 2,
+    "mapIndex": 1
+  },
+  "objects": [
+    {
+      "type": "Orc",
+      "worldX": 768,
+      "worldY": 816,
+      "active": true
+    },
+    {
+      "type": "RedSlime",
+      "worldX": 648,
+      "worldY": 484,
+      "active": true
+    },
+    {
+      "type": "Bat",
+      "worldX": 1010,
+      "worldY": 854,
+      "active": true
+    },
+    {
+      "type": "Skeleton Lord",
+      "worldX": 1440,
+      "worldY": 1184,
+      "active": true
+    }
+  ],
+  "mapIndex": 1,
+  "mapPath": "map1"
+>>>>>>> bef08c1b1c78351f593a5bdbe90962e2de3c2d51
 }
