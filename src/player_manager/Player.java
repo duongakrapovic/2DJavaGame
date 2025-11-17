@@ -70,10 +70,21 @@ public class Player extends Entity {
 
     @Override
     public void update() {
+        // === ĐANG BỊ KNOCKBACK → chỉ đẩy & tick hệ thống, bỏ qua input ===
+        if (isKnockbackActive()) {
+            emo.applyKnockback(this);              // dịch chuyển theo velX/velY + giảm counter
+            CombatSystem.tick(this);               // cập nhật phase, i-frames, cooldown...
+            pa.update(                             // animation vẫn cập nhật (đang không đi bộ)
+                    /*isMoving=*/false,
+                    CombatSystem.isAttacking(combat),
+                    CombatSystem.getPhase(combat)
+            );
+            return;                                // QUAN TRỌNG: không xử lý input trong frame này
+        }
+
         int[] delta = pm.calculateMovement();
         pm.move(delta[0], delta[1]);
 
-        // update animation
         pa.update(
                 pm.isMoving(),
                 CombatSystem.isAttacking(combat),
@@ -85,8 +96,9 @@ public class Player extends Entity {
 
         handleAttackInput();
         CombatSystem.tick(this);
-
     }
+
+
 
     @Override
     public void draw(Graphics2D g2) {
@@ -169,9 +181,6 @@ public class Player extends Entity {
         );
 
         psm.loadAttackSprites(this, weapon.spriteKey());
-        if (msgUI != null) {
-            msgUI.showTouchMessage("Equipped " + weapon.displayName(), null, gp);
-        }
     }
 
 }

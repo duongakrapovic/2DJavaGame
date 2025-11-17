@@ -37,9 +37,9 @@ public class RedSlimeMonster extends Monster {
 
         // combat: quệt ngắn
         combat.setAttackBoxSize(30, 26);
-        combat.setTimingFrames(6, 6, 10, 98);
+        combat.setTimingFrames(20, 6, 16, 40);
 
-        setController(new WanderMovement(wanderSpeed, 80));
+        setController(new WanderMovement(1, 240));
     }
 
     private void getImage() {
@@ -57,14 +57,4 @@ public class RedSlimeMonster extends Monster {
         atkLeft1=left1; atkLeft2=left2; atkRight1=right1; atkRight2=right2;
     }
 
-    @Override
-    public void update() {
-        // Optional: “nhảy quệt” – trong ACTIVE tăng speed chút
-        if (combat != null && CombatSystem.isAttackActive(combat)) {
-            actualSpeed = 3;
-        } else {
-            actualSpeed = wanderSpeed;
-        }
-        super.update();
-    }
 }

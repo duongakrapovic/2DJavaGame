@@ -1,12 +1,17 @@
 package monster_data;
 
+import ai.movement.AggroSwitchMovement;
+import ai.movement.ChaseMovement;
 import ai.movement.WanderMovement;
 import combat.CombatSystem;
 import entity.Entity;
 import main.GamePanel;
+import player_manager.Player;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class BatMonster extends Monster {
 
@@ -40,10 +45,24 @@ public class BatMonster extends Monster {
 
         // combat ngắn – lao vào quẹt
         combat.setAttackBoxSize(28, 24);
-        combat.setTimingFrames(12, 6, 16, 86);
+        combat.setTimingFrames(3, 18, 42, 30);
 
-        // AI: lang thang, khi đến gần player thì “đổi sang đuổi”
-        setController(new WanderMovement(wanderSpeed, 70));
+        // movement AI
+        var wander = new WanderMovement(2, 240);
+        Supplier<Player> playerSup = () -> (gp.em != null ? gp.em.getPlayer() : null);
+        var chase  = new ChaseMovement(gp, playerSup, 2, gp.tileSize);
+
+        Predicate<Entity> aggroCond = me -> {
+            Player p = playerSup.get();
+            if (p == null || p.isDead()) return false;
+            long dx = (long)p.worldX - me.worldX;
+            long dy = (long)p.worldY - me.worldY;
+            long dist2 = dx*dx + dy*dy;
+            long r = 1L * gp.tileSize * 6;
+            return dist2 < r*r;
+        };
+
+        setController(new AggroSwitchMovement(wander, chase, aggroCond));
     }
     private void getImage() {
         // 2 khung đập cánh (tileSize)

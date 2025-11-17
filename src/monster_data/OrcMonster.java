@@ -35,8 +35,7 @@ public class OrcMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // ===== Base stats =====
-        setStats(20, 0, 3); // hp, defense, exp drop (tùy bạn)
-        this.attackDamage = 5;
+        setStats(20, 3, 3); // hp, defense, exp drop (tùy bạn)
         this.attackKnockback = 8;
 
         // ===== Combat config =====
@@ -44,9 +43,9 @@ public class OrcMonster extends Monster {
         this.combat.setTimingFrames(12, 10, 16, 82);
 
         // movement AI
-        var wander = new WanderMovement(2, 80);
+        var wander = new WanderMovement(2, 240);
         Supplier<Player> playerSup = () -> (gp.em != null ? gp.em.getPlayer() : null);
-        var chase  = new ChaseMovement(gp, playerSup, 3, gp.tileSize);
+        var chase  = new ChaseMovement(gp, playerSup, 2, gp.tileSize);
 
         Predicate<Entity> aggroCond = me -> {
             Player p = playerSup.get();

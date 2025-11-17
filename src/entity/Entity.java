@@ -54,7 +54,6 @@ public class Entity implements CombatContext {
     public int velX = 0, velY = 0;
     private int knockbackCounter = 0;
     private int knockbackFrames = 12;
-    public int knockbackPower = 2;
 
     // --- attack box (shared with CombatComponent) ---
     public Rectangle attackBox = new Rectangle(0, 0, 0, 0);

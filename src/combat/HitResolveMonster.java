@@ -24,6 +24,7 @@ public final class HitResolveMonster {
         int[] kb = CombatSystem.computeMonsterAttackKnockback(m, player);
 
         DamageProcessor.applyDamage(player, rawDamage, kb[0], kb[1]);
+
         CombatSystem.markHitLanded(m.combat, player);                 // dùng API trung gian
     }
 }
