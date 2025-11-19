@@ -168,4 +168,24 @@ public class ChunkManager {
     public void shutdown(){
         loader.shutdownNow();
     }
+    public void loadAllChunksSync() {
+        synchronized (chunks) {
+            chunks.clear();
+        }
+
+        for (int cx = 0; cx < gp.chunkSize; cx++) {
+            for (int cy = 0; cy < gp.chunkSize; cy++) {
+                // Giới hạn biên map nếu cần
+                if (cx < 0 || cy < 0 || cx >= gp.chunkSize || cy >= gp.chunkSize) continue;
+
+                Chunk c = loadChunkFromFile(cx, cy, pathMap);
+                if (c != null) {
+                    synchronized (chunks) {
+                        chunks.put(chunkKey(cx, cy), c);
+                    }
+                }
+            }
+        }
+    }
+
 }

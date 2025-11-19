@@ -126,8 +126,15 @@ public class Entity implements CombatContext {
     }
 
     public void reduceHP(int amount) {
-        hp = Math.max(0, hp - Math.max(0, amount));
+        int dmg = Math.max(0, amount);
+        int old = hp;
+        hp = Math.max(0, hp - dmg);
+
+        System.out.println("[HP] " + name +
+                " -" + dmg +
+                " (" + old + " -> " + hp + ")");
     }
+
 
     public void setInvulnFrames(int frames) {
         invulnFrames = Math.max(0, frames);

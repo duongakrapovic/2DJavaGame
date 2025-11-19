@@ -19,12 +19,12 @@ public class TileManager {
     GamePanel gp;
     // Array of all tiles loaded from tileset
     public Tile[] tile;
-    
+
     public TileManager(GamePanel gp){
         this.gp = gp;
         tile = null; // initialize tile array
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
-        loadTilesetProperties("/maptiles/tileset.tsx");  
+        loadTilesetProperties("/maptiles/tileset.tsx");
     }
      /**
      * Load tileset image and split it into individual tiles.
@@ -45,7 +45,7 @@ public class TileManager {
                     tile[index].image = tileset.getSubimage(
                         x * tileSize, y * tileSize, tileSize, tileSize
                     );
-                    tile[index].collision = false; 
+                    tile[index].collision = false;
                     index++;
                 }
             }
@@ -103,7 +103,7 @@ public class TileManager {
         for(Chunk c : chunkM.getActiveChunks()){
             int chunkWorldX = c.chunkX * c.size * gp.tileSize;
             int chunkWorldY = c.chunkY * c.size * gp.tileSize;
-            
+
             // Skip chunks outside the screen
             if(chunkWorldX + c.size*gp.tileSize < screenLeft) continue;
             if(chunkWorldX > screenRight) continue;
@@ -125,7 +125,7 @@ public class TileManager {
                 }
             }
 
-            // draw red outline to recognize each chunk 
+            // draw red outline to recognize each chunk
             g2.setColor(Color.RED);
             int rectX = chunkWorldX - playerPosX + gp.em.getPlayer().screenX;
             int rectY = chunkWorldY - playerPosY + gp.em.getPlayer().screenY;
@@ -133,4 +133,34 @@ public class TileManager {
             g2.drawRect(rectX, rectY, rectSize, rectSize);
         }
     }
+    public boolean isCollisionAtWorld(int worldX, int worldY, ChunkManager chunkM) {
+        int tileSize = gp.tileSize;
+
+        for (Chunk c : chunkM.getActiveChunks()) {
+            int chunkWorldX = c.chunkX * c.size * tileSize;
+            int chunkWorldY = c.chunkY * c.size * tileSize;
+            int chunkPixelSize = c.size * tileSize;
+
+            if (worldX < chunkWorldX || worldX >= chunkWorldX + chunkPixelSize) continue;
+            if (worldY < chunkWorldY || worldY >= chunkWorldY + chunkPixelSize) continue;
+
+            int localCol = (worldX - chunkWorldX) / tileSize;
+            int localRow = (worldY - chunkWorldY) / tileSize;
+
+            if (localRow < 0 || localRow >= c.size || localCol < 0 || localCol >= c.size) {
+                return true;
+            }
+
+            int tileNum = c.mapTileNum[localRow][localCol];
+            if (tileNum < 0 || tileNum >= tile.length) {
+                return false;   // cho an toàn
+            }
+
+            return tile[tileNum].collision;
+        }
+
+        // ❗ Không có chunk chứa vị trí đó ⇒ coi như KHÔNG chặn
+        return false;
+    }
+
 }

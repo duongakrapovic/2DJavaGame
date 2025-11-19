@@ -14,6 +14,7 @@ public abstract class Monster extends Entity {
     protected int attackTriggerRadius  = 36;
     protected int faceLockThreshold    = 4;
     protected int atkW, atkH;
+    public int homeX, homeY; // toạ độ “nhà” để leash + wander quanh
 
     public Monster(GamePanel gp) {
         super(gp);
@@ -43,7 +44,10 @@ public abstract class Monster extends Entity {
             worldY = preY;
         }
     }
-
+    public void setHome(int x, int y) {
+        this.homeX = x;
+        this.homeY = y;
+    }
     protected void decideAttack() {
         // Không cho spam: nếu CombatSystem đang trong 1 đòn thì bỏ qua
         if (CombatSystem.isAttacking(this.combat)) return;
