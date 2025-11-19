@@ -20,11 +20,12 @@ public class Entity implements CombatContext {
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage atkUp1, atkUp2, atkDown1, atkDown2, atkLeft1, atkLeft2, atkRight1, atkRight2;
     public BufferedImage staticImage;
-    public String direction = "down";
+    public String direction = "down";  // hướng cho di chuyển / AI
+    public String attackDir = "down";  // hướng đã lock cho animation tấn công
     public int spriteCounter = 0;
     public int spriteNum = 1;
     public int actionLockCounter = 0;
-
+    public boolean attacking = false;
     // --- collision ---
     public Rectangle solidArea;
     public boolean collisionXOn = false;
@@ -59,7 +60,7 @@ public class Entity implements CombatContext {
     public Rectangle attackBox = new Rectangle(0, 0, 0, 0);
 
     // --- systems/manager ---
-    protected final GamePanel gp;
+    public final GamePanel gp;
     protected final EntityMovement emo;
     protected final EntitySpriteManager esm;
     protected final EntityDraw ed;
@@ -88,6 +89,7 @@ public class Entity implements CombatContext {
 
         this.combat = new CombatComponent();
         this.attackBox = combat.getAttackBox(); // dùng chung rect để code vẽ cũ không phải đổi
+        this.attackDir = this.direction;  // init mặc định
     }
 
     // -------- controller ----------

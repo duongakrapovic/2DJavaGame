@@ -69,7 +69,7 @@ public class Player extends Entity {
         pa = new PlayerAnimation(this);
 
         // ---- Combat config
-        setStats(2, 3, 1);
+        setStats(100, 3, 1);
     }
     
     public void setDefaultValues() {

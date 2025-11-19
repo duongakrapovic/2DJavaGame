@@ -27,17 +27,27 @@ public abstract class Monster extends Entity {
         this.combat.setAttackBoxSize(atkW, atkH);
     }
 
-
     @Override
     public void update() {
+        // 1) Quyết định có bắt đầu attack không (nếu đang attack thì thôi)
         decideAttack();
+
+        // 2) Giữ vị trí nếu đang attack
         int preX = worldX, preY = worldY;
-        boolean hold = CombatSystem.isAttacking(combat) ;
+        boolean holdPos = CombatSystem.isAttacking(combat);
+
         super.update();
-        if (hold) { worldX = preX; worldY = preY; }
+
+        if (holdPos) {
+            worldX = preX;
+            worldY = preY;
+        }
     }
 
     protected void decideAttack() {
+        // Không cho spam: nếu CombatSystem đang trong 1 đòn thì bỏ qua
+        if (CombatSystem.isAttacking(this.combat)) return;
+
         // 0) Lấy player an toàn
         Player p = (gp.em != null ? gp.em.getPlayer() : null);
         if (p == null || p.isDead()) return;
@@ -52,17 +62,11 @@ public abstract class Monster extends Entity {
 
         // 2) Nếu đã chạm thân -> đánh ngay
         if (meBody.intersects(plFat)) {
-            if (CombatSystem.canStartAttack(this.combat)) {
-                // Không đổi hướng khi đang giữa pha; chỉ face khi bắt đầu
-                faceOnceToward(p);
-                CombatSystem.startAttack(this.combat, this);
-                this.combat.clearHitThisSwing();
-            }
+            tryStartAttackOn(p);
             return;
         }
 
         // 3) Reach-rectangle: kéo ô meBody theo hướng đang nhìn
-        //    => cho phép “đánh tầm ngắn” khi đứng sát trước mặt
         final int rw = (atkW > 0 ? atkW : gp.tileSize);
         final int rh = (atkH > 0 ? atkH : gp.tileSize);
 
@@ -84,17 +88,27 @@ public abstract class Monster extends Entity {
                 break;
         }
 
-        // 4) Nếu player ở trong tầm reach -> bắt đầu đòn (nếu hết CD)
+        // 4) Nếu player ở trong tầm reach -> bắt đầu đòn
         if (reach.intersects(plFat)) {
-            if (CombatSystem.canStartAttack(this.combat)) {
-                faceOnceToward(p); // chỉ set hướng 1 lần tại thời điểm bắt đầu
-                CombatSystem.startAttack(this.combat, this);
-                this.combat.clearHitThisSwing();
-            }
+            tryStartAttackOn(p);
         }
     }
 
-    // === Helper: chỉ xoay mặt 1 lần khi bắt đầu đòn ===
+    protected void tryStartAttackOn(Player p) {
+        // 1) CombatSystem phải cho phép (cooldown, state…)
+        if (!CombatSystem.canStartAttack(this.combat)) return;
+
+        // 2) Xoay mặt 1 lần về phía player
+        faceOnceToward(p);
+
+        // 3) LOCK HƯỚNG ĐÁNH: chụp lại hướng tại thời điểm này
+        this.attackDir = this.direction;
+
+        // 4) Bắt đầu đòn đánh
+        CombatSystem.startAttack(this.combat, this);
+        this.combat.clearHitThisSwing();
+    }
+
     private void faceOnceToward(Player p) {
         int dx = p.worldX - this.worldX;
         int dy = p.worldY - this.worldY;
@@ -105,7 +119,6 @@ public abstract class Monster extends Entity {
         }
     }
 
-    // === Đổi sang world-rect tiện dùng ===
     protected Rectangle getSolidAreaWorld() {
         Rectangle sa = this.getSolidArea();
         return new Rectangle(this.worldX + sa.x, this.worldY + sa.y, sa.width, sa.height);

@@ -29,9 +29,9 @@ public class MonsterManager {
     private void spawnMap1() {
         int t = gp.tileSize;
         //addMonster(new OrcMonster(gp, 1) , 17 * t , 17 * t);
-        addMonster(new RedSlimeMonster(gp, 1), 20*t, 12*t);
-        addMonster(new BatMonster(gp, 1), 20*t, 12*t);
-        //addMonster(new SkeletonLord(gp, 1),   30*t, 12*t);
+        //addMonster(new RedSlimeMonster(gp, 1), 20*t, 12*t);
+        //addMonster(new BatMonster(gp, 1), 20*t, 12*t);
+        addMonster(new SkeletonLord(gp, 1),   30*t, 12*t);
     }
 
     private void spawnMap2() {

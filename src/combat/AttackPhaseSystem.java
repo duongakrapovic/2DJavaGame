@@ -73,7 +73,18 @@ public final class AttackPhaseSystem {
         int bw = body.width;
         int bh = body.height;
 
-        String dir = owner.getDirection();
+        String dir = owner.getDirection();  // hướng mặc định
+
+        // 🔒 CHỈ MONSTER mới bị lock theo attackDir
+        if (owner instanceof entity.Entity e) {
+            if (e instanceof monster_data.Monster &&          // chỉ quái
+                    CombatSystem.isAttacking(e.combat) &&
+                    e.attackDir != null && !e.attackDir.isEmpty()) {
+
+                dir = e.attackDir; // boss + quái dùng hướng đã lock
+            }
+        }
+
         dir = (dir == null) ? "right" : dir.toLowerCase();
 
         int ax, ay;
@@ -93,7 +104,9 @@ public final class AttackPhaseSystem {
             default: // right
                 ax = bx + bw;
                 ay = by + (bh - cc.getAttackHeight()) / 2;
+                break;
         }
+
         cc.getAttackBox().setBounds(ax, ay, cc.getAttackWidth(), cc.getAttackHeight());
     }
 }
