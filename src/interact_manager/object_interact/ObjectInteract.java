@@ -27,19 +27,22 @@ public class ObjectInteract {
 
     public void handle(int index) {
         if (index != 999) {
-            List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+            List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
             if (index >= 0 && index < objects.size()) {
                 WorldObject obj = objects.get(index);
                 if (obj != null && obj.mapIndex == gp.currentMap) {
-                    // gọi đúng handler tương ứng
                     IObjectInteraction handler = ObjectInteractionFactory.getHandler(obj.name);
-                    if (handler != null) handler.interact(gp, player, input, obj);
-                    else if (msgUI != null)
+                    if (handler != null) {
+                        handler.interact(gp, player, input, obj);
+                    } else if (msgUI != null) {
                         msgUI.showTouchMessage("Unknown object: " + obj.name, obj, gp);
+                    }
                 }
             }
-        } else if (msgUI != null) {
-            msgUI.hideTouchMessage();
+        } else {
+
+            player.setInteracting(false);
+
         }
     }
 }

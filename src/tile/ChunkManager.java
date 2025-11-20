@@ -187,5 +187,41 @@ public class ChunkManager {
             }
         }
     }
+    private Chunk getChunk(int chunkX, int chunkY) {
+        String key = chunkKey(chunkX, chunkY);
+        synchronized (chunks) {
+            return chunks.get(key);
+        }
+    }
+    // Lấy tile num theo toạ độ tile (col, row) trong world
+    public int getTileNum(int tileCol, int tileRow) {
+        // Ngoài biên map thì cho 0 hoặc -1 tuỳ bạn
+        if (tileCol < 0 || tileRow < 0
+                || tileCol >= gp.maxWorldCol
+                || tileRow >= gp.maxWorldRow) {
+            return 0;
+        }
+
+        int worldTilesPerChunk = chunkSize; // 32
+        int chunkX = tileCol / worldTilesPerChunk;
+        int chunkY = tileRow / worldTilesPerChunk;
+
+        int inChunkCol = tileCol % worldTilesPerChunk;
+        int inChunkRow = tileRow % worldTilesPerChunk;
+
+        Chunk c = getChunk(chunkX, chunkY);
+        if (c == null) {
+            // Chunk chưa load → coi như tile rỗng, hoặc 0
+            return 0;
+        }
+
+        return c.mapTileNum[inChunkRow][inChunkCol];
+    }
+    // Lấy tile num theo toạ độ world (pixel)
+    public int getTileNumAtWorld(int worldX, int worldY) {
+        int tileCol = worldX / gp.tileSize;
+        int tileRow = worldY / gp.tileSize;
+        return getTileNum(tileCol, tileRow);
+    }
 
 }

@@ -21,9 +21,9 @@ public class ObjectInteractionFactory {
             case "door" -> new DoorInteraction();
             case "manaposion" -> new ManaPosionInteraction();
             case "healthposion" -> new HealthPosionInteraction();
-            case "sword" -> new SwordInteraction();
-            case "axe" -> new AxeInteraction();
-            case "pick" ->  new PickInteraction();
+            case "argonaut hero's sword" -> new SwordInteraction();
+            case "leviathan axe" -> new AxeInteraction();
+            case "steve pick" ->  new PickInteraction();
             default -> null;
         };
     }

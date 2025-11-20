@@ -39,7 +39,8 @@ public class BatMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats
-        setStats(10, 0, 2);              // hp, def, exp
+        setStats(10, 5, 2);
+        setExpReward(5);
         attackDamage = 3;
         attackKnockback = 6;
 

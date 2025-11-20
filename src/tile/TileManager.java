@@ -134,33 +134,14 @@ public class TileManager {
         }
     }
     public boolean isCollisionAtWorld(int worldX, int worldY, ChunkManager chunkM) {
-        int tileSize = gp.tileSize;
+        int tileNum = chunkM.getTileNumAtWorld(worldX, worldY);
 
-        for (Chunk c : chunkM.getActiveChunks()) {
-            int chunkWorldX = c.chunkX * c.size * tileSize;
-            int chunkWorldY = c.chunkY * c.size * tileSize;
-            int chunkPixelSize = c.size * tileSize;
-
-            if (worldX < chunkWorldX || worldX >= chunkWorldX + chunkPixelSize) continue;
-            if (worldY < chunkWorldY || worldY >= chunkWorldY + chunkPixelSize) continue;
-
-            int localCol = (worldX - chunkWorldX) / tileSize;
-            int localRow = (worldY - chunkWorldY) / tileSize;
-
-            if (localRow < 0 || localRow >= c.size || localCol < 0 || localCol >= c.size) {
-                return true;
-            }
-
-            int tileNum = c.mapTileNum[localRow][localCol];
-            if (tileNum < 0 || tileNum >= tile.length) {
-                return false;   // cho an toàn
-            }
-
-            return tile[tileNum].collision;
+        // Bảo vệ out-of-range
+        if (tileNum < 0 || tileNum >= tile.length) {
+            return false;
         }
 
-        // ❗ Không có chunk chứa vị trí đó ⇒ coi như KHÔNG chặn
-        return false;
+        return tile[tileNum].collision;  // dùng cờ collision của Tile[]
     }
 
 }

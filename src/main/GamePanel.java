@@ -19,6 +19,7 @@ import ui.health.MonsterHealthUI;
 import ui.base.UIManager;
 import ui.effects.FadeUI;
 import ui.effects.MessageUI;
+import ui.health.PlayerStatusUI;
 import ui.screens.gameover.GameOverUI;
 import ui.screens.mainmenu.MainMenuUI;
 import ui.screens.pause.PauseOverlay;
@@ -84,6 +85,7 @@ public class GamePanel extends JPanel {
         uiManager.add(new MessageUI(this));
         uiManager.add(new FadeUI(this));
         uiManager.add(new HealthUI(this));
+        uiManager.add(new PlayerStatusUI(this));
         uiManager.add(new MonsterHealthUI(this));
         uiManager.add(new GameOverUI(this));
         uiManager.add(new ui.effects.DialogueUI(this));
@@ -100,14 +102,14 @@ public class GamePanel extends JPanel {
 
     public void setupGame() {
         em.getPlayer().setDefaultValues();
-        chunkM.pathMap = "map0";
+        chunkM.pathMap = "map3";
         gsm.setState(GameState.START);
     }
 
     public void restartGame() {
-        currentMap = 0;
-        chunkM.pathMap = "map0";
-        chunkM.loadMap("map0");
+        currentMap = 3;
+        chunkM.pathMap = "map3";
+        chunkM.loadMap("map3");
         em.getPlayer().setDefaultValues();
         em.getPlayer().setHP(em.getPlayer().getMaxHP());
         em.getPlayer().mapIndex = currentMap; // <<< QUAN TRỌNG (đồng bộ player map)
@@ -163,7 +165,7 @@ public class GamePanel extends JPanel {
             tileM.draw(g2, chunkM);
 
         em.draw(g2, currentMap);
-
+        om.draw(g2, currentMap , em.getPlayer());
         uiManager.draw(g2, gsm.getState());
 
 

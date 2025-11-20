@@ -16,6 +16,9 @@ public abstract class Monster extends Entity {
     protected int atkW, atkH;
     public int homeX, homeY; // toạ độ “nhà” để leash + wander quanh
 
+    // --- EXP config ---
+    protected int expReward = 1;   // quái này cho bao nhiêu EXP khi chết
+
     public Monster(GamePanel gp) {
         super(gp);
 
@@ -27,7 +30,24 @@ public abstract class Monster extends Entity {
         this.atkH = gp.tileSize * 3 / 2;
         this.combat.setAttackBoxSize(atkW, atkH);
     }
+    // Getter/Setter EXP
+    public int getExpReward() {
+        return expReward;
+    }
 
+    public void setExpReward(int expReward) {
+        this.expReward = Math.max(0, expReward);
+    }
+
+    // (optional) auto tính exp theo chỉ số quái
+    protected void initExpFromStats() {
+        int base = (int) (
+                getMaxHP() * 0.1 +
+                        getATK() * 1.5 +
+                        getDEF() * 0.5
+        );
+        this.expReward = Math.max(1, base);
+    }
     @Override
     public void update() {
         // 1) Quyết định có bắt đầu attack không (nếu đang attack thì thôi)
@@ -131,8 +151,45 @@ public abstract class Monster extends Entity {
         Rectangle sa = e.getSolidArea();
         return new Rectangle(e.worldX + sa.x, e.worldY + sa.y, sa.width, sa.height);
     }
+    public void onDeath() {
+        // 1) EXP
+        Player p = (gp != null && gp.em != null) ? gp.em.getPlayer() : null;
+        if (p != null) {
+            int expGain = getExpReward();
+            System.out.println("[EXP] Thưởng cho player: +" + expGain + " EXP từ " + name);
+            p.gainExp(expGain);
+        } else {
+            System.out.println("[EXP] Không tìm thấy player để cộng EXP");
+        }
 
-    @Override
-    public void onDamaged(int damage) { }
-    public void onDeath() { }
+        // 2) 25% drop
+        double roll = Math.random();
+        System.out.println("[DROP] Roll = " + roll);
+        if (roll < 0.25) {
+            System.out.println("[DROP] => Rơi HealthPosion");
+            spawnHealthPosionDrop();
+        } else {
+            System.out.println("[DROP] => Không rơi gì");
+        }
+    }
+
+    private void spawnHealthPosionDrop() {
+        if (gp == null || gp.om == null) return;
+
+        gp.om.spawnHealthPosion(this.mapIndex, this.worldX, this.worldY);
+    }
+
+    public void reduceHP(int amount) {
+        boolean wasDead = isDead();
+        System.out.println("[DMG] " + name + " nhận " + amount + " dmg (hp=" + getHP() + ")");
+
+        super.reduceHP(amount);
+
+        System.out.println("[DMG] " + name + " sau khi trừ hp=" + getHP());
+
+        if (!wasDead && isDead()) {
+            System.out.println("[DEATH] " + name + " vừa chết");
+            onDeath();
+        }
+    }
 }

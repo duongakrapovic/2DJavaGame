@@ -18,15 +18,22 @@ public class HealthPosionInteraction implements IObjectInteraction {
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
-        List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
-        if (msgUI != null) msgUI.showTouchMessage("press 'F' to heal health", obj, gp);
+        if (msgUI != null) {
+            msgUI.showTouchMessage("press 'F' to heal health", obj, gp);
+        }
+
         if (input.isPicked()) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             objects.remove(obj);
-            if (msgUI != null) msgUI.showTouchMessage("That close!", obj, gp);
-            // Nếu có hệ thống máu thì thêm dòng hồi máu ở đây
-            // player.health = Math.min(player.maxHealth, player.health + 50);
+
+            // Hồi 10% máu
+            player.healPercent(0.10);
+
+            if (msgUI != null) {
+                msgUI.showTouchMessage("Healed 10% HP", obj, gp);
+            }
         }
     }
 }

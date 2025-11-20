@@ -17,20 +17,16 @@ public class NPCManager {
 
     private void spawnNPCs() {
         int t = gp.tileSize;
-
-        // Map 0
-        NPC_Oldman oldman0 = new NPC_Oldman(gp, 0);
-        oldman0.worldX = 23 * t;
-        oldman0.worldY = 30 * t;
+        NPC_Oldman oldman0 = new NPC_Oldman(gp, 3);
+        oldman0.worldX = 10 * t;
+        oldman0.worldY = 20 * t;
         addNPC(oldman0);
 
-        // Map 1
-        NPC_Frog frog1 = new NPC_Frog(gp, 1);
+        NPC_Frog frog1 = new NPC_Frog(gp, 3);
         frog1.worldX = 20 * t;
-        frog1.worldY = 25 * t;
+        frog1.worldY = 20 * t;
         addNPC(frog1);
 
-        // Map 3 (shop)
     }
 
     public void addNPC(Entity npc) {

@@ -10,7 +10,7 @@ public final class Sword extends Weapon {
         super(gp);
         this.mapIndex = mapIndex;
         
-        name = "sword";
+        name = "Argonaut Hero's Sword ";
         width  = gp.tileSize;
         height = gp.tileSize;
         collision = false;

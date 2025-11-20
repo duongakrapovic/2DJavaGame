@@ -21,7 +21,6 @@ public class MonsterManager {
     private final List<SpawnSlot> spawnSlots = new ArrayList<>();
 
     // Bật/tắt check “spawn xa player”
-    // 👉 ĐỂ FALSE để test respawn cho chắc, sau này thích thì bật lại
     private final boolean useDistanceCheck = false;
 
     private static final boolean DEBUG_MONSTER = true;
@@ -49,10 +48,8 @@ public class MonsterManager {
     public MonsterManager(GamePanel gp) {
         this.gp = gp;
 
-        // Load toàn bộ chunk 1 lần để check được collision khi setup spawn
-        gp.chunkM.loadAllChunksSync();
-
-        setupSpawnSlots();  // khai báo toàn bộ bãi quái
+        // KHÔNG loadAllChunksSync() chung nữa
+        setupSpawnSlots();  // khai báo toàn bộ bãi quái (có load map tương ứng bên trong)
         initialSpawn();     // spawn lứa đầu
     }
 
@@ -61,62 +58,62 @@ public class MonsterManager {
     // =====================================================
 
     private void setupSpawnSlots() {
-        int t = gp.tileSize;  // = 96 px
+        int t = gp.tileSize;
 
-        // ================= MAP 0: 49 con slime, nhưng chỉ ở tile không collision =================
+        // Lưu lại map hiện tại của ChunkManager để restore sau
+        String oldPath = gp.chunkM.pathMap;
+
+        // ================= MAP 0: Slime field =================
+        gp.chunkM.loadMap("map0");
+        gp.chunkM.loadAllChunksSync();     // load toàn bộ chunk map0 để check collision
+
         for (int ty = 18; ty <= 72; ty += 9) {
             for (int tx = 18; tx <= 72; tx += 9) {
                 int wx = tx * t;
                 int wy = ty * t;
 
                 if (isBlockedTile(0, wx, wy)) {
-                    if (DEBUG_MONSTER) {
-                        System.out.println("[SPAWN_SLOT] Bỏ ("+tx+","+ty+") map 0 vì tile collision");
-                    }
                     continue;
                 }
-
                 addSpawn(0, wx, wy, "SLIME", 15_000L);
             }
         }
 
-        // ================= MAP 1: Orc + Bat + Boss (giãn ra) =================
-        addSpawnIfFree(1,  2 * t,  2 * t, "ORC", 35_000);  // Pocket A
-        addSpawnIfFree(1,  3 * t,  3 * t, "BAT", 25_000);
+        // ================= MAP 1: Orc + Bat + Boss =================
+        gp.chunkM.loadMap("map1");
+        gp.chunkM.loadAllChunksSync();     // load toàn bộ chunk map1 để check collision
 
-        addSpawnIfFree(1,  6 * t,  2 * t, "ORC", 40_000);  // Pocket B
-        addSpawnIfFree(1,  7 * t,  3 * t, "BAT", 28_000);
+        // Vùng quái thường: khoảng 30 con (5 hàng x 6 cột = 30 vị trí)
+        int mobCount = 0;
+        for (int ty = 18; ty <= 54; ty += 9) {      // 18,27,36,45,54  -> 5 hàng
+            for (int tx = 18; tx <= 63; tx += 9) {  // 18..63           -> 6 cột
+                int wx = tx * t;
+                int wy = ty * t;
 
-        addSpawnIfFree(1,  9 * t,  2 * t, "BAT", 26_000);  // Pocket C
-        addSpawnIfFree(1, 10 * t,  4 * t, "BAT", 26_000);
+                if (isBlockedTile(1, wx, wy)) {
+                    continue;
+                }
 
-        // Boss ở khu riêng, tách ra một chút
-        addSpawnIfFree(1,  8 * t,  4 * t, "BOSS", 600_000); // ~10 phút respawn
+                // Xen kẽ ORC / BAT cho vui
+                String id = (mobCount % 2 == 0) ? "ORC" : "BAT";
+                long respawn = id.equals("ORC") ? 35_000L : 25_000L;
 
-        // MAP 2: nhà, không có quái
-    }
-
-    private void addSpawnIfFree(int mapId, int wx, int wy,
-                                String monsterId, long respawnDelayMs) {
-        if (isBlockedTile(mapId, wx, wy)) {
-            if (DEBUG_MONSTER) {
-                System.out.println("[SPAWN_SLOT] Bỏ spawn " + monsterId +
-                        " tại map " + mapId + " vì tile collision");
+                addSpawn(1, wx, wy, id, respawn);
+                mobCount++;
             }
-            return;
         }
-        addSpawn(mapId, wx, wy, monsterId, respawnDelayMs);
+
+        // Boss Skeleton: tìm 1 tile trống gần góc dưới bên phải map1
+        addSpawn(1, 50* t, 75 * t, "BOSS", 600_000L); // ~10 phút respawn
+
+        // Restore map cũ cho ChunkManager về đúng trạng thái ban đầu
+        gp.chunkM.loadMap(oldPath);
     }
 
     private void addSpawn(int mapId, int wx, int wy,
                           String monsterId, long respawnDelayMs) {
         SpawnSlot slot = new SpawnSlot(mapId, wx, wy, monsterId, respawnDelayMs);
         spawnSlots.add(slot);
-        if (DEBUG_MONSTER) {
-            System.out.println("[SPAWN_SLOT] + " + monsterId +
-                    " @map=" + mapId + " x=" + wx + " y=" + wy +
-                    " respawn=" + respawnDelayMs + "ms");
-        }
     }
 
     // =====================================================
@@ -134,9 +131,6 @@ public class MonsterManager {
 
         Entity m = createMonster(slot.monsterId, slot.mapId);
         if (m == null) {
-            if (DEBUG_MONSTER) {
-                System.out.println("[SPAWN] createMonster NULL cho " + slot.monsterId);
-            }
             return;
         }
 
@@ -152,13 +146,6 @@ public class MonsterManager {
                 .add(m);
 
         slot.current = m;
-
-        if (DEBUG_MONSTER) {
-            String type = (slot.lastDeathTime == 0) ? "INIT" : "RESPAWN";
-            System.out.println("[SPAWN " + type + "] " + slot.monsterId +
-                    " @map=" + slot.mapId +
-                    " x=" + slot.worldX + " y=" + slot.worldY);
-        }
     }
 
     /**
@@ -166,7 +153,15 @@ public class MonsterManager {
      */
     private Entity createMonster(String id, int mapId) {
         return switch (id) {
-            case "SLIME" -> new RedSlimeMonster(gp, mapId);
+            case "SLIME" -> {
+                double r = Math.random();      // 0.0 -> 1.0
+
+                if (r < 0.5) {
+                    yield new RedSlimeMonster(gp, mapId);
+                } else {
+                    yield new SlimeMonster(gp, mapId);
+                }
+            }
             case "BAT"   -> new BatMonster(gp, mapId);
             case "ORC"   -> new OrcMonster(gp, mapId);
             case "BOSS"  -> new SkeletonLord(gp, mapId);
@@ -175,18 +170,15 @@ public class MonsterManager {
     }
 
     // =====================================================
-    // 3. API PUBLIC
+    // 3. API PUBLIC (phần còn lại giữ nguyên code cũ của bạn)
     // =====================================================
 
     public List<Entity> getMonsters(int mapId) {
         return monstersByMap.getOrDefault(mapId, Collections.emptyList());
     }
 
-    /**
-     * Gọi từ GamePanel:
-     * monsterManager.update(currentMap, player.worldX, player.worldY);
-     */
     public void update(int mapId, int playerX, int playerY) {
+        // 3.1 Update quái đang sống
         List<Entity> list = monstersByMap.get(mapId);
         if (list != null) {
             Iterator<Entity> it = list.iterator();
@@ -205,6 +197,7 @@ public class MonsterManager {
             }
         }
 
+        // 3.2 Respawn quái cho map hiện tại
         handleRespawn(mapId, playerX, playerY);
     }
 
@@ -215,46 +208,21 @@ public class MonsterManager {
     }
 
     // =====================================================
-    // 4. CHẾT + RESPWAN
+    // 4. CHẾT + RESPAWN
     // =====================================================
 
-    /**
-     * TODO: sửa hàm này cho đúng với logic chết của bạn.
-     *
-     * 👉 Nếu Entity có boolean alive:
-     *      return !e.alive;
-     *
-     * 👉 Nếu Entity có hp:
-     *      return e.hp <= 0;
-     *
-     * Đoạn dưới là ví dụ, bạn chỉnh cho khớp với Entity của bạn.
-     */
     private boolean isDead(Entity e) {
         boolean dead = e.isDead();   // dùng hàm trong Entity (hp <= 0)
-
-        if (DEBUG_MONSTER && dead) {
-            System.out.println("[DEAD] " + e.name +
-                    " hp=" + e.getHP() +
-                    " (MonsterManager.isDead)");
-        }
 
         return dead;
     }
 
-    /** Khi quái chết, tìm slot chứa nó để đánh dấu lastDeathTime + giải phóng slot. */
     private void registerDeath(Entity e) {
         long now = System.currentTimeMillis();
         for (SpawnSlot slot : spawnSlots) {
             if (slot.current == e) {
                 slot.current = null;
                 slot.lastDeathTime = now;
-
-                if (DEBUG_MONSTER) {
-                    System.out.println("[DEATH_SLOT] " + slot.monsterId +
-                            " slot freed @map=" + slot.mapId +
-                            " x=" + slot.worldX + " y=" + slot.worldY +
-                            " time=" + now);
-                }
                 break;
             }
         }
@@ -266,25 +234,15 @@ public class MonsterManager {
         for (SpawnSlot slot : spawnSlots) {
             if (slot.mapId != currentMapId) continue;    // chỉ xử lý map hiện tại
             if (slot.current != null) continue;          // slot đang có quái
-
-            // chưa từng có quái chết ở slot này ⇒ bỏ qua respawn (initialSpawn đã lo)
-            if (slot.lastDeathTime == 0L) continue;
+            if (slot.lastDeathTime == 0L) continue;      // chưa từng chết ⇒ skip
 
             long waited = now - slot.lastDeathTime;
             if (waited < slot.respawnDelayMs) {
-                if (DEBUG_MONSTER) {
-                    System.out.println("[RESPAWN_WAIT] " + slot.monsterId +
-                            " còn " + (slot.respawnDelayMs - waited) + "ms");
-                }
                 continue;
             }
 
-            if (useDistanceCheck && !isFarFromPlayer(slot.worldX, slot.worldY, playerX, playerY)) {
-                if (DEBUG_MONSTER) {
-                    System.out.println("[RESPAWN_NEAR_PLAYER] " + slot.monsterId +
-                            " @(" + slot.worldX + "," + slot.worldY + ")" +
-                            " player=(" + playerX + "," + playerY + ")");
-                }
+            if (useDistanceCheck &&
+                    !isFarFromPlayer(slot.worldX, slot.worldY, playerX, playerY)) {
                 continue;
             }
 
@@ -295,18 +253,16 @@ public class MonsterManager {
         }
     }
 
-    /**
-     * Đảm bảo quái không respawn quá sát player.
-     * Nếu muốn bật lại, đặt useDistanceCheck = true.
-     */
     private boolean isFarFromPlayer(int x, int y, int playerX, int playerY) {
         int dx = x - playerX;
         int dy = y - playerY;
-        int safeRadius = gp.tileSize * 5; // tránh spawn trong bán kính 5 tile quanh player
+        int safeRadius = gp.tileSize * 5;
         return dx * dx + dy * dy > safeRadius * safeRadius;
     }
 
     private boolean isBlockedTile(int mapId, int worldX, int worldY) {
+        // mapId hiện vẫn chưa cần dùng, vì ChunkManager đang trỏ
+        // đúng map tương ứng trước khi gọi hàm này.
         return gp.tileM.isCollisionAtWorld(worldX, worldY, gp.chunkM);
     }
 }

@@ -22,6 +22,21 @@ public class Player extends Entity {
     public int hasKey = 0;
     int speedTimer = 0;
 
+    // --- Level / EXP / Rank ---
+    private int level = 1;
+    private int exp = 0;
+    private int expToNext = 10;   // exp cần để lên level 2
+    private int rank = 0;         // 0 = thường, 1 = C, 2 = B...
+
+    // Base stats + tăng mỗi level
+    private int baseHp   = 100;
+    private int baseAtk  = 20;
+    private int baseDef  = 2;
+
+    private int hpPerLevel  = 10;
+    private int atkPerLevel = 3;
+    private int defPerLevel = 1;
+
     //ui
     private MessageUI msgUI;
 
@@ -69,19 +84,24 @@ public class Player extends Entity {
         pa = new PlayerAnimation(this);
 
         // ---- Combat config
-        setStats(100, 3, 1);
+        // ---- Combat config (dựa trên level/rank)
+        recalcStatsFromLevel();
     }
-    
+
     public void setDefaultValues() {
-        
-        worldX = gp.tileSize * (gp.chunkSize / 2 + 7) - 8;
-        worldY = gp.tileSize * (gp.chunkSize / 2 + 1) - 8;
+        mapIndex = 3; // rất quan trọng
+
+        // Ví dụ spawn trước cửa map3
+        worldX = gp.tileSize * 15;
+        worldY = gp.tileSize * 22;
+
         defaultSpeed = 10;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
-        direction = "down";
+        direction = "up";
         animationON = true;
     }
+
 
     @Override
     public void update() {
@@ -113,8 +133,6 @@ public class Player extends Entity {
         CombatSystem.tick(this);
         handleNPCInteraction();
     }
-
-
 
     @Override
     public void draw(Graphics2D g2) {
@@ -217,4 +235,94 @@ public class Player extends Entity {
             }
         }
     }
+    /** Hệ số rank: mỗi rank +20% stats (có thể chỉnh) */
+    private double getRankMultiplier() {
+        return 1.0 + rank * 0.2;
+    }
+
+    /** Tính lại HP/ATK/DEF từ level + rank và set vào Entity.setStats() */
+    private void recalcStatsFromLevel() {
+        int rawHp  = baseHp  + (level - 1) * hpPerLevel;
+        int rawAtk = baseAtk + (level - 1) * atkPerLevel;
+        int rawDef = baseDef + (level - 1) * defPerLevel;
+
+        double mul = getRankMultiplier();
+
+        int finalHp  = (int) Math.round(rawHp  * mul);
+        int finalAtk = (int) Math.round(rawAtk * mul);
+        int finalDef = (int) Math.round(rawDef * mul);
+
+        // dùng setStats của Entity
+        setStats(finalHp, finalAtk, finalDef);
+    }
+    /** EXP cần cho level tiếp theo (có thể chỉnh công thức cho mượt hơn) */
+    private int calcExpToNext(int lv) {
+        // ví dụ: 10 * 1.2^(lv-1)
+        double base = 10.0;
+        return (int) Math.round(base * Math.pow(1.2, lv - 1));
+    }
+
+    /** Player nhận thêm EXP khi giết quái */
+    public void gainExp(int amount) {
+        if (amount <= 0) return;
+
+        int beforeExp = exp;
+        int beforeLevel = level;
+
+        System.out.println(
+                "[EXP] gainExp +" + amount +
+                        " | trước: exp=" + beforeExp + "/" + expToNext +
+                        " lv=" + beforeLevel
+        );
+
+        this.exp += amount;
+
+        // Lên nhiều level nếu exp dư
+        while (exp >= expToNext) {
+            exp -= expToNext;
+            levelUp();  // trong levelUp cũng sẽ in debug
+        }
+
+        System.out.println(
+                "[EXP] sau gainExp: exp=" + exp + "/" + expToNext +
+                        " lv=" + level
+        );
+    }
+
+    /** Xử lý khi lên level */
+    private void levelUp() {
+        level++;
+        expToNext = calcExpToNext(level);
+
+        recalcStatsFromLevel();   // cập nhật HP/ATK/DEF
+
+        // Hồi full máu khi lên level
+        setHP(getMaxHP());
+        System.out.println("[LEVEL] Player lên level " + level +
+                " | next exp = " + expToNext);
+    }
+
+    // Getter nếu cần hiển thị UI
+    public int getLevel() { return level; }
+    public int getExp()   { return exp; }
+    public int getExpToNext() { return expToNext; }
+    public int getRank()  { return rank; }
+    // Hồi 1 lượng máu cố định
+    public void heal(int amount) {
+        if (amount <= 0) return;
+        int max = getMaxHP();
+        int cur = getHP();
+        int newHp = Math.min(max, cur + amount);
+        setHP(newHp);
+    }
+
+    // Hồi theo % máu tối đa (vd 0.1 = 10%)
+    public void healPercent(double percent) {
+        if (percent <= 0) return;
+        int max = getMaxHP();
+        int healAmount = (int) Math.round(max * percent);
+        if (healAmount <= 0) healAmount = 1; // luôn hồi ít nhất 1 máu
+        heal(healAmount);
+    }
+
 }

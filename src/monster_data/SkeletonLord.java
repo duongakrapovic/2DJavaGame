@@ -43,6 +43,7 @@ public class SkeletonLord extends Monster {
         // stats
         setStats(220 , 6, 2);
         attackKnockback = 8;
+        setExpReward(100);
 
         // combat reach + timing P1
         atkW = gp.tileSize * 2;

@@ -30,7 +30,7 @@ public class EntityMovement {
 
         gp.cChecker.checkTile(e, nextX, nextY);
 
-        List<WorldObject> objs = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objs = gp.om.getObjects(gp.currentMap);
         int objIndex = gp.cChecker.checkWorldObject(e, objs, dx, dy);
         if (objIndex != 999) {
             var obj = objs.get(objIndex);
@@ -85,7 +85,7 @@ public class EntityMovement {
         gp.cChecker.checkTile(e, nextX, nextY);
 
         // Objects
-        var objs = gp.em.getWorldObjects(gp.currentMap);
+        var objs = gp.om.getObjects(gp.currentMap);
         int objIndex = gp.cChecker.checkWorldObject(e, objs, dx, dy);
         if (objIndex != 999) {
             var obj = objs.get(objIndex);

@@ -18,24 +18,19 @@ public class EntityManager {
     private final Player player;
     private final MonsterManager mM;
     private final NPCManager npcM;
-    private final ObjectManager oM;
 
     public EntityManager(GamePanel gp, InputController input) {
         this.gp = gp;
         this.player = new Player(gp, input);
         this.mM = new MonsterManager(gp);
         this.npcM = new NPCManager(gp);
-        this.oM = new ObjectManager(gp);
     }
 
     public Player getPlayer() { return player; }
     public List<Entity> getMonsters(int map) { return mM.getMonsters(map); }
     public List<Entity> getNPCs(int map) { return npcM.getNPCs(map); }
-    public List<WorldObject> getWorldObjects(int map) {
-        return oM.getObjects(map);
-    }
 
-   
+
     public List<Entity> getMonsters() {
         return mM.getMonsters(gp.currentMap);
     }
@@ -43,7 +38,6 @@ public class EntityManager {
     public void update(int currentMap) {
         // 1) Player + object
         player.update();
-        oM.update();
 
         // 2) Update + xử lý chết + respawn quái thông qua MonsterManager
         //    => chỗ này sẽ gọi e.update() cho từng quái, check isDead, registerDeath, respawn...
@@ -73,7 +67,6 @@ public class EntityManager {
 
     public void draw(Graphics2D g2, int currentMap) {
         // World Object
-        oM.draw(g2, currentMap, player);
 
         // Entity
         List<Entity> all = new ArrayList<>();

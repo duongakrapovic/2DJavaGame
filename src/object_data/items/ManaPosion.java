@@ -21,7 +21,7 @@ public class ManaPosion extends WorldObject {
         collision = false;
         
         
-        int t = gp.tileSize / 2;
+        int t = gp.tileSize / 8;
         solidArea = new Rectangle(-t / 2, -t /2, width + t, height + t);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;

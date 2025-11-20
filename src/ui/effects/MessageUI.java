@@ -48,5 +48,4 @@ public class MessageUI extends BaseUI {
     public void hideTouchMessage() {
         show = false;
     }
-
 }

@@ -8,7 +8,7 @@ public final class Axe extends Weapon {
     
     public Axe(GamePanel gp, int mapIndex ) {
         super(gp);
-        name = "Axe";
+        name = "Leviathan Axe";
         this.mapIndex = mapIndex;
         
         width  = gp.tileSize;
