@@ -3,7 +3,6 @@ package ai.movement;
 import entity.Entity;
 import java.util.Random;
 
-/** Đi ngẫu nhiên: đổi hướng sau mỗi N frame. Có quán tính và (tuỳ chọn) giới hạn vùng. */
 public class WanderMovement implements MovementController {
     private final int speed;
     private final int changeEveryFrames;
@@ -16,7 +15,6 @@ public class WanderMovement implements MovementController {
     private String currentDir = "down";
     private final Random rng = new Random();
 
-    /** Giữ nguyên hành vi cũ (nhưng có quán tính nhẹ). */
     public WanderMovement(int speed, int changeEveryFrames) {
         this(speed, changeEveryFrames, /*minHoldFrames*/8);
     }
@@ -42,16 +40,6 @@ public class WanderMovement implements MovementController {
         this.maxX = Math.max(minX, maxX);
         this.maxY = Math.max(minY, maxY);
         this.fencePadding = Math.max(0, fencePadding);
-    }
-
-    /** Factory: tạo vùng “tâm là vị trí spawn” với bán kính r (xấp xỉ vùng vuông). */
-    public static WanderMovement centeredAroundSpawn(Entity e,
-                                                     int speed, int changeEveryFrames, int minHoldFrames,
-                                                     int radiusPx, int fencePadding) {
-        int cx = e.worldX, cy = e.worldY;
-        int r = Math.max(8, radiusPx);
-        return new WanderMovement(speed, changeEveryFrames, minHoldFrames,
-                cx - r, cy - r, cx + r, cy + r, fencePadding);
     }
 
     @Override
@@ -91,7 +79,6 @@ public class WanderMovement implements MovementController {
         }
 
         e.direction = currentDir;
-        // Không chỉnh worldX/worldY ở đây — việc đó do EntityMovement.move xử lý.
     }
 
     // --- helpers ---

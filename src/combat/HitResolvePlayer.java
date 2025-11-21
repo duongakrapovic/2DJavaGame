@@ -12,7 +12,7 @@ public final class HitResolvePlayer {
 
     public static void resolve(Player player, List<Entity> monsters) {
         if (player == null || player.isDead()) return;
-        if (!CombatSystem.isAttackActive(player.combat)) return;      // dùng API trung gian
+        if (!CombatSystem.isAttackActive(player.combat)) return;
 
         Rectangle attack = player.combat.getAttackBox();
         if (attack == null || attack.width <= 0 || attack.height <= 0) return;

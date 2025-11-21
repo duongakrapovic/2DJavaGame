@@ -14,10 +14,8 @@ import java.util.*;
 public class MonsterManager {
     private final GamePanel gp;
 
-    // Quái đang sống theo map
     private final Map<Integer, List<Entity>> monstersByMap = new HashMap<>();
 
-    // Tất cả điểm spawn của mọi map
     private final List<SpawnSlot> spawnSlots = new ArrayList<>();
 
     // Bật/tắt check “spawn xa player”
@@ -48,14 +46,9 @@ public class MonsterManager {
     public MonsterManager(GamePanel gp) {
         this.gp = gp;
 
-        // KHÔNG loadAllChunksSync() chung nữa
-        setupSpawnSlots();  // khai báo toàn bộ bãi quái (có load map tương ứng bên trong)
-        initialSpawn();     // spawn lứa đầu
+        setupSpawnSlots();
+        initialSpawn();
     }
-
-    // =====================================================
-    // 1. KHAI BÁO SPAWN CHO TỪNG MAP
-    // =====================================================
 
     private void setupSpawnSlots() {
         int t = gp.tileSize;
@@ -103,10 +96,8 @@ public class MonsterManager {
             }
         }
 
-        // Boss Skeleton: tìm 1 tile trống gần góc dưới bên phải map1
         addSpawn(1, 50* t, 75 * t, "BOSS", 600_000L); // ~10 phút respawn
 
-        // Restore map cũ cho ChunkManager về đúng trạng thái ban đầu
         gp.chunkM.loadMap(oldPath);
     }
 
@@ -116,9 +107,7 @@ public class MonsterManager {
         spawnSlots.add(slot);
     }
 
-    // =====================================================
     // 2. SPAWN LÚC BẮT ĐẦU GAME + RESPAWN
-    // =====================================================
 
     private void initialSpawn() {
         for (SpawnSlot slot : spawnSlots) {
@@ -148,9 +137,6 @@ public class MonsterManager {
         slot.current = m;
     }
 
-    /**
-     * Factory: tạo đúng loại quái theo id + map.
-     */
     private Entity createMonster(String id, int mapId) {
         return switch (id) {
             case "SLIME" -> {
@@ -169,10 +155,7 @@ public class MonsterManager {
         };
     }
 
-    // =====================================================
-    // 3. API PUBLIC (phần còn lại giữ nguyên code cũ của bạn)
-    // =====================================================
-
+    // 3. API PUBLIC
     public List<Entity> getMonsters(int mapId) {
         return monstersByMap.getOrDefault(mapId, Collections.emptyList());
     }
@@ -197,7 +180,7 @@ public class MonsterManager {
             }
         }
 
-        // 3.2 Respawn quái cho map hiện tại
+        // Respawn quái cho map hiện tại
         handleRespawn(mapId, playerX, playerY);
     }
 
@@ -207,9 +190,7 @@ public class MonsterManager {
         }
     }
 
-    // =====================================================
     // 4. CHẾT + RESPAWN
-    // =====================================================
 
     private boolean isDead(Entity e) {
         boolean dead = e.isDead();   // dùng hàm trong Entity (hp <= 0)
@@ -262,7 +243,6 @@ public class MonsterManager {
 
     private boolean isBlockedTile(int mapId, int worldX, int worldY) {
         // mapId hiện vẫn chưa cần dùng, vì ChunkManager đang trỏ
-        // đúng map tương ứng trước khi gọi hàm này.
         return gp.tileM.isCollisionAtWorld(worldX, worldY, gp.chunkM);
     }
 }

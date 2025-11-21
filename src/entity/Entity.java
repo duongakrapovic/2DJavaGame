@@ -24,8 +24,7 @@ public class Entity implements CombatContext {
     public String attackDir = "down";  // hướng đã lock cho animation tấn công
     public int spriteCounter = 0;
     public int spriteNum = 1;
-    public int actionLockCounter = 0;
-    public boolean attacking = false;
+
     // --- collision ---
     public Rectangle solidArea;
     public boolean collisionXOn = false;
@@ -33,11 +32,6 @@ public class Entity implements CombatContext {
     public boolean collisionOn = false;
     public boolean collision = false;
     public int solidAreaDefaultX, solidAreaDefaultY;
-
-    // --- auto-slide config ---
-    public boolean autoSlideEnabled = true;
-    private int slideStepPx = 2;        // mỗi bước trượt mấy px
-    private int slideMaxTries = 8;      // thử tối đa bao nhiêu lần mỗi frame
 
     // --- state / stats ---
     public String name;
@@ -125,6 +119,9 @@ public class Entity implements CombatContext {
         return def;
     }
 
+    public void setHP(int value) {
+        this.hp = Math.max(0, Math.min(value, maxHp));
+    }
     public void reduceHP(int amount) {
         int dmg = Math.max(0, amount);
         int old = hp;
@@ -134,7 +131,6 @@ public class Entity implements CombatContext {
                 " -" + dmg +
                 " (" + old + " -> " + hp + ")");
     }
-
 
     public void setInvulnFrames(int frames) {
         invulnFrames = Math.max(0, frames);
@@ -190,14 +186,6 @@ public class Entity implements CombatContext {
         this.velY = 0;
     }
 
-    public int getVelX() {
-        return this.velX;
-    }
-
-    public int getVelY() {
-        return this.velY;
-    }
-
     @Override
     public int getWorldX() {
         return worldX;
@@ -239,7 +227,6 @@ public class Entity implements CombatContext {
         return new int[]{dx, dy};
     }
 
-    // Entity.java
     public void update() {
         // Nếu đang KB → chỉ đẩy; bỏ qua input/AI ở frame này
         if (isKnockbackActive()) {
@@ -271,7 +258,6 @@ public class Entity implements CombatContext {
     public void onDamaged(int damage) {
     }
 
-    // --- Method (THÊM MỚI): gọi từ DamageProcessor ---
     public void applyKnockback(int kbX, int kbY, int durationFrames) {
         velX = kbX;
         velY = kbY;
@@ -279,25 +265,16 @@ public class Entity implements CombatContext {
     }
 
     // --- Save/Load support ---
-    public void setHP(int value) {
-        this.hp = Math.max(0, Math.min(value, maxHp));
-    }
 
     public void revive() {
         this.hp = Math.max(1, maxHp); // hồi sinh với full máu
     }
 
     // === Dialogue Support ===
-
-    /**
-     * Faces the player when starting a dialogue.
-     * Default implementation is empty — can be overridden by NPCs.
-     */
     public void facePlayer() {
         if (gp == null || gp.em == null) return;
         var player = gp.em.getPlayer();
         if (player == null) return;
-
         switch (player.direction) {
             case "up" -> direction = "down";
             case "down" -> direction = "up";
@@ -306,11 +283,6 @@ public class Entity implements CombatContext {
         }
     }
 
-    /**
-     * Starts a dialogue.
-     * Default implementation does nothing — specific NPCs (e.g., Oldman, Frog)
-     * can override this method to trigger DialogueUI.
-     */
     public void speak(GamePanel gp) {
         // Each NPC subclass overrides this to start its dialogue
     }

@@ -33,7 +33,6 @@ public class SoundButton {
                 imgs[row][col] = temp.getSubimage(col * tileW, row * tileH, tileW, tileH);
     }
 
-    /** Cập nhật frame hiển thị (0 = bình thường, 1 = hover, 2 = pressed) */
     public void update() {
         rowIndex = muted ? 1 : 0;
         colIndex = 0; // vì điều khiển bằng phím, không có hover/press

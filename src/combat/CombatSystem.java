@@ -16,8 +16,6 @@ public final class CombatSystem {
 
     public static boolean canStartAttack(CombatComponent cc) { return AttackPhaseSystem.canStart(cc); }
 
-    // CombatSystem.java
-// CombatSystem.java
     public static void startAttack(CombatComponent cc, CombatContext owner) {
 
         // DEBUG: log mỗi lần bất kỳ entity nào bắt đầu đòn

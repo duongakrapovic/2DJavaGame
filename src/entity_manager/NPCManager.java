@@ -22,11 +22,6 @@ public class NPCManager {
         oldman0.worldY = 20 * t;
         addNPC(oldman0);
 
-        NPC_Frog frog1 = new NPC_Frog(gp, 3);
-        frog1.worldX = 20 * t;
-        frog1.worldY = 20 * t;
-        addNPC(frog1);
-
     }
 
     public void addNPC(Entity npc) {

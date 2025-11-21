@@ -9,11 +9,7 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
-/**
- * TileManager.java
- * Manages loading of tile.set images, tile properties (like collision),
- * and draws visible tiles on the screen based on active chunks.
- */
+
 public class TileManager {
     // Reference to main game panel
     GamePanel gp;
@@ -26,11 +22,6 @@ public class TileManager {
         loadTileset("/maptiles/tileset.png", gp.originalTileSize);
         loadTilesetProperties("/maptiles/tileset.tsx");
     }
-     /**
-     * Load tileset image and split it into individual tiles.
-     * @param path path to tileset image
-     * @param tileSize size of each tile in pixels
-     */
     public void loadTileset(String path, int tileSize) {
         try {
             BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream(path));
@@ -53,10 +44,7 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    /**
-     * Load tile properties (like collision) from TSX file.
-     * @param tsxPath path to TSX file
-     */
+
     public void loadTilesetProperties(String tsxPath) {
         try {
             InputStream is = getClass().getResourceAsStream(tsxPath);
@@ -86,11 +74,7 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    /**
-     * Draw tiles from active chunks on the screen
-     * @param g2 Graphics2D context
-     * @param chunkM ChunkManager containing active chunks
-     */
+
     public void draw(Graphics2D g2 ,ChunkManager chunkM){
         int playerPosX = gp.em.getPlayer().worldX;
         int playerPosY = gp.em.getPlayer().worldY;

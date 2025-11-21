@@ -28,7 +28,6 @@ public class ObjectPortal extends WorldObject {
 
         f1 = setup("/object/portal1", width, height);
         f2 = setup("/object/portal2", width, height);
-        //staticImage = (f1 != null ? f1 : f2); // fallback
 
         collision = false;
 
@@ -36,9 +35,6 @@ public class ObjectPortal extends WorldObject {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-//        targetMap = mapIndex;
-//        targetWorldX = 10 * gp.tileSize;
-//        targetWorldY = 10 * gp.tileSize;
     }
 
     @Override

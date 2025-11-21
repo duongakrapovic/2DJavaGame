@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 
 public class BatMonster extends Monster {
 
-    private final int wanderSpeed = 2;   // nhanh hơn orc
-    private final int chaseSpeed  = 3;   // bám đuổi khi gần
+    private final int wanderSpeed = 2;
+    private final int chaseSpeed  = 3;
 
     public BatMonster(GamePanel gp, int mapIndex) {
         super(gp);
@@ -25,7 +25,7 @@ public class BatMonster extends Monster {
         name = "Bat";
         width = gp.tileSize;
         height = gp.tileSize;
-        hasAttackAnim = false;           // dùng frame tileSize, không offset vẽ
+        hasAttackAnim = false;
 
         getImage();
 
@@ -76,13 +76,12 @@ public class BatMonster extends Monster {
         right1 = setup("/monster/bat_down_1", width, height);
         right2 = setup("/monster/bat_down_2", width, height);
 
-        // dùng chung cho attack (không cần phình khung)
+        // dùng chung cho attack
         atkUp1=up1; atkUp2=up2; atkDown1=down1; atkDown2=down2;
         atkLeft1=left1; atkLeft2=left2; atkRight1=right1; atkRight2=right2;
     }
     @Override
     public void update() {
-        // Optional: “nhảy quệt” – trong ACTIVE tăng speed chút
         if (combat != null && CombatSystem.isAttackActive(combat)) {
             actualSpeed = 3;
         } else {

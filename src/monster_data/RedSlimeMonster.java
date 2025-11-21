@@ -17,7 +17,7 @@ public class RedSlimeMonster extends Monster {
         name = "RedSlime";
         width = gp.tileSize;
         height = gp.tileSize;
-        hasAttackAnim = false; // y như slime thường
+        hasAttackAnim = false;
 
         getImage();
 

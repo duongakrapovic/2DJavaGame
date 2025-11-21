@@ -15,10 +15,7 @@ public class PlayerMovement {
     }
 
     public int[] calculateMovement(){
-        // in java , the top left corner is x = 0 and y = 0;
-        // x valuaes increase to the right
-        // y valuaes increase as they go down
-        //System.out.println("done");
+
         int deltaMoveX = 0;
         int deltaMoveY = 0;
         if(player.input.isUpPressed() == true || player.input.isDownPressed() == true ||
@@ -41,11 +38,7 @@ public class PlayerMovement {
                 player.direction = "right";
                 deltaMoveX += player.actualSpeed;
             }
-            
-            /* there is a problem that when player go diagonally , the speed will be
-            speed * sqrt(2). therefore, we have to normalize movement vector,
-            the true position of charactor should be lower than before, 
-            */
+
             // normalize diagonal
             double length = Math.sqrt(deltaMoveX*deltaMoveX + deltaMoveY*deltaMoveY);
             if(length != 0){
@@ -62,18 +55,6 @@ public class PlayerMovement {
     }
     
     public void move(int dx, int dy){
-        /* 
-        there is a problem , If the position touches the boundary, it is impossible 
-        to press 2 keys to move diagonally and the result is to move in a 
-        normal direction. therefore, valriable collisionOn is for static object and tiles.
-        if we use that val for both coordinates x and y , we can not move in the most 
-        possible direction. I use 2 val called collisionXOn collisionYOn for the movement
-        of player so i can calculate the posible future move. 
-        
-        -> we have to predict the path that the player can move.
-        */ 
-        
-        // X
         player.collisionOn=false;
         player.collisionXOn=false;      
         int nextX = player.worldX + dx;
@@ -81,8 +62,7 @@ public class PlayerMovement {
         pi.allCheck(nextX, nextY);
         if(!player.collisionXOn && !player.collisionOn)
             player.worldX = nextX;
-        //System.out.println(player.worldX);
-        // Y
+
         player.collisionOn=false;
         player.collisionYOn=false;
         
@@ -91,7 +71,6 @@ public class PlayerMovement {
         pi.allCheck(nextX, nextY);
         if(!player.collisionYOn && !player.collisionOn) 
             player.worldY = nextY;
-        //System.out.println( player.worldY);
     }
 }
 

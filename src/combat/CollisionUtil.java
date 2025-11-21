@@ -29,5 +29,4 @@ public final class CollisionUtil {
                 w, h
         );
     }
-
 }

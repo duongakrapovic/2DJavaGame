@@ -112,9 +112,9 @@ public class GamePanel extends JPanel {
         chunkM.loadMap("map3");
         em.getPlayer().setDefaultValues();
         em.getPlayer().setHP(em.getPlayer().getMaxHP());
-        em.getPlayer().mapIndex = currentMap; // <<< QUAN TRỌNG (đồng bộ player map)
+        em.getPlayer().mapIndex = currentMap;
         if (om != null) {
-            om.reloadMapObjects(currentMap); // <<< NẠP LẠI OBJECT ĐÚNG MAP
+            om.reloadMapObjects(currentMap);
         }
         cChecker = new CollisionChecker(this);
         if (em != null && em.getPlayer() != null) {

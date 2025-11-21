@@ -44,7 +44,6 @@ public class EntityMovement {
             e.worldY = nextY;
         }
     }
-    // EntityMovement.java
     public void applyKnockback(Entity e) {
         int vx = Math.max(-24, Math.min(24, e.velX));
         int vy = Math.max(-24, Math.min(24, e.velY));
@@ -73,8 +72,6 @@ public class EntityMovement {
         }
     }
 
-
-    // EntityMovement.java
     private boolean willCollide(Entity e, int dx, int dy) {
         e.collisionOn = false;
 
@@ -92,18 +89,11 @@ public class EntityMovement {
             if (obj != null && obj.collision) e.collisionOn = true;
         }
 
-        // Entities
-        // ❗ QUAN TRỌNG: Player KHÔNG tự checkPlayer với chính mình
         if (!(e instanceof player_manager.Player)) {
             gp.cChecker.checkPlayer(e, nextX, nextY);        // quái check va chạm với Player
         } else {
-            // Nếu có hàm này thì dùng để check quái/NPC, loại chính e:
-            // gp.cChecker.checkEntitiesExcept(e, nextX, nextY);
-            // Nếu CHƯA có, tạm thời bỏ qua để KB không bị triệt tiêu.
         }
 
         return e.collisionOn;
     }
-
-
 }

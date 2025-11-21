@@ -25,8 +25,6 @@ public class ManaPosionInteraction implements IObjectInteraction {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             objects.remove(obj);
             if (msgUI != null) msgUI.showTouchMessage("full fuel!", obj, gp);
-            // Nếu có hệ thống mana thì thêm dòng tăng mana ở đây
-            // player.mana = player.maxMana;
         }
     }
 }

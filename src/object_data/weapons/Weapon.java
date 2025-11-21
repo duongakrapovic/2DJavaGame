@@ -20,7 +20,7 @@ public abstract class Weapon extends WorldObject {
     // ✅ Constructor đầy đủ
     public Weapon(GamePanel gp, int mapIndex) {
         super(gp);
-        this.mapIndex = mapIndex;     // dùng bởi ObjectManager.addObject(...)
+        this.mapIndex = mapIndex;
         collision = true;
         width = gp.tileSize;
         height = gp.tileSize;

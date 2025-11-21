@@ -20,7 +20,7 @@ public final class Sword extends Weapon {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        loadSprite(); // tự load /objects/sword.png
+        loadSprite();
     }
 
     @Override public String spriteKey() { return "sword"; }

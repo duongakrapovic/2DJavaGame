@@ -13,7 +13,6 @@ public class ChaseMovement implements MovementController {
     private final int stopRadius;
 
     // --- chống giật khi player chạy chéo ---
-    // Bạn có thể tinh chỉnh 3 tham số này nếu muốn chậm/nhanh hơn.
     private final int retargetEveryFrames = 8; // bao lâu xem xét đổi hướng 1 lần
     private final int minHoldFrames       = 8; // giữ nguyên hướng tối thiểu
     private final int axisBiasPx          = 6; // chênh lệch px cần thiết để đổi trục
@@ -65,7 +64,6 @@ public class ChaseMovement implements MovementController {
                 currentDir = (dy >= 0) ? "down" : "up";
             } else {
                 // khi chênh lệch nhỏ, giữ hướng cũ để khỏi giật
-                // (tùy ý: có thể ưu tiên trục X hoặc Y nếu muốn)
             }
         }
 

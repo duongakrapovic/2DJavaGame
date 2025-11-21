@@ -4,14 +4,12 @@ import entity.Entity;
 
 import java.util.function.Predicate;
 
-/** Chuyển controller theo điều kiện, có debounce/hysteresis theo frame để tránh chớp. */
 public class AggroSwitchMovement implements MovementController {
     private final MovementController idleController;
     private final MovementController aggroController;
     private final Predicate<Entity> aggroCondition;
 
     // --- chống bật/tắt liên tục ---
-    // Cần TRUE liên tiếp >= onFrames mới vào aggro; cần FALSE liên tiếp >= offFrames mới thoát.
     private final int onFrames  = 3;
     private final int offFrames = 6;
 
@@ -38,7 +36,6 @@ public class AggroSwitchMovement implements MovementController {
             onCount  = Math.max(onCount - 1, 0);
         }
 
-        // chuyển trạng thái với ngưỡng frame để tránh flicker
         if (!isAggro && onCount >= onFrames)  { isAggro = true;  offCount = 0; }
         if ( isAggro && offCount >= offFrames){ isAggro = false; onCount  = 0; }
 

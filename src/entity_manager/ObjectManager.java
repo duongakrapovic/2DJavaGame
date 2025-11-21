@@ -18,7 +18,6 @@ public class ObjectManager {
 
     public ObjectManager(GamePanel gp) {
         this.gp = gp;
-        System.out.println("[OM] NEW ObjectManager");
         spawnObjects();
     }
 
@@ -45,16 +44,6 @@ public class ObjectManager {
         int t = gp.tileSize;
         addObject(new ObjectDoor(gp, 3), 15 * t + 22 , 23 * t);
         addObject(new ObjectKey(gp, 3 ), 10 * t, 18 * t + 5);
-        addObject(new ManaPosion(gp, 3), 14 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 15 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 16 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 17 * t, 12 * t - 5);
-        
-        addObject(new HealthPosion(gp, 3), 15 * t, 16 * t - 5);
-        addObject(new HealthPosion(gp, 3), 16 * t, 16 * t - 5);
-        addObject(new HealthPosion(gp, 3), 15 * t, 17 * t - 5);
-        addObject(new HealthPosion(gp, 3), 16 * t, 17 * t - 5);
-
         addObject(new Axe(gp, 3), 16 * t , 18 * t);
     }
     public void addObject(WorldObject obj, int wx, int wy) {
@@ -75,7 +64,6 @@ public class ObjectManager {
         for (WorldObject o : getObjects(mapId))
             o.update();
     }
-
 
     public void draw(Graphics2D g2, Entity player) {
         draw(g2, gp.currentMap, player);

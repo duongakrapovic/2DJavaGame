@@ -6,12 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import main.GamePanel;
-
-/**
- * ChunkManager.java
- * Handles loading, unloading, and managing chunks (sections of the tile map) around the player.
- * Supports asynchronous loading to avoid blocking the main game thread.
- */
 public class ChunkManager {
     // Size of each chunk (number of tiles per side)
     private final int chunkSize;
@@ -33,14 +27,6 @@ public class ChunkManager {
     private String chunkKey(int x, int y){
         return x + "_" + y;
     }
-
-    /**
-     * Load a chunk from file (runs in background thread)
-     * @param chunkX chunk X index
-     * @param chunkY chunk Y index
-     * @param pathMap map folder
-     * @return loaded Chunk or null if file not found/error
-     */
     private Chunk loadChunkFromFile(int chunkX, int chunkY, String pathMap){
         Chunk c = new Chunk(chunkX, chunkY, chunkSize);
         try {
@@ -78,10 +64,6 @@ public class ChunkManager {
             return null;
         }
     }
-
-    /**
-     * Load chunk asynchronously (non-blocking)
-     */
     public void loadChunkAsync(int chunkX, int chunkY , String pathMap){
         String key = chunkKey(chunkX, chunkY);
         synchronized (chunks) {
@@ -89,9 +71,6 @@ public class ChunkManager {
         }
 
         loader.submit(() -> {
-            // proof for multithreading
-            //System.out.println("Loading chunk " + key + " @" + System.nanoTime());
-            
             Chunk c = loadChunkFromFile(chunkX, chunkY, pathMap);
             if(c != null){
                 synchronized (chunks) {
@@ -101,9 +80,6 @@ public class ChunkManager {
         });
     }
 
-    /**
-     * Unload chunks that are far outside the visible area
-     */
     private void unloadFarChunks(int left, int right, int top, int bottom){
         synchronized (chunks) {
             chunks.entrySet().removeIf(e -> {
@@ -114,11 +90,6 @@ public class ChunkManager {
         }
     }
 
-    /**
-     * Update chunks around the player: load visible chunks and unload distant chunks
-     * @param playerWorldX player's world X coordinate
-     * @param playerWorldY player's world Y coordinate
-     */
     public void updateChunks(int playerWorldX, int playerWorldY){
         int buffer = gp.tileSize * (chunkSize / 2);
 
@@ -135,36 +106,30 @@ public class ChunkManager {
         for(int cx = chunkLeft; cx <= chunkRight; cx++){
             for(int cy = chunkTop; cy <= chunkBottom; cy++){
                 if (cx < 0 || cy < 0 || cx >= gp.chunkSize || cy >= gp.chunkSize) {
-                    continue; // ngoài map thì bỏ qua
+                    continue;
                 }
                 loadChunkAsync(cx, cy , pathMap);
             }
         }
         unloadFarChunks(chunkLeft, chunkRight, chunkTop, chunkBottom);
-        //System.out.println("complete update chunk");
     }
 
-    /** clear all chunks */
     public void clearChunks(){
         synchronized (chunks) {
             chunks.clear();
         }
     }
 
-     /** Get currently active chunks (returns a copy to avoid concurrent modification) */
     public Iterable<Chunk> getActiveChunks(){
         synchronized (chunks) {
             return new HashMap<>(chunks).values(); 
         }
     }
-    /**
-     * Force load a new map immediately (clears old chunks)
-     */
+
     public void loadMap(String mapName) {
         clearChunks();                // xoá toàn bộ chunk cũ
         this.pathMap = mapName;       // cập nhật đường dẫn map mới
     }
-    /** Shutdown the background loader thread */
     public void shutdown(){
         loader.shutdownNow();
     }
@@ -195,7 +160,7 @@ public class ChunkManager {
     }
     // Lấy tile num theo toạ độ tile (col, row) trong world
     public int getTileNum(int tileCol, int tileRow) {
-        // Ngoài biên map thì cho 0 hoặc -1 tuỳ bạn
+        // Ngoài biên map thì cho 0 hoặc -1
         if (tileCol < 0 || tileRow < 0
                 || tileCol >= gp.maxWorldCol
                 || tileRow >= gp.maxWorldRow) {
