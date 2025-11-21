@@ -20,16 +20,16 @@ public class AxeInteraction implements IObjectInteraction {
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
-        List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
-        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick axe", obj, gp);
+        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick Leviathan Axe", obj, gp);
         if (input.isPicked()) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             objects.remove(obj);
             player.setCurrentWeapon(new Axe(gp, gp.currentMap));
             Weapon temp = player.getCurrentWeapon();
             player.equipWeapon(temp);
-            if (msgUI != null) msgUI.showTouchMessage("Ya got a axe!", obj, gp);
+            if (msgUI != null) msgUI.showTouchMessage("Ya got ur grandpa strongest weapons let go to the door and have a test!", obj, gp);
         }
     }
 }

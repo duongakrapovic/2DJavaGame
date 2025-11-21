@@ -1,5 +1,6 @@
 package monster_data;
 
+import ai.movement.WanderMovement;
 import combat.CombatSystem;
 import main.GamePanel;
 
@@ -41,14 +42,14 @@ public class SkeletonLord extends Monster {
 
         // stats
         setStats(220 , 6, 2);
-        attackDamage    = 6;
         attackKnockback = 8;
+        setExpReward(100);
 
         // combat reach + timing P1
         atkW = gp.tileSize * 2;
         atkH = gp.tileSize * 2;
         combat.setAttackBoxSize(atkW, atkH);
-        combat.setTimingFrames(10, 8, 14, 88);
+        combat.setTimingFrames(3, 18, 39, 30);
 
         // trigger radius & face lock
         attackTriggerRadius = Math.max(gp.tileSize * 6, 48);
@@ -57,6 +58,8 @@ public class SkeletonLord extends Monster {
         direction = "down";
 
         loadPhaseSprites();
+        // easy movement
+        setController(new WanderMovement(/*speed*/2, /*changeEveryFrames*/120));
     }
 
     private void loadPhaseSprites() {
@@ -132,25 +135,11 @@ public class SkeletonLord extends Monster {
 
             defaultSpeed = ENRAGE_SPEED;
             actualSpeed  = ENRAGE_SPEED;
-
             atkW = gp.tileSize * 3;
             atkH = gp.tileSize * 2;
             combat.setAttackBoxSize(atkW, atkH);
-
-            attackTriggerRadius = Math.max(gp.tileSize * 8, attackTriggerRadius);
-            combat.setTimingFrames(6, 8, 10, 74);
-            faceLockThreshold = 4;
-
+            combat.setTimingFrames(6, 8, 10, 36);
             switchToPhase2Sprites();
         }
     }
-
-    @Override
-    protected void decideAttack() {
-        this.faceLockThreshold = enraged ? 4 : 6;
-        super.decideAttack();
-    }
-
-    @Override public void onDamaged(int damage) { }
-    @Override public void onDeath() { }
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package interact_manager.object_interact.items;
 
 import main.GamePanel;
@@ -19,15 +15,31 @@ public class KeyInteraction implements IObjectInteraction {
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
-        List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
-        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick key", obj, gp);
-        if (input.isPicked()) {
+        boolean pressed = input.isPicked();
+
+        // ==== 1) BẤM F → NHẶT KEY ====
+        if (pressed) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             player.hasKey++;
-            objects.remove(obj);
-            if (msgUI != null) msgUI.showTouchMessage("Ya got a key!", obj, gp);
+            objects.remove(obj); // xoá key khỏi map
+
+            if (msgUI != null) {
+                msgUI.showTouchMessage("You got a key!", obj, gp);
+            }
+
+            // Sau khi nhặt xong, frame này coi như kết thúc tương tác
+            player.setInteracting(false);
+            return;
+        }
+
+        // ==== 2) KHÔNG BẤM F → HIỆN HƯỚNG DẪN (KHÔNG SPAM) ====
+        if (!player.isInteracting()) {
+            if (msgUI != null) {
+                msgUI.showTouchMessage("Press 'F' to pick key", obj, gp);
+            }
+            player.setInteracting(true);
         }
     }
 }
-

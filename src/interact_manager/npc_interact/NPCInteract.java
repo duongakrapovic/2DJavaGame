@@ -9,11 +9,6 @@ import ui.effects.DialogueUI;
 
 import java.util.List;
 
-/**
- * NPCInteract.java
- * Handles player–NPC interactions.
- * Uses the NPC list from EntityManager (getNPCs()).
- */
 public class NPCInteract {
 
     private final GamePanel gp;

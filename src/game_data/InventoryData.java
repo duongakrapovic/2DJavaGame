@@ -1,8 +1,5 @@
 package game_data;
 
-/**
- * Stores information about each item in the player's inventory.
- */
 public class InventoryData {
     public String itemName;
     public int quantity;

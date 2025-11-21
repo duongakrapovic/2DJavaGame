@@ -15,6 +15,7 @@ public class OrcMonster extends Monster {
 
     private final int wanderSpeed = 1; // chậm hơn goblin, mạnh hơn slime
 
+
     public OrcMonster(GamePanel gp, int mapIndex) {
         super(gp);
         this.mapIndex = mapIndex;
@@ -35,18 +36,17 @@ public class OrcMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // ===== Base stats =====
-        setStats(20, 0, 3); // hp, defense, exp drop (tùy bạn)
-        this.attackDamage = 5;
+        setStats(20, 7, 3); // hp, defense, exp drop (tùy bạn)
         this.attackKnockback = 8;
-
+        setExpReward(5);
         // ===== Combat config =====
         this.combat.setAttackBoxSize(40, 32);
         this.combat.setTimingFrames(12, 10, 16, 82);
 
         // movement AI
-        var wander = new WanderMovement(2, 80);
+        var wander = new WanderMovement(2, 240);
         Supplier<Player> playerSup = () -> (gp.em != null ? gp.em.getPlayer() : null);
-        var chase  = new ChaseMovement(gp, playerSup, 3, gp.tileSize);
+        var chase  = new ChaseMovement(gp, playerSup, 2, gp.tileSize);
 
         Predicate<Entity> aggroCond = me -> {
             Player p = playerSup.get();

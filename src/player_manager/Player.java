@@ -16,11 +16,32 @@ import object_data.weapons.Weapon;
 
 public class Player extends Entity {
     private Weapon currentWeapon;
-    public Weapon getCurrentWeapon() { return currentWeapon; }
-    public Weapon setCurrentWeapon(Weapon w){return currentWeapon = w;}
+
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+
+    public Weapon setCurrentWeapon(Weapon w) {
+        return currentWeapon = w;
+    }
 
     public int hasKey = 0;
     int speedTimer = 0;
+
+    // --- Level / EXP / Rank ---
+    private int level = 1;
+    private int exp = 0;
+    private int expToNext = 10;
+    private int rank = 0;
+
+    // Base stats + tăng mỗi level
+    private int baseHp = 100;
+    private int baseAtk = 20;
+    private int baseDef = 2;
+
+    private int hpPerLevel = 10;
+    private int atkPerLevel = 3;
+    private int defPerLevel = 1;
 
     //ui
     private MessageUI msgUI;
@@ -38,16 +59,13 @@ public class Player extends Entity {
     // --- Interaction debounce (avoid F-key spamming) ---
     private boolean interacting = false;
 
-    /** Mark that the player is interacting this frame. */
     public void setInteracting(boolean value) {
         this.interacting = value;
     }
 
-    /** Check if the player is currently interacting. */
     public boolean isInteracting() {
         return interacting;
     }
-
 
     public Player(GamePanel gp, InputController input) {
         super(gp);
@@ -68,27 +86,65 @@ public class Player extends Entity {
         pm = new PlayerMovement(this, gp);
         pa = new PlayerAnimation(this);
 
-        // ---- Combat config
-        setStats(2, 3, 1);
+        // ---- Combat config (dựa trên level/rank)
+        recalcStatsFromLevel();
     }
-    
+
     public void setDefaultValues() {
-        
-        worldX = gp.tileSize * (gp.chunkSize / 2 + 7) - 8;
-        worldY = gp.tileSize * (gp.chunkSize / 2 + 1) - 8;
+        mapIndex = 3; // rất quan trọng
+
+        // Ví dụ spawn trước cửa map3
+        worldX = gp.tileSize * 15;
+        worldY = gp.tileSize * 22;
+
         defaultSpeed = 10;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
-        direction = "down";
+        direction = "up";
         animationON = true;
     }
+    public int getLevel() {
+        return level;
+    }
 
+    public int getExp() {
+        return exp;
+    }
+
+    public int getExpToNext() {
+        return expToNext;
+    }
+
+    public int setLevel(int level) {
+        this.level = level;
+        return level;
+    }
+
+    public int setExp(int exp) {
+        this.exp = exp;
+        return exp;
+    }
+    //rank
+    private double getRankMultiplier() {
+        return 1.0 + rank * 0.2;
+    }
     @Override
     public void update() {
+        // === ĐANG BỊ KNOCKBACK → chỉ đẩy & tick hệ thống, bỏ qua input ===
+        if (isKnockbackActive()) {
+            emo.applyKnockback(this);
+            CombatSystem.tick(this);
+            pa.update(
+                    false,
+                    CombatSystem.isAttacking(combat),
+                    CombatSystem.getPhase(combat)
+            );
+            return;
+        }
+
         int[] delta = pm.calculateMovement();
         pm.move(delta[0], delta[1]);
 
-        // update animation
         pa.update(
                 pm.isMoving(),
                 CombatSystem.isAttacking(combat),
@@ -100,9 +156,7 @@ public class Player extends Entity {
 
         handleAttackInput();
         CombatSystem.tick(this);
-
         handleNPCInteraction();
-
     }
 
     @Override
@@ -137,20 +191,27 @@ public class Player extends Entity {
             }
         } else {
             switch (direction) {
-                case "up":    image = (spriteNum == 1 ? up1    : up2);    break;
-                case "down":  image = (spriteNum == 1 ? down1  : down2);  break;
-                case "left":  image = (spriteNum == 1 ? left1  : left2);  break;
-                default:      image = (spriteNum == 1 ? right1 : right2); break;
+                case "up":
+                    image = (spriteNum == 1 ? up1 : up2);
+                    break;
+                case "down":
+                    image = (spriteNum == 1 ? down1 : down2);
+                    break;
+                case "left":
+                    image = (spriteNum == 1 ? left1 : left2);
+                    break;
+                default:
+                    image = (spriteNum == 1 ? right1 : right2);
+                    break;
             }
         }
 
         g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-        // debug: body rect
+
         g2.setColor(Color.red);
         g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 
-        // debug: attackBox
         if (CombatSystem.isAttackActive(combat)) {
             Rectangle atk = combat.getAttackBox();
             if (atk.width > 0 && atk.height > 0) {
@@ -187,9 +248,6 @@ public class Player extends Entity {
         );
 
         psm.loadAttackSprites(this, weapon.spriteKey());
-        if (msgUI != null) {
-            msgUI.showTouchMessage("Equipped " + weapon.displayName(), null, gp);
-        }
     }
 
     private void handleNPCInteraction() {
@@ -203,10 +261,91 @@ public class Player extends Entity {
 
                     gp.gsm.setState(GameState.DIALOGUE);
                 }
-            }
-            else {
+            } else {
                 System.out.println("[DEBUG] No NPC collision detected");
             }
         }
+    }
+
+    // count stats with exp
+    private void recalcStatsFromLevel() {
+        int rawHp = baseHp + (level - 1) * hpPerLevel;
+        int rawAtk = baseAtk + (level - 1) * atkPerLevel;
+        int rawDef = baseDef + (level - 1) * defPerLevel;
+
+        double mul = getRankMultiplier();
+
+        int finalHp = (int) Math.round(rawHp * mul);
+        int finalAtk = (int) Math.round(rawAtk * mul);
+        int finalDef = (int) Math.round(rawDef * mul);
+
+        // dùng setStats của Entity
+        setStats(finalHp, finalAtk, finalDef);
+    }
+
+    // exp to next level
+    private int calcExpToNext(int lv) {
+        // ví dụ: 10 * 1.2^(lv-1)
+        double base = 10.0;
+        return (int) Math.round(base * Math.pow(1.2, lv - 1));
+    }
+
+    /**
+     * Player nhận thêm EXP khi giết quái
+     */
+    public void gainExp(int amount) {
+        if (amount <= 0) return;
+
+        int beforeExp = exp;
+        int beforeLevel = level;
+
+        System.out.println(
+                "[EXP] gainExp +" + amount +
+                        " | trước: exp=" + beforeExp + "/" + expToNext +
+                        " lv=" + beforeLevel
+        );
+
+        this.exp += amount;
+
+        // Lên nhiều level nếu exp dư
+        while (exp >= expToNext) {
+            exp -= expToNext;
+            levelUp();  // trong levelUp cũng sẽ in debug
+        }
+
+        System.out.println(
+                "[EXP] sau gainExp: exp=" + exp + "/" + expToNext +
+                        " lv=" + level
+        );
+    }
+
+    private void levelUp() {
+        level++;
+        expToNext = calcExpToNext(level);
+
+        recalcStatsFromLevel();   // cập nhật HP/ATK/DEF
+
+        // Hồi full máu khi lên level
+        setHP(getMaxHP());
+        System.out.println("[LEVEL] Player lên level " + level +
+                " | next exp = " + expToNext);
+    }
+
+    // Hồi 1 lượng máu cố định
+    public void heal(int amount) {
+        if (amount <= 0) return;
+        int max = getMaxHP();
+        int cur = getHP();
+        int newHp = Math.min(max, cur + amount);
+        setHP(newHp);
+    }
+
+    // Hồi theo % máu tối đa (vd 0.1 = 10%)
+    public void healPercent(double percent) {
+        if (percent <= 0) return;
+        int max = getMaxHP();
+        int healAmount = (int) Math.round(max * percent);
+        if (healAmount <= 0) healAmount = 1; // luôn hồi ít nhất 1 máu
+        heal(healAmount);
     }
 }

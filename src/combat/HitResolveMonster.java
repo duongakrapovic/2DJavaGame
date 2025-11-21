@@ -10,7 +10,7 @@ public final class HitResolveMonster {
 
     public static void resolve(Monster m, Player player) {
         if (m == null || player == null || m.isDead() || player.isDead()) return;
-        if (!CombatSystem.isAttackActive(m.combat)) return;          // dùng API trung gian
+        if (!CombatSystem.isAttackActive(m.combat)) return;
 
         Rectangle attack = m.combat.getAttackBox();
         if (attack == null || attack.width <= 0 || attack.height <= 0) return;
@@ -18,12 +18,13 @@ public final class HitResolveMonster {
         Rectangle playerBody = CollisionUtil.getEntityBodyWorldRect(player);
         if (!attack.intersects(playerBody)) return;
 
-        if (CombatSystem.wasHitThisSwing(m.combat, player)) return;  // dùng API trung gian
+        if (CombatSystem.wasHitThisSwing(m.combat, player)) return;
 
         int rawDamage = Math.max(1, m.getATK());
         int[] kb = CombatSystem.computeMonsterAttackKnockback(m, player);
 
         DamageProcessor.applyDamage(player, rawDamage, kb[0], kb[1]);
-        CombatSystem.markHitLanded(m.combat, player);                 // dùng API trung gian
+
+        CombatSystem.markHitLanded(m.combat, player);
     }
 }

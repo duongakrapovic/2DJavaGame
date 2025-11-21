@@ -6,10 +6,6 @@ import ui.utilz.LoadSave;
 
 import static ui.utilz.Constants.UI.URMButtons.*;
 
-/**
- * UrmButton — chuẩn hóa cho hệ thống GamePanel, điều khiển bằng bàn phím
- * Cắt theo kích thước gốc (56x56), vẽ scale theo GamePanel.SCALE
- */
 public class UrmButton {
     private final int x, y;
     private final int rowIndex; // 0: Resume, 1: Replay, 2: Menu
@@ -39,7 +35,6 @@ public class UrmButton {
         }
     }
 
-    /** Cập nhật frame hiển thị theo trạng thái focus/pressed */
     public void update() {
         index = 0;              // normal
         if (focused) index = 1; // sáng khi focus

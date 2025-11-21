@@ -29,7 +29,7 @@ public class PortalInteraction implements IObjectInteraction {
                     gp.currentMap = 0;
                 }
 
-                var destList = gp.em.getWorldObjects(gp.currentMap);
+                var destList = gp.om.getObjects(gp.currentMap);
                 WorldObject dest = null;
                 for (var wo : destList) {
                     if (wo != null && "portal".equals(wo.name)) {

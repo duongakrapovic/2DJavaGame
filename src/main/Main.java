@@ -17,10 +17,9 @@ public class Main {
 
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
-        // gamepanel show the content , jfram is a container
-        window.pack(); // cause this window to be sized to fit the preferred size
-        // and layout of its subcomponent(=GamePanel)
-        
+
+        window.pack();
+
         window.setLocationRelativeTo(null);// place window in the middle of the screen
         window.setVisible(true);// view the window on screen
         

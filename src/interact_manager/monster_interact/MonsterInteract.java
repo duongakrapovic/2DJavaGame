@@ -20,7 +20,6 @@ public class MonsterInteract {
     }
 
     public void handle(int index) {
-        // TODO: xử lý monster sau
     }
 }
 

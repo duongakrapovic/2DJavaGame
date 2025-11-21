@@ -1,9 +1,5 @@
 package ui.utilz;
 
-/**
- * Constants.java
- * Chứa các giá trị cố định cho UI
- */
 public class Constants {
 
     // ===== UI constants =====

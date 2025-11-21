@@ -10,7 +10,7 @@ public final class Sword extends Weapon {
         super(gp);
         this.mapIndex = mapIndex;
         
-        name = "sword";
+        name = "Argonaut Hero's Sword ";
         width  = gp.tileSize;
         height = gp.tileSize;
         collision = false;
@@ -20,7 +20,7 @@ public final class Sword extends Weapon {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        loadSprite(); // tự load /objects/sword.png
+        loadSprite();
     }
 
     @Override public String spriteKey() { return "sword"; }

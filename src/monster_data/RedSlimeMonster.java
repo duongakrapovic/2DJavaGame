@@ -17,7 +17,7 @@ public class RedSlimeMonster extends Monster {
         name = "RedSlime";
         width = gp.tileSize;
         height = gp.tileSize;
-        hasAttackAnim = false; // y như slime thường
+        hasAttackAnim = false;
 
         getImage();
 
@@ -31,15 +31,15 @@ public class RedSlimeMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats nhỉnh hơn slime thường
-        setStats(12, 0, 3);       // hp, def, exp
+        setStats(12, 2, 3);       // hp, def, exp
         attackDamage = 4;
         attackKnockback = 5;
 
         // combat: quệt ngắn
         combat.setAttackBoxSize(30, 26);
-        combat.setTimingFrames(6, 6, 10, 98);
+        combat.setTimingFrames(20, 6, 16, 40);
 
-        setController(new WanderMovement(wanderSpeed, 80));
+        setController(new WanderMovement(1, 240));
     }
 
     private void getImage() {
@@ -57,14 +57,4 @@ public class RedSlimeMonster extends Monster {
         atkLeft1=left1; atkLeft2=left2; atkRight1=right1; atkRight2=right2;
     }
 
-    @Override
-    public void update() {
-        // Optional: “nhảy quệt” – trong ACTIVE tăng speed chút
-        if (combat != null && CombatSystem.isAttackActive(combat)) {
-            actualSpeed = 3;
-        } else {
-            actualSpeed = wanderSpeed;
-        }
-        super.update();
-    }
 }

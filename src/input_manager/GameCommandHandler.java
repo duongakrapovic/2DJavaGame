@@ -12,31 +12,14 @@ import ui.effects.DialogueUI;
 import ui.screens.pause.PauseOverlay;
 
 
-/**
- * GameCommandHandler.java
- * Handles global keyboard commands (ESC, ENTER, arrows, etc.)
- * for major game states:
- * - Main menu (START)
- * - Gameplay (PLAY)
- * - Pause state (PAUSE)
- *
- * This class does NOT control player movement or combat actions;
- * those are handled in KeyHandler.
- */
 public class GameCommandHandler implements KeyListener {
 
-    /** Reference to the main GamePanel instance. */
     private final GamePanel gp;
 
-    /** Constructor: attach to the current GamePanel. */
     public GameCommandHandler(GamePanel gp) {
         this.gp = gp;
     }
 
-    /**
-     * Called when a key is pressed.
-     * Executes different logic depending on the current GameState.
-     */
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -97,7 +80,6 @@ public class GameCommandHandler implements KeyListener {
                 return;
             }
 
-            // TODO: handle gameplay keys (movement, attack, etc.)
         }
 
         // ============ PAUSE STATE ==================

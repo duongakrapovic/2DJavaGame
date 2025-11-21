@@ -14,11 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * SaveManager.java
- * Handles saving/loading Player + Monster + Map data.
- * Fully compatible with your current EntityManager structure.
- */
+
 public class SaveManager {
 
     private static final String SAVE_DIR = "saves";
@@ -47,7 +43,9 @@ public class SaveManager {
                     player.getHP(),
                     player.getMaxHP(),
                     (player.getCurrentWeapon() != null ? player.getCurrentWeapon().name : null),
-                    gp.currentMap
+                    gp.currentMap ,
+                    player.getExp(),
+                    player.getLevel()
             );
 
             // ==== MONSTERS ====
@@ -103,23 +101,49 @@ public class SaveManager {
             if (player != null && data.player != null) {
                 player.worldX = data.player.worldX;
                 player.worldY = data.player.worldY;
-                player.setHP(data.player.health);
+
+                // exp & level
+                player.setExp(data.player.exp);
+                player.setLevel(data.player.level);
+
+                // stats + máu
                 player.setStats(data.player.maxHealth, player.getATK(), player.getDEF());
                 player.setHP(data.player.health);
+
+                // ========= VŨ KHÍ =========
+                if (data.player.weaponName != null) {
+                    object_data.weapons.Weapon w = null;
+
+                    // TODO: thay bằng đúng tên vũ khí của bạn
+                    switch (data.player.weaponName) {
+                        case "Leviathan Axe" ->
+                                w = new object_data.weapons.Axe(gp , data.mapIndex);
+                        case "Argonaut Hero's Sword" ->
+                                w = new object_data.weapons.Sword(gp , data.mapIndex);
+                        case "Steve Pick" ->
+                                w = new object_data.weapons.Pick(gp , data.mapIndex);
+                    }
+
+                    if (w != null) {
+                        // dùng đúng setter sẵn có của bạn
+                        player.setCurrentWeapon(w);
+                        // để combat + animation dùng thông số của weapon
+                        player.equipWeapon(w);
+                    }
+                }
+
                 // Restore map
                 gp.currentMap = data.player.mapIndex;
                 player.mapIndex = gp.currentMap;
                 String newMap = "map" + gp.currentMap;
 
                 gp.chunkM.loadMap(newMap);
-                // ==== REBIND SYSTEMS ====
                 if (gp.om != null) {
                     gp.om.reloadMapObjects(gp.currentMap);
                 }
-
                 gp.em.update(gp.currentMap);
-
             }
+
 
             // ==== RESTORE MONSTERS ====
             var monsters = gp.em.getMonsters(gp.currentMap);

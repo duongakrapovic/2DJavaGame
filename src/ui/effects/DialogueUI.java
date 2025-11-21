@@ -16,7 +16,6 @@ public class DialogueUI extends BaseUI {
 
     public DialogueUI(GamePanel gp) { super(gp); }
 
-    /** Start a new dialogue */
     public void startDialogue(String[] src) {
         this.lines = (src == null || src.length == 0) ? new String[]{""} : src;
         this.index = 0;
@@ -28,12 +27,10 @@ public class DialogueUI extends BaseUI {
         gp.gsm.setState(GameState.DIALOGUE);
     }
 
-    /** For external checks */
     public boolean isActive() {
         return gp.gsm.getState() == GameState.DIALOGUE && lines != null && index < lines.length;
     }
 
-    /** External page flip */
     public void nextPage() {
         if (lines == null) return;
         String line = (lines[index] == null) ? "" : lines[index];
@@ -83,7 +80,6 @@ public class DialogueUI extends BaseUI {
         prevPressed = pressed;
     }
 
-    /** Sang dòng mới hoặc kết thúc */
     private void nextLine() {
         index++;
         if (lines != null && index < lines.length && lines[index] != null) {
@@ -97,7 +93,6 @@ public class DialogueUI extends BaseUI {
         }
     }
 
-    /** Kết thúc hội thoại */
     private void endDialogue() {
         text.setLength(0);
         lines = null;

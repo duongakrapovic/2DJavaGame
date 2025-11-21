@@ -1,37 +1,15 @@
 {
   "player": {
-    "worldX": 2144,
-    "worldY": 2242,
-    "health": 2,
-    "maxHealth": 2,
-    "mapIndex": 1
+    "worldX": 810,
+    "worldY": 932,
+    "health": 100,
+    "maxHealth": 100,
+    "weaponName": "Leviathan Axe",
+    "mapIndex": 3,
+    "exp": 0,
+    "level": 1
   },
-  "objects": [
-    {
-      "type": "Orc",
-      "worldX": 768,
-      "worldY": 816,
-      "active": true
-    },
-    {
-      "type": "RedSlime",
-      "worldX": 648,
-      "worldY": 484,
-      "active": true
-    },
-    {
-      "type": "Bat",
-      "worldX": 1010,
-      "worldY": 854,
-      "active": true
-    },
-    {
-      "type": "Skeleton Lord",
-      "worldX": 1440,
-      "worldY": 1184,
-      "active": true
-    }
-  ],
-  "mapIndex": 1,
-  "mapPath": "map1"
+  "objects": [],
+  "mapIndex": 3,
+  "mapPath": "map3"
 }

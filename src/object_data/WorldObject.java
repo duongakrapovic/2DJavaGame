@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
-/** Lớp cha nhẹ cho đồ vật (không combat, không stats). */
 public class WorldObject {
 
     // World & screen

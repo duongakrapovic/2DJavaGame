@@ -18,28 +18,14 @@ public class GameLoop implements Runnable{
     
     @Override
     public void run(){
-        //System.out.println("game loop start");
         double drawInterval = 1000000000/FPS; //  1s = 10^9 nano s
         // darw the screen every 0,016s or else upadte + repaint overload
         double nextDrawTime = System.nanoTime() + drawInterval;
-        
-//        long timer = System.currentTimeMillis();
-//        int drawcnt = 0;
+
         while(true){
-            // as long as this gameThread exists, it repeats the process
-            // that is wirten inside of these brackets          
-            
-            // System.out.println("loop running");
-            // 1 : UPDATE INFO - CHARACTER POSITION
-            //System.out.println("gp.update start");
             gp.update();
             // 2 : DARW THE SCREEN WITH UPDATED INFO
             gp.repaint();
-            //System.out.println("end repaint");
-            // proof for multithreading
-            //System.out.println("GameLoop tick @" + System.nanoTime());
-            
-//            drawcnt++;// catch 1 frame drew
             
             try{
                 double remainingTime = nextDrawTime - System.nanoTime();
@@ -55,16 +41,6 @@ public class GameLoop implements Runnable{
             catch(InterruptedException e){
                e.printStackTrace();
             }
-            
-            // check each 1s
-//            if(System.currentTimeMillis() - timer >= 1000){// 1s == 1000 mili second
-//                System.out.println("FPS : " + drawcnt);
-//                drawcnt = 0;
-//                timer += 1000;
-                // no assign timer as System.currentTimeMillis() in the "if" 
-                // can cause wrong time 
-            //} 
-            
         }
     }
 }

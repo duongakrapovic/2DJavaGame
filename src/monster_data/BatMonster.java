@@ -1,17 +1,22 @@
 package monster_data;
 
+import ai.movement.AggroSwitchMovement;
+import ai.movement.ChaseMovement;
 import ai.movement.WanderMovement;
 import combat.CombatSystem;
 import entity.Entity;
 import main.GamePanel;
+import player_manager.Player;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class BatMonster extends Monster {
 
-    private final int wanderSpeed = 2;   // nhanh hơn orc
-    private final int chaseSpeed  = 3;   // bám đuổi khi gần
+    private final int wanderSpeed = 2;
+    private final int chaseSpeed  = 3;
 
     public BatMonster(GamePanel gp, int mapIndex) {
         super(gp);
@@ -20,7 +25,7 @@ public class BatMonster extends Monster {
         name = "Bat";
         width = gp.tileSize;
         height = gp.tileSize;
-        hasAttackAnim = false;           // dùng frame tileSize, không offset vẽ
+        hasAttackAnim = false;
 
         getImage();
 
@@ -34,16 +39,31 @@ public class BatMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats
-        setStats(10, 0, 2);              // hp, def, exp
+        setStats(10, 5, 2);
+        setExpReward(5);
         attackDamage = 3;
         attackKnockback = 6;
 
         // combat ngắn – lao vào quẹt
         combat.setAttackBoxSize(28, 24);
-        combat.setTimingFrames(12, 6, 16, 86);
+        combat.setTimingFrames(3, 18, 42, 30);
 
-        // AI: lang thang, khi đến gần player thì “đổi sang đuổi”
-        setController(new WanderMovement(wanderSpeed, 70));
+        // movement AI
+        var wander = new WanderMovement(2, 240);
+        Supplier<Player> playerSup = () -> (gp.em != null ? gp.em.getPlayer() : null);
+        var chase  = new ChaseMovement(gp, playerSup, 2, gp.tileSize);
+
+        Predicate<Entity> aggroCond = me -> {
+            Player p = playerSup.get();
+            if (p == null || p.isDead()) return false;
+            long dx = (long)p.worldX - me.worldX;
+            long dy = (long)p.worldY - me.worldY;
+            long dist2 = dx*dx + dy*dy;
+            long r = 1L * gp.tileSize * 6;
+            return dist2 < r*r;
+        };
+
+        setController(new AggroSwitchMovement(wander, chase, aggroCond));
     }
     private void getImage() {
         // 2 khung đập cánh (tileSize)
@@ -56,13 +76,12 @@ public class BatMonster extends Monster {
         right1 = setup("/monster/bat_down_1", width, height);
         right2 = setup("/monster/bat_down_2", width, height);
 
-        // dùng chung cho attack (không cần phình khung)
+        // dùng chung cho attack
         atkUp1=up1; atkUp2=up2; atkDown1=down1; atkDown2=down2;
         atkLeft1=left1; atkLeft2=left2; atkRight1=right1; atkRight2=right2;
     }
     @Override
     public void update() {
-        // Optional: “nhảy quệt” – trong ACTIVE tăng speed chút
         if (combat != null && CombatSystem.isAttackActive(combat)) {
             actualSpeed = 3;
         } else {

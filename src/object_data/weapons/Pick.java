@@ -8,7 +8,7 @@ public final class Pick extends Weapon {
     
     public Pick(GamePanel gp , int mapIndex) {
         super(gp);
-        name = "Pick";
+        name = "Steve Pick";
         this.mapIndex = mapIndex;
         
         width  = gp.tileSize;

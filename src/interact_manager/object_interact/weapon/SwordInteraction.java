@@ -20,7 +20,7 @@ public class SwordInteraction implements IObjectInteraction {
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
-        List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
         if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick sword", obj, gp);
         if (input.isPicked()) {

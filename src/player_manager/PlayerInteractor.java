@@ -22,7 +22,7 @@ public class PlayerInteractor {
         // DÙNG API MỚI cho object (WorldObject)
         int objIndex = gp.cChecker.checkWorldObject(
                 player,
-                gp.em.getWorldObjects(gp.currentMap),
+                gp.om.getObjects(gp.currentMap),
                 dx, dy
         );
         player.iR.InteractObject(objIndex);

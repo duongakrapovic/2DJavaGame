@@ -17,8 +17,35 @@ public final class CombatSystem {
     public static boolean canStartAttack(CombatComponent cc) { return AttackPhaseSystem.canStart(cc); }
 
     public static void startAttack(CombatComponent cc, CombatContext owner) {
+
+        // DEBUG: log mỗi lần bất kỳ entity nào bắt đầu đòn
+        if (owner instanceof entity.Entity) {          // import entity.Entity nếu chưa có
+            entity.Entity e = (entity.Entity) owner;
+
+            if (e.gp != null) {
+                System.out.println(
+                        "[ATTACK START] by=" + e.name +
+                                " frame=" + e.gp.frameCounter +
+                                " phase=" + cc.getAttackPhase()
+                );
+            } else {
+                System.out.println(
+                        "[ATTACK START] by=" + e.name +
+                                " phase=" + cc.getAttackPhase()
+                );
+            }
+        } else {
+            // phòng trường hợp owner là loại khác Entity
+            System.out.println(
+                    "[ATTACK START] by=" + owner.getClass().getSimpleName() +
+                            " phase=" + cc.getAttackPhase()
+            );
+        }
+
         AttackPhaseSystem.start(cc, owner);
     }
+
+
 
     public static void update(CombatComponent cc, CombatContext owner) {
         AttackPhaseSystem.update(cc, owner);

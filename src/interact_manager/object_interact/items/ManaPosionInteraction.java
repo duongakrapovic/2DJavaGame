@@ -18,15 +18,13 @@ public class ManaPosionInteraction implements IObjectInteraction {
     @Override
     public void interact(GamePanel gp, Player player, InputController input, WorldObject obj) {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
-        List<WorldObject> objects = gp.em.getWorldObjects(gp.currentMap);
+        List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
         if (msgUI != null) msgUI.showTouchMessage("press 'F' to heal mana", obj, gp);
         if (input.isPicked()) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             objects.remove(obj);
             if (msgUI != null) msgUI.showTouchMessage("full fuel!", obj, gp);
-            // Nếu có hệ thống mana thì thêm dòng tăng mana ở đây
-            // player.mana = player.maxMana;
         }
     }
 }

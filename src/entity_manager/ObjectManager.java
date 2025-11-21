@@ -29,13 +29,9 @@ public class ObjectManager {
     }
     private void spawnMap0() {
         int t = gp.tileSize;
-        addObject(new ObjectKey(gp, 0), 23 * t, 18 * t);
         addObject(new Shop(gp, 0),46 * t, 15 * t);
         addObject(new ObjectDoor(gp, 0),48 * t - 23, 18 * t);
         addObject(new ObjectPortal(gp, 0),47 * t + 12, 47 * t + 12);
-        addObject(new Sword(gp, 0) ,23 *t , 20 * t);
-        addObject(new Axe(gp, 0), 23*t , 23 * t);
-        
     }
     private void spawnMap1() {
         int t = gp.tileSize;
@@ -47,18 +43,7 @@ public class ObjectManager {
     private void spawnMap3() {
         int t = gp.tileSize;
         addObject(new ObjectDoor(gp, 3), 15 * t + 22 , 23 * t);
-        
-        addObject(new ManaPosion(gp, 3), 14 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 15 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 16 * t, 12 * t - 5);
-        addObject(new ManaPosion(gp, 3), 17 * t, 12 * t - 5);
-        
-        addObject(new HealthPosion(gp, 3), 15 * t, 16 * t - 5);
-        addObject(new HealthPosion(gp, 3), 16 * t, 16 * t - 5);
-        addObject(new HealthPosion(gp, 3), 15 * t, 17 * t - 5);
-        addObject(new HealthPosion(gp, 3), 16 * t, 17 * t - 5);
-        
-        addObject(new Sword(gp, 3) ,15 *t , 18 * t);
+        addObject(new ObjectKey(gp, 3 ), 10 * t, 18 * t + 5);
         addObject(new Axe(gp, 3), 16 * t , 18 * t);
     }
     public void addObject(WorldObject obj, int wx, int wy) {
@@ -80,7 +65,6 @@ public class ObjectManager {
             o.update();
     }
 
-
     public void draw(Graphics2D g2, Entity player) {
         draw(g2, gp.currentMap, player);
     }
@@ -88,13 +72,16 @@ public class ObjectManager {
     public void draw(Graphics2D g2, int mapId, Entity player) {
         if (player == null) return;
 
+        List<WorldObject> list = getObjects(mapId);
+
         final int leftWorld  = player.worldX - player.screenX - gp.tileSize;
         final int rightWorld = player.worldX + (gp.screenWidth - player.screenX) + gp.tileSize;
         final int topWorld   = player.worldY - player.screenY - gp.tileSize;
         final int botWorld   = player.worldY + (gp.screenHeight - player.screenY) + gp.tileSize;
 
-        for (WorldObject o : getObjects(mapId)) {
-            // culling
+        for (WorldObject o : list) {
+
+
             int ow = (o.width  > 0 ? o.width  : gp.tileSize);
             int oh = (o.height > 0 ? o.height : gp.tileSize);
             int ox2 = o.worldX + ow;
@@ -104,28 +91,34 @@ public class ObjectManager {
                 continue;
             }
 
-            // world -> screen
             int sx = o.worldX - player.worldX + player.screenX;
             int sy = o.worldY - player.worldY + player.screenY;
 
             BufferedImage img = null;
             try {
                 img = o.getRenderImage();
-            } catch (NoSuchMethodError | Exception ignored) {
-            }
+            } catch (NoSuchMethodError | Exception ignored) {}
+
             if (img == null) img = o.staticImage;
 
             if (img != null) g2.drawImage(img, sx, sy, null);
 
-            // debug hitbox
-            
             g2.setColor(java.awt.Color.RED);
-            g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y, o.solidArea.width, o.solidArea.height);
-            
+            g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y,
+                    o.solidArea.width, o.solidArea.height);
         }
     }
     public void reloadMapObjects(int mapId) {
-        objectsByMap.clear();     // xóa toàn bộ object cũ
-        spawnObjects();           // tạo lại toàn bộ object (bao gồm portal)
+        objectsByMap.clear();
+        spawnObjects();
+    }
+    // === Drop từ quái: HealthPosion ===
+    public void spawnHealthPosion(int mapIndex, int wx, int wy) {
+        HealthPosion potion = new HealthPosion(gp, mapIndex);
+        addObject(potion, wx, wy);
+
+        int size = getObjects(mapIndex).size();
+        System.out.println("[DROP] HealthPosion spawn tại map " + mapIndex +
+                " (" + wx + ", " + wy + ")  -> list size = " + size);
     }
 }
