@@ -37,7 +37,7 @@ public class KeyInteraction implements IObjectInteraction {
         // ==== 2) KHÔNG BẤM F → HIỆN HƯỚNG DẪN (KHÔNG SPAM) ====
         if (!player.isInteracting()) {
             if (msgUI != null) {
-                msgUI.showTouchMessage("Press 'F' to pick key", obj, gp);
+                msgUI.showTouchMessage("Press 'F' to pick the mystery key. You may need it in the future", obj, gp);
             }
             player.setInteracting(true);
         }

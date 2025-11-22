@@ -36,7 +36,7 @@ public class OrcMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // ===== Base stats =====
-        setStats(20, 7, 3); // hp, defense, exp drop (tùy bạn)
+        setStats(40, 8, 5); // hp, defense, exp drop (tùy bạn)
         this.attackKnockback = 8;
         setExpReward(5);
         // ===== Combat config =====

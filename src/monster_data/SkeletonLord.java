@@ -41,7 +41,7 @@ public class SkeletonLord extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats
-        setStats(220 , 6, 2);
+        setStats(220 , 15, 10);
         attackKnockback = 8;
         setExpReward(100);
 

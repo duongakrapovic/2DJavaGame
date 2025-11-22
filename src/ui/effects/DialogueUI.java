@@ -111,8 +111,6 @@ public class DialogueUI extends BaseUI {
         prevPressed = false;
     }
 
-
-
     @Override
     public void draw(Graphics2D g2) {
         if (!isActive()) return;
@@ -122,16 +120,46 @@ public class DialogueUI extends BaseUI {
         int w = gp.screenWidth - 2 * x;
         int h = gp.tileSize * 3;
 
+        // Nền hộp thoại
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRoundRect(x, y, w, h, 20, 20);
 
+        // Viền
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(x, y, w, h, 20, 20);
 
+        // Text hội thoại
         g2.setFont(new Font("Arial", Font.PLAIN, 22));
+        g2.setColor(Color.white);
         drawMultiline(g2, text.toString(), x + gp.tileSize / 2, y + gp.tileSize, w - gp.tileSize);
+
+        // ====== Hint "[E] to continue" ======
+        if (finished) { // chỉ hiện khi đã in xong dòng hiện tại
+            String hint;
+
+            // nếu còn dòng tiếp theo -> continue, nếu là dòng cuối -> close
+            boolean hasMore = (lines != null && index < lines.length - 1);
+            if (hasMore) {
+                hint = "[E] to continue";
+            } else {
+                hint = "[E] to close";
+            }
+
+            FontMetrics fm = g2.getFontMetrics();
+            int hintWidth = fm.stringWidth(hint);
+
+            int paddingX = gp.tileSize / 2;
+            int paddingY = gp.tileSize / 3;
+
+            int hintX = x + w - paddingX - hintWidth;
+            int hintY = y + h - paddingY;
+
+            g2.setColor(new Color(255, 255, 255, 210)); // trắng hơi mờ
+            g2.drawString(hint, hintX, hintY);
+        }
     }
+
 
     private void drawMultiline(Graphics2D g2, String s, int x, int y, int width) {
         FontMetrics fm = g2.getFontMetrics();

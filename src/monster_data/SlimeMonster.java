@@ -25,7 +25,7 @@ public class SlimeMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // Stats sinh tồn
-        setStats(10, 2, 0);
+        setStats(10, 2, 1);
 
         this.attackDamage = 2;
         this.attackKnockback = 6;
