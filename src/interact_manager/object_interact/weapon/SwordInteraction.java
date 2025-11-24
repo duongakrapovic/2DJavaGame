@@ -22,14 +22,14 @@ public class SwordInteraction implements IObjectInteraction {
         MessageUI msgUI = gp.uiManager.get(MessageUI.class);
         List<WorldObject> objects = gp.om.getObjects(gp.currentMap);
 
-        if (msgUI != null) msgUI.showTouchMessage("press 'F' to pick sword", obj, gp);
+        if (msgUI != null) msgUI.showTouchMessage("It's the argonaut hero's sword! Press F to pick", obj, gp);
         if (input.isPicked()) {
             SoundManager.getInstance().playSE(SoundManager.SoundID.COIN);
             objects.remove(obj);
             player.setCurrentWeapon(new Sword(gp, gp.currentMap));
             Weapon temp = player.getCurrentWeapon();
             player.equipWeapon(temp);
-            if (msgUI != null) msgUI.showTouchMessage("Ya got a sword!", obj, gp);
+            if (msgUI != null) msgUI.showTouchMessage("Ya got the legendary sword!", obj, gp);
         }
     }
 }

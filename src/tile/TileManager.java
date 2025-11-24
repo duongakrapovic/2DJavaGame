@@ -110,11 +110,11 @@ public class TileManager {
             }
 
             // draw red outline to recognize each chunk
-            g2.setColor(Color.RED);
-            int rectX = chunkWorldX - playerPosX + gp.em.getPlayer().screenX;
-            int rectY = chunkWorldY - playerPosY + gp.em.getPlayer().screenY;
-            int rectSize = c.size * gp.tileSize;
-            g2.drawRect(rectX, rectY, rectSize, rectSize);
+//            g2.setColor(Color.RED);
+//            int rectX = chunkWorldX - playerPosX + gp.em.getPlayer().screenX;
+//            int rectY = chunkWorldY - playerPosY + gp.em.getPlayer().screenY;
+//            int rectSize = c.size * gp.tileSize;
+//            g2.drawRect(rectX, rectY, rectSize, rectSize);
         }
     }
     public boolean isCollisionAtWorld(int worldX, int worldY, ChunkManager chunkM) {

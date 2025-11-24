@@ -205,17 +205,17 @@ public class Player extends Entity {
 
         g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-        g2.setColor(Color.red);
-        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+//        g2.setColor(Color.red);
+//        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 
         if (CombatSystem.isAttackActive(combat)) {
             Rectangle atk = combat.getAttackBox();
             if (atk.width > 0 && atk.height > 0) {
                 int ax = atk.x - (worldX - screenX);
                 int ay = atk.y - (worldY - screenY);
-                g2.fillRect(ax, ay, atk.width, atk.height);
-                g2.setColor(Color.red);
-                g2.drawRect(ax, ay, atk.width, atk.height);
+//                g2.fillRect(ax, ay, atk.width, atk.height);
+//                g2.setColor(Color.red);
+//                g2.drawRect(ax, ay, atk.width, atk.height);
             }
         }
     }

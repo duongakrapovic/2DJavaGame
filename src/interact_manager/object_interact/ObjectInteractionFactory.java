@@ -23,7 +23,7 @@ public class ObjectInteractionFactory {
             case "healthposion" -> new HealthPosionInteraction();
             case "argonaut hero's sword" -> new SwordInteraction();
             case "leviathan axe" -> new AxeInteraction();
-            case "steve pick" ->  new PickInteraction();
+            case "steve's pick" ->  new PickInteraction();
             default -> null;
         };
     }

@@ -29,7 +29,7 @@ public class AxeInteraction implements IObjectInteraction {
             player.setCurrentWeapon(new Axe(gp, gp.currentMap));
             Weapon temp = player.getCurrentWeapon();
             player.equipWeapon(temp);
-            if (msgUI != null) msgUI.showTouchMessage("Ya got ur grandpa strongest weapons let go to the door and have a test!", obj, gp);
+            if (msgUI != null) msgUI.showTouchMessage("U got ur grandpa's axe! Press j to perform a hit", obj, gp);
         }
     }
 }
