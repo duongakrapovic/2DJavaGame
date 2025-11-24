@@ -170,10 +170,9 @@ public class GamePanel extends JPanel {
         if (gsm.getState() != GameState.START)
             tileM.draw(g2, chunkM);
 
-        em.draw(g2, currentMap);
         om.draw(g2, currentMap , em.getPlayer());
+        em.draw(g2, currentMap);
         uiManager.draw(g2, gsm.getState());
-
 
         frameCounter++;
         if (frameCounter >= 1_000_000) frameCounter = 0;

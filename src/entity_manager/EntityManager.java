@@ -66,5 +66,4 @@ public class EntityManager {
         all.sort((a, b) -> Integer.compare(a.worldY, b.worldY));
         for (Entity e : all) e.draw(g2);
     }
-
 }
