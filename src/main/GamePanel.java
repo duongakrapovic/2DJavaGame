@@ -113,6 +113,12 @@ public class GamePanel extends JPanel {
         em.getPlayer().setDefaultValues();
         em.getPlayer().setHP(em.getPlayer().getMaxHP());
         em.getPlayer().mapIndex = currentMap;
+        em.getPlayer().setLevel(1);
+        em.getPlayer().setExp(0);
+
+        object_data.weapons.Weapon defaultWeapon = new object_data.weapons.Sword(this, currentMap);
+        em.getPlayer().setCurrentWeapon(defaultWeapon);
+        em.getPlayer().equipWeapon(defaultWeapon);
         if (om != null) {
             om.reloadMapObjects(currentMap);
         }
