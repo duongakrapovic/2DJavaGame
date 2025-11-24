@@ -57,21 +57,13 @@ public class GameCommandHandler implements KeyListener {
             if (dialogue != null && dialogue.isActive()) {
                 return;
             }
-            // === SAVE & LOAD GAME ===
+            // === SAVE GAME ===
             if (code == KeyEvent.VK_F5) {
                 gp.saveManager.saveGame(gp);
                 var msgUI = gp.uiManager.get(MessageUI.class);
                 if (msgUI != null) msgUI.showTouchMessage("Game Saved!", null, gp);
                 return;
             }
-
-            if (code == KeyEvent.VK_F9) {
-                gp.saveManager.loadGame(gp);
-                var msgUI = gp.uiManager.get(MessageUI.class);
-                if (msgUI != null) msgUI.showTouchMessage("Game Loaded!", null, gp);
-                return;
-            }
-
 
             // Press ESC to open the pause menu
             if (code == KeyEvent.VK_ESCAPE) {
