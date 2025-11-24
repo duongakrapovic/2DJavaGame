@@ -31,7 +31,7 @@ public class RedSlimeMonster extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats nhỉnh hơn slime thường
-        setStats(12, 2, 3);       // hp, def, exp
+        setStats(12, 3, 1);       // hp, def, exp
         attackDamage = 4;
         attackKnockback = 5;
 

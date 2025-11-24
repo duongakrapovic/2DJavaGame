@@ -103,9 +103,9 @@ public class ObjectManager {
 
             if (img != null) g2.drawImage(img, sx, sy, null);
 
-            g2.setColor(java.awt.Color.RED);
-            g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y,
-                    o.solidArea.width, o.solidArea.height);
+//            g2.setColor(java.awt.Color.RED);
+//            g2.drawRect(sx + o.solidArea.x, sy + o.solidArea.y,
+//                    o.solidArea.width, o.solidArea.height);
         }
     }
     public void reloadMapObjects(int mapId) {
@@ -119,6 +119,14 @@ public class ObjectManager {
 
         int size = getObjects(mapIndex).size();
         System.out.println("[DROP] HealthPosion spawn tại map " + mapIndex +
+                " (" + wx + ", " + wy + ")  -> list size = " + size);
+    }
+    public void spawnSword(int mapIndex, int wx, int wy) {
+        Sword sword = new Sword(gp, mapIndex);
+        addObject(sword, wx, wy);
+
+        int size = getObjects(mapIndex).size();
+        System.out.println("[DROP] Sword spawn tại map " + mapIndex +
                 " (" + wx + ", " + wy + ")  -> list size = " + size);
     }
 }

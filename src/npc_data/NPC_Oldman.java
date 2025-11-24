@@ -46,12 +46,16 @@ public class NPC_Oldman extends Entity {
 
     // ==== THÊM HỘI THOẠI ====
     public void setDialogue() {
-        dialogues[0][0] = "Hôm nay cháu tròn 15 tuổi rồi… cũng là ngày đầu tiên được phép bước vào Dungeon.\n";
-        dialogues[0][1] = "Ông biết cháu háo hức lắm — muốn tự kiếm tiền, muốn khám phá thế giới ngoài kia.";
-        dialogues[0][2] = "Nhưng hãy nhớ, Dungeon không chỉ có kho báu đâu… mà còn đầy rẫy quái vật và hiểm nguy.";
-        dialogues[0][3] = "Nhân dịp sinh nhật, ông có món quà cho cháu.\n" +
-                "Đây là Rìu Leviathan, vũ khí đã theo ông suốt thời trai trẻ.\n";
-        dialogues[0][4] = "Hãy mang nó theo, bảo vệ bản thân… và trở về kể cho ông nghe chuyến phiêu lưu đầu tiên của cháu nhé.";
+        dialogues[0][0] = "Today, you finally turn 15… which means you're allowed to enter the Dungeon for the first time.\n";
+        dialogues[0][1] = "I know you're excited — eager to earn your own money and explore the world out there.";
+        dialogues[0][2] = "But remember, the Dungeon isn't just treasures… it's filled with monsters and danger.";
+        dialogues[0][3] = "For your birthday, I have a gift for you.\n"
+                + "This is the Leviathan Axe, the weapon that accompanied me through my youth.\n";
+        dialogues[0][4] = "Take it with you, protect yourself… and come back to tell me all about your very first adventure.";
+
+        dialogues[0][5] = "Now, head outside the house. Your first combat awaits near the entrance.";
+        dialogues[0][6] = "And remember this — no matter how tough the journey is, you can always return home to rest and recover your health.";
+        dialogues[0][7] = "Go on, my child. Your adventure begins now.";
 
         dialogues[1][0] = "If you become tired, rest at the water.";
         dialogues[1][1] = "However, the monsters reappear if you rest.\nI don't know why but that's how it works.";

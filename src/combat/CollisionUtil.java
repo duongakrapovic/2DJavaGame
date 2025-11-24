@@ -14,19 +14,4 @@ public final class CollisionUtil {
 
         return new Rectangle(e.worldX + offX, e.worldY + offY, w, h);
     }
-
-    public static Rectangle getContextBodyWorldRect(CombatContext ctx) {
-        if (ctx == null) return new Rectangle(0, 0, 0, 0);
-
-        Rectangle sa = ctx.getSolidArea();
-        int offX = (sa != null) ? sa.x : 0;
-        int offY = (sa != null) ? sa.y : 0;
-        int w    = Math.max(0, (sa != null) ? sa.width  : 1);
-        int h    = Math.max(0, (sa != null) ? sa.height : 1);
-        return new Rectangle(
-                ctx.getWorldX() + offX,
-                ctx.getWorldY() + offY,
-                w, h
-        );
-    }
 }

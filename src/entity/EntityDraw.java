@@ -137,31 +137,30 @@ public class EntityDraw {
         }
 
         // ================= DEBUG: SOLID AREA =================
-        if (e.solidArea != null) {
-            g2.setColor(Color.RED);
-            g2.drawRect(
-                    screenX + e.solidArea.x,
-                    screenY + e.solidArea.y,
-                    e.solidArea.width,
-                    e.solidArea.height
-            );
-        }
+//        if (e.solidArea != null) {
+//            g2.setColor(Color.RED);
+//            g2.drawRect(
+//                    screenX + e.solidArea.x,
+//                    screenY + e.solidArea.y,
+//                    e.solidArea.width,
+//                    e.solidArea.height
+//            );
+//        }
 
         // ================= DEBUG: ATTACK BOX ACTIVE =================
-        if (CombatSystem.isAttackActive(e.combat)) {
-            Rectangle atk = e.combat.getAttackBox();
-            if (atk != null && atk.width > 0 && atk.height > 0) {
-                int ax = atk.x - camOriginX;
-                int ay = atk.y - camOriginY;
-
-                g2.setColor(new Color(255, 32, 32, 140));
-                g2.fillRect(ax, ay, atk.width, atk.height);
-                g2.setColor(Color.RED);
-                g2.drawRect(ax, ay, atk.width, atk.height);
-            }
-        }
+//        if (CombatSystem.isAttackActive(e.combat)) {
+//            Rectangle atk = e.combat.getAttackBox();
+//            if (atk != null && atk.width > 0 && atk.height > 0) {
+//                int ax = atk.x - camOriginX;
+//                int ay = atk.y - camOriginY;
+//
+//                g2.setColor(new Color(255, 32, 32, 140));
+//                g2.fillRect(ax, ay, atk.width, atk.height);
+//                g2.setColor(Color.RED);
+//                g2.drawRect(ax, ay, atk.width, atk.height);
+//            }
+//        }
     }
-
     private static BufferedImage nz(BufferedImage a, BufferedImage b) {
         return a != null ? a : b;
     }

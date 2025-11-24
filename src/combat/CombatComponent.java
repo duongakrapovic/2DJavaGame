@@ -29,8 +29,6 @@ public class CombatComponent {
     private final Rectangle attackBox = new Rectangle();
 
     private final Set<Object> hitThisSwing = new HashSet<>();
-    // KNOCKBACK
-    public static final int DEFAULT_KNOCKBACK = 2;
 
     // ================== API ==================
 

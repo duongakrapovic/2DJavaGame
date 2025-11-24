@@ -44,17 +44,13 @@ public abstract class Weapon extends WorldObject {
 
     // ===================== COMMON UTILITY =====================
 
-    public String displayName() {
-        String k = spriteKey();
-        return (k == null || k.isEmpty()) ? "Weapon"
-                : Character.toUpperCase(k.charAt(0)) + k.substring(1);
-    }
 
     public void loadSprite() {
         staticImage = setup("/object/" + spriteKey(), gp.tileSize, gp.tileSize);
     }
 
     // ===================== COMBAT LOGIC =====================
+    // use later in CombatSystem
     public int computeDamage(Player p, Entity target) {
         int offensive = Math.round(p.getATK() * atkMultiplier()) + atkFlat();
         int def = Math.max(0, target.getDEF());
@@ -62,5 +58,4 @@ public abstract class Weapon extends WorldObject {
         return Math.max(1, Math.round(offensive * mitig));
     }
 
-    public void onEquip(Player p) {}
 }

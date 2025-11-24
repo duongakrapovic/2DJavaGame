@@ -28,22 +28,21 @@ public class Player extends Entity {
     public int hasKey = 0;
     int speedTimer = 0;
 
-    // --- Level / EXP / Rank ---
+    // --- Level / EXP ---
     private int level = 1;
     private int exp = 0;
     private int expToNext = 10;
-    private int rank = 0;
 
     // Base stats + tăng mỗi level
-    private int baseHp = 100;
-    private int baseAtk = 20;
+    private int baseHp = 15;
+    private int baseAtk = 3;
     private int baseDef = 2;
 
-    private int hpPerLevel = 10;
-    private int atkPerLevel = 3;
+    private int hpPerLevel = 3;
+    private int atkPerLevel = 1;
     private int defPerLevel = 1;
 
-    //ui
+    // UI
     private MessageUI msgUI;
 
     // managers
@@ -86,7 +85,7 @@ public class Player extends Entity {
         pm = new PlayerMovement(this, gp);
         pa = new PlayerAnimation(this);
 
-        // ---- Combat config (dựa trên level/rank)
+        // ---- Combat config (dựa trên level)
         recalcStatsFromLevel();
     }
 
@@ -97,12 +96,13 @@ public class Player extends Entity {
         worldX = gp.tileSize * 15;
         worldY = gp.tileSize * 22;
 
-        defaultSpeed = 10;
+        defaultSpeed = 5;
         buffSpeed = 4;
         actualSpeed = defaultSpeed;
         direction = "up";
         animationON = true;
     }
+
     public int getLevel() {
         return level;
     }
@@ -124,10 +124,7 @@ public class Player extends Entity {
         this.exp = exp;
         return exp;
     }
-    //rank
-    private double getRankMultiplier() {
-        return 1.0 + rank * 0.2;
-    }
+
     @Override
     public void update() {
         // === ĐANG BỊ KNOCKBACK → chỉ đẩy & tick hệ thống, bỏ qua input ===
@@ -208,18 +205,17 @@ public class Player extends Entity {
 
         g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-
-        g2.setColor(Color.red);
-        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+//        g2.setColor(Color.red);
+//        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 
         if (CombatSystem.isAttackActive(combat)) {
             Rectangle atk = combat.getAttackBox();
             if (atk.width > 0 && atk.height > 0) {
                 int ax = atk.x - (worldX - screenX);
                 int ay = atk.y - (worldY - screenY);
-                g2.fillRect(ax, ay, atk.width, atk.height);
-                g2.setColor(Color.red);
-                g2.drawRect(ax, ay, atk.width, atk.height);
+//                g2.fillRect(ax, ay, atk.width, atk.height);
+//                g2.setColor(Color.red);
+//                g2.drawRect(ax, ay, atk.width, atk.height);
             }
         }
     }
@@ -251,36 +247,61 @@ public class Player extends Entity {
     }
 
     private void handleNPCInteraction() {
-        if (input.isTalkPressed()) { // E key
-            int npcIndex = gp.cChecker.checkEntity(this, gp.em.getNPCs(gp.currentMap), worldX, worldY);
-            if (npcIndex != 999) {
-                Entity npc = gp.em.getNPCs(gp.currentMap).get(npcIndex);
-                if (npc != null) {
-                    npc.facePlayer();
-                    npc.speak(gp);
+        // Tìm NPC đang chạm player
+        int npcIndex = gp.cChecker.checkEntity(this, gp.em.getNPCs(gp.currentMap), worldX, worldY);
 
-                    gp.gsm.setState(GameState.DIALOGUE);
-                }
-            } else {
-                System.out.println("[DEBUG] No NPC collision detected");
-            }
+        // Không chạm NPC nào -> reset interacting để lần sau lại gần vẫn hiện hint
+        if (npcIndex == 999) {
+            setInteracting(false);
+            return;
         }
+
+        // Lấy NPC
+        Entity npc = gp.em.getNPCs(gp.currentMap).get(npcIndex);
+        if (npc == null) return;
+
+        if (gp.gsm.getState() != GameState.PLAY) return;
+
+        // === 1) LẠI GẦN NHƯNG CHƯA BẤM E -> HIỆN HINT ===
+        if (!input.isTalkPressed()) {
+
+            if (msgUI == null && gp.uiManager != null) {
+                msgUI = gp.uiManager.get(MessageUI.class);
+            }
+
+            // Chỉ hint cho ông nội + tránh spam bằng isInteracting()
+            if (msgUI != null && "oldman".equalsIgnoreCase(npc.name) && !isInteracting()) {
+                msgUI.showTouchMessage(
+                        "Press 'E' to talk to your grandpa.",
+                        npc,   // MessageUI bám theo vị trí ông nội
+                        gp
+                );
+                setInteracting(true);
+            }
+
+            // chưa bấm E thì chỉ hint, không mở thoại
+            return;
+        }
+
+        // === 2) BẤM E -> MỞ ĐỐI THOẠI ===
+
+        // Nếu DialogueUI đang mở sẵn thì bỏ qua
+        ui.effects.DialogueUI dialogue = gp.uiManager.get(ui.effects.DialogueUI.class);
+        if (dialogue != null && dialogue.isActive()) return;
+
+        npc.facePlayer();
+        npc.speak(gp);
+        gp.gsm.setState(GameState.DIALOGUE);
     }
 
-    // count stats with exp
+    // count stats with level (không còn rank)
     private void recalcStatsFromLevel() {
-        int rawHp = baseHp + (level - 1) * hpPerLevel;
-        int rawAtk = baseAtk + (level - 1) * atkPerLevel;
-        int rawDef = baseDef + (level - 1) * defPerLevel;
-
-        double mul = getRankMultiplier();
-
-        int finalHp = (int) Math.round(rawHp * mul);
-        int finalAtk = (int) Math.round(rawAtk * mul);
-        int finalDef = (int) Math.round(rawDef * mul);
+        int hp = baseHp + (level - 1) * hpPerLevel;
+        int atk = baseAtk + (level - 1) * atkPerLevel;
+        int def = baseDef + (level - 1) * defPerLevel;
 
         // dùng setStats của Entity
-        setStats(finalHp, finalAtk, finalDef);
+        setStats(hp, atk, def);
     }
 
     // exp to next level
@@ -310,7 +331,7 @@ public class Player extends Entity {
         // Lên nhiều level nếu exp dư
         while (exp >= expToNext) {
             exp -= expToNext;
-            levelUp();  // trong levelUp cũng sẽ in debug
+            levelUp();  // trong levelUp cũng sẽ in debug + hiện thông báo
         }
 
         System.out.println(
@@ -327,8 +348,18 @@ public class Player extends Entity {
 
         // Hồi full máu khi lên level
         setHP(getMaxHP());
-        System.out.println("[LEVEL] Player lên level " + level +
-                " | next exp = " + expToNext);
+
+        // --- Thông báo LEVEL UP bằng tiếng Anh ---
+        if (msgUI == null && gp != null && gp.uiManager != null) {
+            msgUI = gp.uiManager.get(MessageUI.class);
+        }
+        if (msgUI != null) {
+            msgUI.showTouchMessage(
+                    "LEVEL UP!  You reached level " + level + "! Get stronger and stronger",
+                    null, // không gắn với object nào cụ thể
+                    gp
+            );
+        }
     }
 
     // Hồi 1 lượng máu cố định

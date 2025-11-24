@@ -41,7 +41,7 @@ public class SkeletonLord extends Monster {
         solidAreaDefaultY = solidArea.y;
 
         // stats
-        setStats(220 , 6, 2);
+        setStats(220 , 15, 10);
         attackKnockback = 8;
         setExpReward(100);
 
@@ -142,4 +142,15 @@ public class SkeletonLord extends Monster {
             switchToPhase2Sprites();
         }
     }
+    @Override
+    public void onDeath() {
+        // 1) Gọi logic chung của Monster: cộng EXP + random HealthPosion
+        super.onDeath();
+
+        // 2) Boss rơi thêm kiếm
+        if (gp != null && gp.om != null) {
+            gp.om.spawnSword(this.mapIndex, this.worldX, this.worldY);
+        }
+    }
+
 }
