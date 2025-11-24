@@ -70,21 +70,4 @@ public class SoundManager {
         }
     }
 
-    // --- Custom SFX playback for UI (hover, click, etc.) ---
-    public static void playSFX(String name) {
-        try {
-            String path = "/sound/" + name + ".wav";
-            URL url = SoundManager.class.getResource(path);
-            if (url == null) {
-                System.out.println("[SoundManager] Missing SFX: " + path);
-                return;
-            }
-            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
-            Clip clip = AudioSystem.getClip();
-            clip.open(ais);
-            clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

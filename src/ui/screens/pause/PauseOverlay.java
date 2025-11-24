@@ -11,47 +11,49 @@ import java.awt.image.BufferedImage;
 import static ui.utilz.Constants.UI.PauseButtons.SOUND_SIZE;
 import static ui.utilz.Constants.UI.URMButtons.*;
 
-
 public class PauseOverlay extends BaseUI {
+
     private BufferedImage bgImg;
     private int bgX, bgY, bgW, bgH;
 
+    // Nút âm thanh và 3 nút URM
     private SoundButton musicB, sfxB;
     private UrmButton menuB, replayB, resumeB;
-    private int focusIndex = 4; // 0=Music, 1=SFX, 2=Menu, 3=Replay, 4=Resume
 
-    // === Constructor ===
+    // 0 = Music, 1 = Menu, 2 = Replay, 3 = Resume
+    private int focusIndex = 4; // mặc định chọn Resume
+
     public PauseOverlay(GamePanel gp) {
         super(gp);
         loadBackground();
         initButtons();
     }
-
+    // Tải background của Pause Menu
     private void loadBackground() {
         bgImg = LoadSave.GetSpriteAtlas(LoadSave.PAUSE_BACKGROUND);
+
         float scale = gp.tileSize / 48f;
         bgW = Math.round(bgImg.getWidth() * scale);
         bgH = Math.round(bgImg.getHeight() * scale);
-        bgX = gp.screenWidth / 2 - bgW / 2;
+        bgX = gp.screenWidth  / 2 - bgW / 2;
         bgY = gp.screenHeight / 2 - bgH / 2;
     }
-
+    // Khởi tạo vị trí của các nút
     private void initButtons() {
         int centerX = bgX + bgW / 2;
-
-        // === SOUND BUTTON ===
+        // ==== Nút âm thanh ====
         final float REF_W = 258f;
         final float REF_H = 389f;
-        final float MUSIC_RIGHT_X = 208f;
+        final float MUSIC_RIGHT_X  = 208f;
         final float MUSIC_CENTER_Y = 111f;
 
         int soundX = bgX + Math.round((MUSIC_RIGHT_X / REF_W) * bgW) - 200;
         int soundY = bgY + Math.round((MUSIC_CENTER_Y / REF_H) * bgH) - SOUND_SIZE / 2 + 220;
         musicB = new SoundButton(soundX, soundY);
 
-        // === URM BUTTONS ===
+        // ==== Nhóm 3 nút Menu / Replay / Resume ====
         int groupW = URM_SIZE * 3 + Constants.UI.PauseButtons.URM_GAP * 2;
-        int baseY = bgY + (int) (bgH * (Constants.UI.PauseButtons.GROUP_Y - 0.215f));
+        int baseY  = bgY + (int) (bgH * (Constants.UI.PauseButtons.GROUP_Y - 0.215f));
         int startX = centerX - groupW / 2 + (int) (bgW * -0.01f);
 
         menuB   = new UrmButton(startX, baseY, 2);
@@ -59,41 +61,41 @@ public class PauseOverlay extends BaseUI {
         resumeB = new UrmButton(startX + (URM_SIZE + Constants.UI.PauseButtons.URM_GAP) * 2, baseY, 0);
     }
 
-    // === Update & Draw ===
     @Override
     public void update() {
+        // Chỉ cần update nút âm thanh
         musicB.update();
     }
 
     @Override
     public void draw(Graphics2D g2) {
-        // Background
+        // Vẽ background
         g2.drawImage(bgImg, bgX, bgY, bgW, bgH, null);
-        // Buttons
+        // Vẽ các nút
         musicB.draw(g2);
         menuB.draw(g2);
         replayB.draw(g2);
         resumeB.draw(g2);
+
+        // Bôi sáng nút đang chọn
         highlightFocusedButton(g2);
     }
-
-    // === Điều kiện hiển thị trong UIManager ===
+    // Điều kiện vẽ trong Pause state
     @Override
     public boolean shouldRenderIn(GameState state) {
-        return gp.gsm.getState() == GameState.PAUSE;
+        return state == GameState.PAUSE;
     }
-
     @Override
     public boolean shouldDraw() {
         return gp.gsm.getState() == GameState.PAUSE;
     }
-
     @Override
     public boolean shouldUpdate() {
         return gp.gsm.getState() == GameState.PAUSE;
     }
-
+    // Bôi sáng nút đang được focus
     private void highlightFocusedButton(Graphics2D g2) {
+
         Rectangle r = switch (focusIndex) {
             case 0 -> musicB.getBounds();
             case 1 -> menuB.getBounds();
@@ -101,20 +103,16 @@ public class PauseOverlay extends BaseUI {
             case 3 -> resumeB.getBounds();
             default -> null;
         };
+
         if (r != null) {
             g2.setColor(new Color(255, 255, 255, 80));
             g2.fillRoundRect(r.x - 4, r.y - 4, r.width + 8, r.height + 8, 10, 10);
         }
     }
 
-    // === Keyboard control ===
-    public void moveLeft() {
-        focusIndex = (focusIndex - 1 + 5) % 5;
-    }
-
-    public void moveRight() {
-        focusIndex = (focusIndex + 1) % 5;
-    }
+    // ==== Điều khiển bằng phím ====
+    public void moveLeft()  { focusIndex = (focusIndex - 1 + 5) % 5; }
+    public void moveRight() { focusIndex = (focusIndex + 1)     % 5; }
 
     public void select() {
         switch (focusIndex) {
@@ -125,19 +123,23 @@ public class PauseOverlay extends BaseUI {
         }
     }
 
-    // === Actions ===
+    // ==== Các hành động ====
     private void toggleMusic() {
         musicB.setMuted(!musicB.isMuted());
-        if (musicB.isMuted())
+
+        if (musicB.isMuted()) {
             SoundManager.getInstance().stopMusic();
-        else
+        } else {
             SoundManager.getInstance().playMusic(SoundManager.SoundID.MUSIC_THEME);
+        }
     }
 
+    // Về Menu chính
     private void goMenu() {
         gp.gsm.setState(GameState.START);
     }
 
+    // Restart game
     private void restart() {
         gp.restartGame();
         if (!musicB.isMuted()) {
@@ -145,6 +147,7 @@ public class PauseOverlay extends BaseUI {
         }
     }
 
+    // Tiếp tục chơi
     private void resume() {
         gp.gsm.setState(GameState.PLAY);
         if (!musicB.isMuted()) {
