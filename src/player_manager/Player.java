@@ -117,6 +117,7 @@ public class Player extends Entity {
 
     public int setLevel(int level) {
         this.level = level;
+        recalcStatsFromLevel();
         return level;
     }
 
@@ -262,13 +263,11 @@ public class Player extends Entity {
 
         if (gp.gsm.getState() != GameState.PLAY) return;
 
-        // === 1) LẠI GẦN NHƯNG CHƯA BẤM E -> HIỆN HINT ===
+        // LẠI GẦN NHƯNG CHƯA BẤM E -> HIỆN HINT
         if (!input.isTalkPressed()) {
-
             if (msgUI == null && gp.uiManager != null) {
                 msgUI = gp.uiManager.get(MessageUI.class);
             }
-
             // Chỉ hint cho ông nội + tránh spam bằng isInteracting()
             if (msgUI != null && "oldman".equalsIgnoreCase(npc.name) && !isInteracting()) {
                 msgUI.showTouchMessage(
@@ -278,12 +277,11 @@ public class Player extends Entity {
                 );
                 setInteracting(true);
             }
-
             // chưa bấm E thì chỉ hint, không mở thoại
             return;
         }
 
-        // === 2) BẤM E -> MỞ ĐỐI THOẠI ===
+        // BẤM E -> MỞ ĐỐI THOẠI
 
         // Nếu DialogueUI đang mở sẵn thì bỏ qua
         ui.effects.DialogueUI dialogue = gp.uiManager.get(ui.effects.DialogueUI.class);
